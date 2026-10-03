@@ -6,7 +6,10 @@
 
   <title>Master Login</title>
 
+  <!-- Supabase Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Supabase Configuration -->
   <script src="../js/supabase.js"></script>
 
   <style>
@@ -26,7 +29,7 @@
       max-width: 400px;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
@@ -53,6 +56,10 @@
       color: white;
       font-size: 16px;
       cursor: pointer;
+    }
+
+    button:hover {
+      background: #333;
     }
 
     #message {
@@ -89,30 +96,75 @@
   </div>
 
   <script>
+
     async function login() {
 
-      const email = document.getElementById("email").value;
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
       const message = document.getElementById("message");
 
+      if (!email || !password) {
+        message.textContent = "❌ Email and password required";
+        return;
+      }
+
       message.textContent = "Logging in...";
 
+      // Supabase Authentication
       const { data, error } =
         await supabaseClient.auth.signInWithPassword({
           email: email,
           password: password
         });
 
+      // Login failed
       if (error) {
         console.error(error);
         message.textContent = "❌ " + error.message;
         return;
       }
 
-      message.textContent = "✅ Login successful!";
-
       console.log("Logged in user:", data.user);
+
+      // Verify Master Role
+      const { data: master, error: roleError } =
+        await supabaseClient
+          .from("owners")
+          .select("full_name, role, shop_id")
+          .eq("id", data.user.id)
+          .single();
+
+      // Role verification failed
+      if (roleError) {
+        console.error(roleError);
+
+        await supabaseClient.auth.signOut();
+
+        message.textContent =
+          "❌ Master role verification failed";
+
+        return;
+      }
+
+      // User is not Master
+      if (master.role !== "master") {
+
+        await supabaseClient.auth.signOut();
+
+        message.textContent =
+          "❌ Access denied";
+
+        return;
+      }
+
+      // Master verified
+      message.textContent =
+        "✅ Master verified successfully!";
+
+      console.log("Master:", master);
+
     }
+
   </script>
 
 </body>
