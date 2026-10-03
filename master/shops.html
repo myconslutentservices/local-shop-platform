@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>All Shops | Master Panel</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
+      color: #111;
+    }
+
+    .topbar {
+      background: #111;
+      color: white;
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .back-btn {
+      background: white;
+      color: #111;
+      border: 0;
+      padding: 9px 15px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .header h2 {
+      margin: 0;
+    }
+
+    .add-btn {
+      background: #111;
+      color: white;
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .search-box {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    .message {
+      display: none;
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+    }
+
+    .error {
+      background: #ffe8e8;
+      color: #b00020;
+    }
+
+    .success {
+      background: #e8f7ed;
+      color: #18733b;
+    }
+
+    .shops {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .shop-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+    }
+
+    .shop-card h3 {
+      margin: 0 0 8px;
+    }
+
+    .shop-info {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .status {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 5px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .active {
+      background: #e5f7ea;
+      color: #18733b;
+    }
+
+    .maintenance {
+      background: #fff4d6;
+      color: #8a6200;
+    }
+
+    .suspended {
+      background: #ffe5e5;
+      color: #b00020;
+    }
+
+    .empty {
+      background: white;
+      padding: 30px;
+      text-align: center;
+      border-radius: 10px;
+      color: #666;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+    }
+
+    @media (max-width: 800px) {
+      .shops {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 550px) {
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .shops {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+
+    <h1>All Shops</h1>
+
+    <a
+      href="dashboard.html"
+      class="back-btn"
+    >
+      ← Dashboard
+    </a>
+
+  </header>
+
+
+  <main class="container">
+
+    <div class="header">
+
+      <h2>Shop Management</h2>
+
+      <button
+        class="add-btn"
+        onclick="addShop()"
+      >
+        + Add Shop
+      </button>
+
+    </div>
+
+
+    <div
+      id="errorMessage"
+      class="message error"
+    ></div>
+
+
+    <div
+      id="successMessage"
+      class="message success"
+    ></div>
+
+
+    <div class="search-box">
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search shop by name or slug..."
+        oninput="filterShops()"
+      >
+
+    </div>
+
+
+    <div
+      id="loading"
+      class="loading"
+    >
+      Loading shops...
+    </div>
+
+
+    <div
+      id="shopsContainer"
+      class="shops"
+    ></div>
+
+  </main>
+
+
+  <script>
+
+    let allShops = [];
+
+
+    // ==========================================
+    // VERIFY MASTER
+    // ==========================================
+
+    async function verifyMaster() {
+
+      const {
+        data: sessionData,
+        error: sessionError
+      } = await supabaseClient.auth.getSession();
+
+
+      if (
+        sessionError ||
+        !sessionData.session
+      ) {
+
+        window.location.href =
+          "login.html";
+
+        return false;
+      }
+
+
+      const user =
+        sessionData.session.user;
+
+
+      const {
+        data: master,
+        error: roleError
+      } = await supabaseClient
+
+        .from("owners")
+
+        .select(
+          "role"
+        )
+
+        .eq(
+          "id",
+          user.id
+        )
+
+        .single();
+
+
+      if (
+        roleError ||
+        !master ||
+        master.role !== "master"
+      ) {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+          "login.html";
+
+        return false;
+      }
+
+
+      return true;
+    }
+
+
+    // ==========================================
+    // LOAD SHOPS
+    // ==========================================
+
+    async function loadShops() {
+
+      const loading =
+        document.getElementById(
+          "loading"
+        );
+
+      const container =
+        document.getElementById(
+          "shopsContainer"
+        );
+
+
+      loading.style.display =
+        "block";
+
+      container.innerHTML = "";
+
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+
+        .from("shops")
+
+        .select(
+          "id, name, slug, phone, whatsapp, address, description, status, created_at"
+        )
+
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
+
+      loading.style.display =
+        "none";
+
+
+      if (error) {
+
+        console.error(
+          "SHOPS ERROR:",
+          error
+        );
+
+        showError(
+          error.message
+        );
+
+        return;
+      }
+
+
+      allShops = data || [];
+
+      renderShops(
+        allShops
+      );
+
+    }
+
+
+    // ==========================================
+    // RENDER SHOPS
+    // ==========================================
+
+    function renderShops(
+      shops
+    ) {
+
+      const container =
+        document.getElementById(
+          "shopsContainer"
+        );
+
+
+      container.innerHTML = "";
+
+
+      if (!shops.length) {
+
+        container.innerHTML = `
+          <div class="empty">
+            No shops found.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      shops.forEach(
+        function(shop) {
+
+          const card =
+            document.createElement(
+              "div"
+            );
+
+          card.className =
+            "shop-card";
+
+
+          const date =
+            new Date(
+              shop.created_at
+            ).toLocaleDateString(
+              "en-IN"
+            );
+
+
+          const statusClass =
+            shop.status === "active"
+              ? "active"
+              : shop.status === "maintenance"
+              ? "maintenance"
+              : "suspended";
+
+
+          card.innerHTML = `
+
+            <h3>
+              ${escapeHtml(shop.name)}
+            </h3>
+
+            <div class="shop-info">
+
+              <strong>Slug:</strong>
+              ${escapeHtml(shop.slug || "-")}
+              <br>
+
+              <strong>Phone:</strong>
+              ${escapeHtml(shop.phone || "-")}
+              <br>
+
+              <strong>WhatsApp:</strong>
+              ${escapeHtml(shop.whatsapp || "-")}
+              <br>
+
+              <strong>Address:</strong>
+              ${escapeHtml(shop.address || "-")}
+              <br>
+
+              <strong>Created:</strong>
+              ${date}
+
+            </div>
+
+            <span class="status ${statusClass}">
+              ${escapeHtml(shop.status || "unknown")}
+            </span>
+
+          `;
+
+
+          container.appendChild(
+            card
+          );
+
+        }
+      );
+
+    }
+
+
+    // ==========================================
+    // SEARCH
+    // ==========================================
+
+    function filterShops() {
+
+      const search =
+        document.getElementById(
+          "searchInput"
+        ).value
+        .toLowerCase()
+        .trim();
+
+
+      const filtered =
+        allShops.filter(
+          function(shop) {
+
+            return (
+
+              (shop.name || "")
+                .toLowerCase()
+                .includes(search)
+
+              ||
+
+              (shop.slug || "")
+                .toLowerCase()
+                .includes(search)
+
+            );
+
+          }
+        );
+
+
+      renderShops(
+        filtered
+      );
+
+    }
+
+
+    // ==========================================
+    // ADD SHOP
+    // ==========================================
+
+    function addShop() {
+
+      alert(
+        "Add Shop module will be created in the next step."
+      );
+
+    }
+
+
+    // ==========================================
+    // ERROR
+    // ==========================================
+
+    function showError(
+      message
+    ) {
+
+      const box =
+        document.getElementById(
+          "errorMessage"
+        );
+
+      box.textContent =
+        "❌ " + message;
+
+      box.style.display =
+        "block";
+
+    }
+
+
+    // ==========================================
+    // SUCCESS
+    // ==========================================
+
+    function showSuccess(
+      message
+    ) {
+
+      const box =
+        document.getElementById(
+          "successMessage"
+        );
+
+      box.textContent =
+        "✅ " + message;
+
+      box.style.display =
+        "block";
+
+    }
+
+
+    // ==========================================
+    // HTML SAFETY
+    // ==========================================
+
+    function escapeHtml(
+      value
+    ) {
+
+      return String(value)
+        .replaceAll(
+          "&",
+          "&amp;"
+        )
+        .replaceAll(
+          "<",
+          "&lt;"
+        )
+        .replaceAll(
+          ">",
+          "&gt;"
+        )
+        .replaceAll(
+          '"',
+          "&quot;"
+        )
+        .replaceAll(
+          "'",
+          "&#039;"
+        );
+
+    }
+
+
+    // ==========================================
+    // START
+    // ==========================================
+
+    async function start() {
+
+      const verified =
+        await verifyMaster();
+
+
+      if (!verified)
+        return;
+
+
+      await loadShops();
+
+    }
+
+
+    start();
+
+  </script>
+
+</body>
+
+</html>
