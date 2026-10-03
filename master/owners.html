@@ -207,11 +207,6 @@
       color: #fff;
     }
 
-    .loading {
-      color: #9ba8b5;
-      font-size: 14px;
-    }
-
     @media (max-width: 700px) {
       .topbar {
         padding: 0 15px;
@@ -269,6 +264,7 @@
 
           <div class="form-group">
             <label for="fullName">Owner Full Name</label>
+
             <input
               type="text"
               id="fullName"
@@ -279,6 +275,7 @@
 
           <div class="form-group">
             <label for="phone">Phone Number</label>
+
             <input
               type="tel"
               id="phone"
@@ -288,6 +285,7 @@
 
           <div class="form-group">
             <label for="email">Owner Login Email</label>
+
             <input
               type="email"
               id="email"
@@ -300,6 +298,7 @@
             <label for="password">Temporary Password</label>
 
             <div class="password-row">
+
               <input
                 type="password"
                 id="password"
@@ -315,15 +314,18 @@
               >
                 Show
               </button>
+
             </div>
           </div>
 
           <div class="form-group full">
+
             <label for="shop">Select Shop</label>
 
             <select id="shop" required>
               <option value="">Loading shops...</option>
             </select>
+
           </div>
 
         </div>
@@ -349,37 +351,49 @@
   <script>
 
     const form = document.getElementById("ownerForm");
+
     const fullName = document.getElementById("fullName");
     const phone = document.getElementById("phone");
     const email = document.getElementById("email");
     const password = document.getElementById("password");
     const shop = document.getElementById("shop");
+
     const submitBtn = document.getElementById("submitBtn");
+
     const message = document.getElementById("message");
     const ownerResult = document.getElementById("ownerResult");
+
     const showPassword = document.getElementById("showPassword");
 
 
     function showMessage(text, type) {
+
       message.textContent = text;
       message.className = "message " + type;
+
     }
 
 
     function clearMessage() {
+
       message.textContent = "";
       message.className = "message";
+
     }
 
 
     showPassword.addEventListener("click", () => {
 
       if (password.type === "password") {
+
         password.type = "text";
         showPassword.textContent = "Hide";
+
       } else {
+
         password.type = "password";
         showPassword.textContent = "Show";
+
       }
 
     });
@@ -392,10 +406,15 @@
         error: sessionError
       } = await supabaseClient.auth.getSession();
 
+
       if (sessionError || !session) {
+
         window.location.href = "login.html";
+
         return false;
+
       }
+
 
       const {
         data: master,
@@ -406,24 +425,32 @@
         .eq("id", session.user.id)
         .single();
 
+
       if (
         roleError ||
         !master ||
         master.role !== "master"
       ) {
+
         await supabaseClient.auth.signOut();
 
         window.location.href = "login.html";
+
         return false;
+
       }
 
+
       return true;
+
     }
 
 
     async function loadShops() {
 
-      shop.innerHTML = '<option value="">Loading shops...</option>';
+      shop.innerHTML =
+        '<option value="">Loading shops...</option>';
+
 
       const {
         data,
@@ -434,15 +461,18 @@
         .eq("status", "active")
         .order("name");
 
+
       if (error) {
+
+        console.error("SHOP LOAD ERROR:", error);
 
         shop.innerHTML =
           '<option value="">Failed to load shops</option>';
 
-        console.error("SHOP LOAD ERROR:", error);
-
         return;
+
       }
+
 
       if (!data || data.length === 0) {
 
@@ -450,10 +480,13 @@
           '<option value="">No active shops found</option>';
 
         return;
+
       }
+
 
       shop.innerHTML =
         '<option value="">Select a shop</option>';
+
 
       data.forEach(item => {
 
@@ -479,13 +512,29 @@
 
       ownerResult.style.display = "none";
 
-      const nameValue = fullName.value.trim();
-      const phoneValue = phone.value.trim();
-      const emailValue = email.value.trim().toLowerCase();
-      const passwordValue = password.value;
-      const shopValue = shop.value;
 
-      if (!nameValue || !emailValue || !passwordValue || !shopValue) {
+      const nameValue =
+        fullName.value.trim();
+
+      const phoneValue =
+        phone.value.trim();
+
+      const emailValue =
+        email.value.trim().toLowerCase();
+
+      const passwordValue =
+        password.value;
+
+      const shopValue =
+        shop.value;
+
+
+      if (
+        !nameValue ||
+        !emailValue ||
+        !passwordValue ||
+        !shopValue
+      ) {
 
         showMessage(
           "Please fill all required fields.",
@@ -493,7 +542,9 @@
         );
 
         return;
+
       }
+
 
       if (passwordValue.length < 6) {
 
@@ -503,79 +554,206 @@
         );
 
         return;
+
       }
 
+
       submitBtn.disabled = true;
-      submitBtn.textContent = "Creating Owner...";
+
+      submitBtn.textContent =
+        "Creating Owner...";
+
 
       try {
 
+        /*
+          Get the currently logged-in Master session.
+        */
+
         const {
-          data,
-          error
-        } = await supabaseClient.functions.invoke(
-          "create-owner",
+          data: sessionData,
+          error: sessionError
+        } = await supabaseClient.auth.getSession();
+
+
+        if (
+          sessionError ||
+          !sessionData?.session?.access_token
+        ) {
+
+          throw new Error(
+            "Master session expired. Please login again."
+          );
+
+        }
+
+
+        const accessToken =
+          sessionData.session.access_token;
+
+
+        /*
+          Call the create-owner Edge Function directly.
+        */
+
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/create-owner`,
           {
-            body: {
-              full_name: nameValue,
-              email: emailValue,
-              password: passwordValue,
-              phone: phoneValue,
-              shop_id: shopValue
-            }
+            method: "POST",
+
+            headers: {
+              "Authorization":
+                `Bearer ${accessToken}`,
+
+              "apikey":
+                SUPABASE_PUBLISHABLE_KEY,
+
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+
+              full_name:
+                nameValue,
+
+              email:
+                emailValue,
+
+              password:
+                passwordValue,
+
+              phone:
+                phoneValue,
+
+              shop_id:
+                shopValue
+
+            })
           }
         );
 
-        if (error) {
 
-          console.error("FUNCTION ERROR:", error);
+        /*
+          Read the Edge Function response.
+        */
+
+        let data = null;
+
+        try {
+
+          data = await response.json();
+
+        } catch (jsonError) {
+
+          data = null;
+
+        }
+
+
+        console.log(
+          "CREATE OWNER STATUS:",
+          response.status
+        );
+
+        console.log(
+          "CREATE OWNER RESPONSE:",
+          data
+        );
+
+
+        if (!response.ok) {
 
           throw new Error(
-            error.message || "Owner creation failed"
+            data?.error ||
+            data?.message ||
+            `Edge Function returned HTTP ${response.status}`
           );
+
         }
+
 
         if (!data || !data.success) {
 
           throw new Error(
-            data?.error || "Owner creation failed"
+            data?.error ||
+            "Owner creation failed."
           );
 
         }
+
 
         showMessage(
           "✅ Owner created successfully!",
           "success"
         );
 
+
         ownerResult.innerHTML = `
-          <p><strong>Owner:</strong> ${data.owner.full_name}</p>
-          <p><strong>Email:</strong> ${emailValue}</p>
-          <p><strong>Phone:</strong> ${data.owner.phone || "Not provided"}</p>
-          <p><strong>Shop:</strong> ${data.shop.name}</p>
-          <p><strong>Role:</strong> ${data.owner.role}</p>
-          <p><strong>Owner ID:</strong> ${data.owner.id}</p>
+
+          <p>
+            <strong>Owner:</strong>
+            ${data.owner.full_name}
+          </p>
+
+          <p>
+            <strong>Email:</strong>
+            ${emailValue}
+          </p>
+
+          <p>
+            <strong>Phone:</strong>
+            ${data.owner.phone || "Not provided"}
+          </p>
+
+          <p>
+            <strong>Shop:</strong>
+            ${data.shop.name}
+          </p>
+
+          <p>
+            <strong>Role:</strong>
+            ${data.owner.role}
+          </p>
+
+          <p>
+            <strong>Owner ID:</strong>
+            ${data.owner.id}
+          </p>
+
         `;
 
-        ownerResult.style.display = "block";
+
+        ownerResult.style.display =
+          "block";
+
 
         form.reset();
 
+
         await loadShops();
+
 
       } catch (error) {
 
-        console.error("CREATE OWNER ERROR:", error);
+        console.error(
+          "CREATE OWNER ERROR:",
+          error
+        );
+
 
         showMessage(
           "❌ " + error.message,
           "error"
         );
 
+
       } finally {
 
         submitBtn.disabled = false;
-        submitBtn.textContent = "Create Owner";
+
+        submitBtn.textContent =
+          "Create Owner";
 
       }
 
@@ -584,11 +762,14 @@
 
     async function init() {
 
-      const isMaster = await verifyMaster();
+      const isMaster =
+        await verifyMaster();
+
 
       if (!isMaster) {
         return;
       }
+
 
       await loadShops();
 
