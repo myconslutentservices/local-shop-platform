@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Master Dashboard | Local Shop Platform</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
+      color: #111;
+    }
+
+    .topbar {
+      background: #111;
+      color: white;
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .logout {
+      border: 0;
+      background: white;
+      color: #111;
+      padding: 9px 15px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h2 {
+      margin: 0 0 6px;
+    }
+
+    .welcome p {
+      margin: 0;
+      color: #666;
+    }
+
+    .status {
+      padding: 12px 15px;
+      border-radius: 8px;
+      background: #e9f8ee;
+      color: #18733b;
+      margin-bottom: 22px;
+      font-size: 14px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+    }
+
+    .card-title {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .number {
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    .section {
+      margin-top: 25px;
+    }
+
+    .section h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .quick-link {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #111;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+      font-weight: bold;
+    }
+
+    .quick-link:hover {
+      background: #eeeeee;
+    }
+
+    .error {
+      background: #ffe9e9;
+      color: #b00020;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    @media (max-width: 700px) {
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .quick-links {
+        grid-template-columns: 1fr;
+      }
+
+      .number {
+        font-size: 25px;
+      }
+    }
+
+    @media (max-width: 450px) {
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar h1 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+
+    <h1>Master Dashboard</h1>
+
+    <button
+      class="logout"
+      onclick="logout()"
+    >
+      Logout
+    </button>
+
+  </header>
+
+
+  <main class="container">
+
+    <div class="welcome">
+      <h2 id="welcomeText">Welcome, Master</h2>
+      <p>Local Shop Platform Control Center</p>
+    </div>
+
+
+    <div
+      id="errorBox"
+      class="error"
+    ></div>
+
+
+    <div class="status">
+      🟢 Master session verified
+    </div>
+
+
+    <div class="stats">
+
+      <div class="card">
+        <div class="card-title">
+          Total Shops
+        </div>
+
+        <div
+          class="number"
+          id="shopsCount"
+        >
+          —
+        </div>
+      </div>
+
+
+      <div class="card">
+        <div class="card-title">
+          Total Owners
+        </div>
+
+        <div
+          class="number"
+          id="ownersCount"
+        >
+          —
+        </div>
+      </div>
+
+
+      <div class="card">
+        <div class="card-title">
+          Total Products
+        </div>
+
+        <div
+          class="number"
+          id="productsCount"
+        >
+          —
+        </div>
+      </div>
+
+
+      <div class="card">
+        <div class="card-title">
+          Total Orders
+        </div>
+
+        <div
+          class="number"
+          id="ordersCount"
+        >
+          —
+        </div>
+      </div>
+
+
+      <div class="card">
+        <div class="card-title">
+          Open Support Tickets
+        </div>
+
+        <div
+          class="number"
+          id="ticketsCount"
+        >
+          —
+        </div>
+      </div>
+
+
+      <div class="card">
+        <div class="card-title">
+          Active Subscriptions
+        </div>
+
+        <div
+          class="number"
+          id="subscriptionsCount"
+        >
+          —
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <h2>Quick Access</h2>
+
+      <div class="quick-links">
+
+        <a
+          class="quick-link"
+          href="#"
+        >
+          🏪 All Shops
+        </a>
+
+        <a
+          class="quick-link"
+          href="#"
+        >
+          👤 All Owners
+        </a>
+
+        <a
+          class="quick-link"
+          href="#"
+        >
+          📦 All Products
+        </a>
+
+        <a
+          class="quick-link"
+          href="#"
+        >
+          🛒 All Orders
+        </a>
+
+        <a
+          class="quick-link"
+          href="#"
+        >
+          💳 Subscriptions
+        </a>
+
+        <a
+          class="quick-link"
+          href="#"
+        >
+          🎫 Support Center
+        </a>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <script>
+
+    // ==========================================
+    // VERIFY MASTER SESSION
+    // ==========================================
+
+    async function verifyMaster() {
+
+      const {
+        data: sessionData,
+        error: sessionError
+      } = await supabaseClient.auth.getSession();
+
+
+      if (
+        sessionError ||
+        !sessionData.session
+      ) {
+
+        window.location.href =
+          "login.html";
+
+        return null;
+      }
+
+
+      const user =
+        sessionData.session.user;
+
+
+      // Verify owner/master record
+      const {
+        data: master,
+        error: roleError
+      } = await supabaseClient
+
+        .from("owners")
+
+        .select(
+          "full_name, role, shop_id"
+        )
+
+        .eq(
+          "id",
+          user.id
+        )
+
+        .single();
+
+
+      if (
+        roleError ||
+        !master ||
+        master.role !== "master"
+      ) {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+          "login.html";
+
+        return null;
+      }
+
+
+      document.getElementById(
+        "welcomeText"
+      ).textContent =
+        "Welcome, " +
+        (master.full_name || "Master");
+
+
+      return user;
+    }
+
+
+    // ==========================================
+    // LOAD DASHBOARD COUNTS
+    // ==========================================
+
+    async function loadDashboard() {
+
+      try {
+
+        // Shops
+        const {
+          count: shopsCount,
+          error: shopsError
+        } = await supabaseClient
+
+          .from("shops")
+
+          .select(
+            "id",
+            {
+              count: "exact",
+              head: true
+            }
+          );
+
+
+        if (shopsError)
+          throw shopsError;
+
+
+        // Owners
+        const {
+          count: ownersCount,
+          error: ownersError
+        } = await supabaseClient
+
+          .from("owners")
+
+          .select(
+            "id",
+            {
+              count: "exact",
+              head: true
+            }
+          );
+
+
+        if (ownersError)
+          throw ownersError;
+
+
+        // Products
+        const {
+          count: productsCount,
+          error: productsError
+        } = await supabaseClient
+
+          .from("products")
+
+          .select(
+            "id",
+            {
+              count: "exact",
+              head: true
+            }
+          );
+
+
+        if (productsError)
+          throw productsError;
+
+
+        // Orders
+        const {
+          count: ordersCount,
+          error: ordersError
+        } = await supabaseClient
+
+          .from("orders")
+
+          .select(
+            "id",
+            {
+              count: "exact",
+              head: true
+            }
+          );
+
+
+        if (ordersError)
+          throw ordersError;
+
+
+        // Support tickets
+        const {
+          count: ticketsCount,
+          error: ticketsError
+        } = await supabaseClient
+
+          .from("support_tickets")
+
+          .select(
+            "id",
+            {
+              count: "exact",
+              head: true
+            }
+          )
+          .in(
+            "status",
+            [
+              "open",
+              "in_progress"
+            ]
+          );
+
+
+        if (ticketsError)
+          throw ticketsError;
+
+
+        // Active subscriptions
+        const {
+          count: subscriptionsCount,
+          error: subscriptionsError
+        } = await supabaseClient
+
+          .from("subscriptions")
+
+          .select(
+            "id",
+            {
+              count: "exact",
+              head: true
+            }
+          )
+          .eq(
+            "status",
+            "active"
+          );
+
+
+        if (subscriptionsError)
+          throw subscriptionsError;
+
+
+        // Display results
+
+        document.getElementById(
+          "shopsCount"
+        ).textContent =
+          shopsCount ?? 0;
+
+
+        document.getElementById(
+          "ownersCount"
+        ).textContent =
+          ownersCount ?? 0;
+
+
+        document.getElementById(
+          "productsCount"
+        ).textContent =
+          productsCount ?? 0;
+
+
+        document.getElementById(
+          "ordersCount"
+        ).textContent =
+          ordersCount ?? 0;
+
+
+        document.getElementById(
+          "ticketsCount"
+        ).textContent =
+          ticketsCount ?? 0;
+
+
+        document.getElementById(
+          "subscriptionsCount"
+        ).textContent =
+          subscriptionsCount ?? 0;
+
+
+      } catch (error) {
+
+        console.error(
+          "Dashboard Error:",
+          error
+        );
+
+        const errorBox =
+          document.getElementById(
+            "errorBox"
+          );
+
+        errorBox.style.display =
+          "block";
+
+        errorBox.textContent =
+          "❌ Dashboard Error: " +
+          error.message;
+      }
+
+    }
+
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
+
+    async function logout() {
+
+      await supabaseClient.auth.signOut();
+
+      window.location.href =
+        "login.html";
+    }
+
+
+    // ==========================================
+    // START DASHBOARD
+    // ==========================================
+
+    async function startDashboard() {
+
+      const user =
+        await verifyMaster();
+
+
+      if (!user)
+        return;
+
+
+      await loadDashboard();
+
+    }
+
+
+    startDashboard();
+
+  </script>
+
+</body>
+
+</html>
