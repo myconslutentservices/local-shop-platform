@@ -1,10 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Local Shop Platform</title>
+
+  <!-- Supabase Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Our Supabase Configuration -->
+  <script src="js/supabase.js"></script>
+</head>
+
 <body>
 
   <h1>Local Shop Platform</h1>
+
   <p id="status">Checking Supabase connection...</p>
 
   <script>
     async function testSupabase() {
+
       const { data, error } = await supabaseClient
         .from("shops")
         .select("id, name, slug")
@@ -19,6 +36,7 @@
       }
 
       status.textContent = "✅ Supabase connected successfully";
+
       console.log("Supabase data:", data);
     }
 
@@ -26,3 +44,4 @@
   </script>
 
 </body>
+</html>
