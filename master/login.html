@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Master Login</title>
+  <title>Master Login | Local Shop Platform</title>
 
   <!-- Supabase Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -13,58 +14,92 @@
   <script src="../js/supabase.js"></script>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
+      min-height: 100vh;
       font-family: Arial, sans-serif;
       background: #f4f4f4;
+
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      margin: 0;
     }
 
     .login-box {
-      background: white;
       width: 90%;
       max-width: 400px;
+      background: #ffffff;
+
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+      border-radius: 14px;
+
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
     }
 
     h1 {
+      margin: 0 0 8px;
       text-align: center;
+      color: #111111;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666666;
+      font-size: 14px;
       margin-bottom: 25px;
     }
 
     input {
       width: 100%;
-      box-sizing: border-box;
-      padding: 13px;
+      padding: 14px;
+
       margin-bottom: 15px;
-      border: 1px solid #ccc;
+
+      border: 1px solid #d5d5d5;
       border-radius: 8px;
+
       font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #111111;
     }
 
     button {
       width: 100%;
-      padding: 13px;
+      padding: 14px;
+
       border: none;
       border-radius: 8px;
-      background: #111;
-      color: white;
+
+      background: #111111;
+      color: #ffffff;
+
       font-size: 16px;
+      font-weight: bold;
+
       cursor: pointer;
     }
 
     button:hover {
-      background: #333;
+      background: #333333;
+    }
+
+    button:disabled {
+      background: #888888;
+      cursor: not-allowed;
     }
 
     #message {
       text-align: center;
-      margin-top: 15px;
+      margin-top: 18px;
+      font-size: 14px;
+      min-height: 20px;
     }
   </style>
 </head>
@@ -75,19 +110,28 @@
 
     <h1>Master Login</h1>
 
+    <div class="subtitle">
+      Local Shop Platform
+    </div>
+
     <input
       type="email"
       id="email"
       placeholder="Master Email"
+      autocomplete="email"
     >
 
     <input
       type="password"
       id="password"
       placeholder="Password"
+      autocomplete="current-password"
     >
 
-    <button onclick="login()">
+    <button
+      id="loginButton"
+      onclick="login()"
+    >
       Login
     </button>
 
@@ -95,77 +139,181 @@
 
   </div>
 
+
   <script>
 
     async function login() {
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const loginButton = document.getElementById("loginButton");
       const message = document.getElementById("message");
 
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      // Check input
       if (!email || !password) {
-        message.textContent = "❌ Email and password required";
+
+        message.textContent =
+          "❌ Email and password required";
+
         return;
       }
 
-      message.textContent = "Logging in...";
+      // Loading state
+      loginButton.disabled = true;
+      loginButton.textContent = "Logging in...";
+      message.textContent = "Checking login...";
 
-      // Supabase Authentication
-      const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
 
-      // Login failed
-      if (error) {
-        console.error(error);
-        message.textContent = "❌ " + error.message;
-        return;
-      }
+      try {
 
-      console.log("Logged in user:", data.user);
+        // ==========================================
+        // 1. SUPABASE AUTH LOGIN
+        // ==========================================
 
-      // Verify Master Role
-      const { data: master, error: roleError } =
-        await supabaseClient
+        const { data, error } =
+          await supabaseClient.auth.signInWithPassword({
+
+            email: email,
+            password: password
+
+          });
+
+
+        // Login failed
+        if (error) {
+
+          console.error("LOGIN ERROR:", error);
+
+          message.textContent =
+            "❌ " + error.message;
+
+          loginButton.disabled = false;
+          loginButton.textContent = "Login";
+
+          return;
+        }
+
+
+        console.log(
+          "Logged in user:",
+          data.user
+        );
+
+
+        // ==========================================
+        // 2. MASTER ROLE VERIFICATION
+        // ==========================================
+
+        message.textContent =
+          "Checking Master access...";
+
+
+        const {
+          data: master,
+          error: roleError
+        } = await supabaseClient
+
           .from("owners")
-          .select("full_name, role, shop_id")
-          .eq("id", data.user.id)
+
+          .select(
+            "full_name, role, shop_id"
+          )
+
+          .eq(
+            "id",
+            data.user.id
+          )
+
           .single();
 
-      // Role verification failed
-      if (roleError) {
-        console.error(roleError);
+
+        // Role query failed
+        if (roleError) {
+
+          console.error(
+            "ROLE ERROR:",
+            roleError
+          );
+
+          await supabaseClient.auth.signOut();
+
+          message.textContent =
+            "❌ " + roleError.message;
+
+          loginButton.disabled = false;
+          loginButton.textContent = "Login";
+
+          return;
+        }
+
+
+        // ==========================================
+        // 3. CHECK MASTER ROLE
+        // ==========================================
+
+        if (
+          !master ||
+          master.role !== "master"
+        ) {
+
+          console.error(
+            "ACCESS DENIED:",
+            master
+          );
+
+          await supabaseClient.auth.signOut();
+
+          message.textContent =
+            "❌ Access denied. Master account required.";
+
+          loginButton.disabled = false;
+          loginButton.textContent = "Login";
+
+          return;
+        }
+
+
+        // ==========================================
+        // 4. MASTER VERIFIED
+        // ==========================================
+
+        console.log(
+          "MASTER VERIFIED:",
+          master
+        );
+
+        message.textContent =
+          "✅ Master verified successfully!";
+
+
+        loginButton.textContent =
+          "Login Successful";
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "UNEXPECTED ERROR:",
+          error
+        );
 
         await supabaseClient.auth.signOut();
 
         message.textContent =
-          "❌ Master role verification failed";
+          "❌ " + error.message;
 
-        return;
+        loginButton.disabled = false;
+        loginButton.textContent = "Login";
       }
-
-      // User is not Master
-      if (master.role !== "master") {
-
-        await supabaseClient.auth.signOut();
-
-        message.textContent =
-          "❌ Access denied";
-
-        return;
-      }
-
-      // Master verified
-      message.textContent =
-        "✅ Master verified successfully!";
-
-      console.log("Master:", master);
 
     }
 
   </script>
 
 </body>
+
 </html>
