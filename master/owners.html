@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Owners - Master Panel</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #0b0f14;
+      color: #ffffff;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      height: 70px;
+      background: #111820;
+      border-bottom: 1px solid #26313d;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .brand span {
+      color: #35d07f;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      color: #fff;
+      background: #1b2530;
+      border: 1px solid #344352;
+      padding: 10px 16px;
+      border-radius: 8px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .page-title {
+      margin-bottom: 25px;
+    }
+
+    .page-title h1 {
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+
+    .page-title p {
+      color: #9ba8b5;
+    }
+
+    .card {
+      background: #111820;
+      border: 1px solid #26313d;
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 25px;
+    }
+
+    .card h2 {
+      margin-bottom: 22px;
+      font-size: 21px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #c9d2db;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 13px 14px;
+      background: #0b0f14;
+      color: #fff;
+      border: 1px solid #344352;
+      border-radius: 8px;
+      outline: none;
+      font-size: 15px;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #35d07f;
+    }
+
+    select option {
+      background: #111820;
+      color: #fff;
+    }
+
+    .password-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .password-row input {
+      flex: 1;
+    }
+
+    .show-btn {
+      border: 1px solid #344352;
+      background: #1b2530;
+      color: #fff;
+      border-radius: 8px;
+      padding: 0 15px;
+      cursor: pointer;
+    }
+
+    .submit-btn {
+      margin-top: 25px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 9px;
+      background: #35d07f;
+      color: #06100a;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      opacity: 0.9;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 8px;
+      line-height: 1.5;
+    }
+
+    .success {
+      display: block;
+      background: #10291d;
+      border: 1px solid #1e7044;
+      color: #7ef0aa;
+    }
+
+    .error {
+      display: block;
+      background: #2c1515;
+      border: 1px solid #793535;
+      color: #ff8f8f;
+    }
+
+    .owner-result {
+      margin-top: 20px;
+      padding: 18px;
+      background: #0b0f14;
+      border: 1px solid #26313d;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .owner-result p {
+      margin: 7px 0;
+      color: #cbd5df;
+    }
+
+    .owner-result strong {
+      color: #fff;
+    }
+
+    .loading {
+      color: #9ba8b5;
+      font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+      .topbar {
+        padding: 0 15px;
+      }
+
+      .container {
+        margin: 25px auto;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group.full {
+        grid-column: auto;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .page-title h1 {
+        font-size: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <span>Pro</span> Master Panel
+    </div>
+
+    <a href="dashboard.html" class="back-btn">
+      ← Dashboard
+    </a>
+  </div>
+
+  <div class="container">
+
+    <div class="page-title">
+      <h1>Owner Management</h1>
+      <p>Create a shop owner account and connect it to a shop.</p>
+    </div>
+
+    <div class="card">
+
+      <h2>➕ Create New Owner</h2>
+
+      <form id="ownerForm">
+
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="fullName">Owner Full Name</label>
+            <input
+              type="text"
+              id="fullName"
+              placeholder="Enter owner name"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input
+              type="tel"
+              id="phone"
+              placeholder="Enter phone number"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="email">Owner Login Email</label>
+            <input
+              type="email"
+              id="email"
+              placeholder="owner@example.com"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="password">Temporary Password</label>
+
+            <div class="password-row">
+              <input
+                type="password"
+                id="password"
+                placeholder="Minimum 6 characters"
+                minlength="6"
+                required
+              >
+
+              <button
+                type="button"
+                class="show-btn"
+                id="showPassword"
+              >
+                Show
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label for="shop">Select Shop</label>
+
+            <select id="shop" required>
+              <option value="">Loading shops...</option>
+            </select>
+          </div>
+
+        </div>
+
+        <button
+          type="submit"
+          class="submit-btn"
+          id="submitBtn"
+        >
+          Create Owner
+        </button>
+
+      </form>
+
+      <div id="message" class="message"></div>
+
+      <div id="ownerResult" class="owner-result"></div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const form = document.getElementById("ownerForm");
+    const fullName = document.getElementById("fullName");
+    const phone = document.getElementById("phone");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const shop = document.getElementById("shop");
+    const submitBtn = document.getElementById("submitBtn");
+    const message = document.getElementById("message");
+    const ownerResult = document.getElementById("ownerResult");
+    const showPassword = document.getElementById("showPassword");
+
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = "message " + type;
+    }
+
+
+    function clearMessage() {
+      message.textContent = "";
+      message.className = "message";
+    }
+
+
+    showPassword.addEventListener("click", () => {
+
+      if (password.type === "password") {
+        password.type = "text";
+        showPassword.textContent = "Hide";
+      } else {
+        password.type = "password";
+        showPassword.textContent = "Show";
+      }
+
+    });
+
+
+    async function verifyMaster() {
+
+      const {
+        data: { session },
+        error: sessionError
+      } = await supabaseClient.auth.getSession();
+
+      if (sessionError || !session) {
+        window.location.href = "login.html";
+        return false;
+      }
+
+      const {
+        data: master,
+        error: roleError
+      } = await supabaseClient
+        .from("owners")
+        .select("full_name, role, shop_id")
+        .eq("id", session.user.id)
+        .single();
+
+      if (
+        roleError ||
+        !master ||
+        master.role !== "master"
+      ) {
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+        return false;
+      }
+
+      return true;
+    }
+
+
+    async function loadShops() {
+
+      shop.innerHTML = '<option value="">Loading shops...</option>';
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("shops")
+        .select("id, name, slug")
+        .eq("status", "active")
+        .order("name");
+
+      if (error) {
+
+        shop.innerHTML =
+          '<option value="">Failed to load shops</option>';
+
+        console.error("SHOP LOAD ERROR:", error);
+
+        return;
+      }
+
+      if (!data || data.length === 0) {
+
+        shop.innerHTML =
+          '<option value="">No active shops found</option>';
+
+        return;
+      }
+
+      shop.innerHTML =
+        '<option value="">Select a shop</option>';
+
+      data.forEach(item => {
+
+        const option = document.createElement("option");
+
+        option.value = item.id;
+
+        option.textContent =
+          `${item.name} (${item.slug})`;
+
+        shop.appendChild(option);
+
+      });
+
+    }
+
+
+    form.addEventListener("submit", async (event) => {
+
+      event.preventDefault();
+
+      clearMessage();
+
+      ownerResult.style.display = "none";
+
+      const nameValue = fullName.value.trim();
+      const phoneValue = phone.value.trim();
+      const emailValue = email.value.trim().toLowerCase();
+      const passwordValue = password.value;
+      const shopValue = shop.value;
+
+      if (!nameValue || !emailValue || !passwordValue || !shopValue) {
+
+        showMessage(
+          "Please fill all required fields.",
+          "error"
+        );
+
+        return;
+      }
+
+      if (passwordValue.length < 6) {
+
+        showMessage(
+          "Password must be at least 6 characters.",
+          "error"
+        );
+
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creating Owner...";
+
+      try {
+
+        const {
+          data,
+          error
+        } = await supabaseClient.functions.invoke(
+          "create-owner",
+          {
+            body: {
+              full_name: nameValue,
+              email: emailValue,
+              password: passwordValue,
+              phone: phoneValue,
+              shop_id: shopValue
+            }
+          }
+        );
+
+        if (error) {
+
+          console.error("FUNCTION ERROR:", error);
+
+          throw new Error(
+            error.message || "Owner creation failed"
+          );
+        }
+
+        if (!data || !data.success) {
+
+          throw new Error(
+            data?.error || "Owner creation failed"
+          );
+
+        }
+
+        showMessage(
+          "✅ Owner created successfully!",
+          "success"
+        );
+
+        ownerResult.innerHTML = `
+          <p><strong>Owner:</strong> ${data.owner.full_name}</p>
+          <p><strong>Email:</strong> ${emailValue}</p>
+          <p><strong>Phone:</strong> ${data.owner.phone || "Not provided"}</p>
+          <p><strong>Shop:</strong> ${data.shop.name}</p>
+          <p><strong>Role:</strong> ${data.owner.role}</p>
+          <p><strong>Owner ID:</strong> ${data.owner.id}</p>
+        `;
+
+        ownerResult.style.display = "block";
+
+        form.reset();
+
+        await loadShops();
+
+      } catch (error) {
+
+        console.error("CREATE OWNER ERROR:", error);
+
+        showMessage(
+          "❌ " + error.message,
+          "error"
+        );
+
+      } finally {
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create Owner";
+
+      }
+
+    });
+
+
+    async function init() {
+
+      const isMaster = await verifyMaster();
+
+      if (!isMaster) {
+        return;
+      }
+
+      await loadShops();
+
+    }
+
+
+    init();
+
+  </script>
+
+</body>
+</html>
