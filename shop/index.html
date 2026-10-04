@@ -302,6 +302,11 @@
       border-radius:9px
     }
 
+    .qty button:disabled{
+      opacity:.5;
+      cursor:not-allowed
+    }
+
     .qty strong{
       min-width:24px;
       text-align:center
@@ -315,6 +320,11 @@
       padding:13px;
       border-radius:11px;
       font-weight:800
+    }
+
+    .primary:disabled{
+      background:#9ca3af;
+      cursor:not-allowed
     }
 
     .cartRow{
@@ -464,6 +474,7 @@
     }
 
     @media(max-width:600px){
+
       .hero h1{
         font-size:24px
       }
@@ -522,20 +533,25 @@
   </button>
 </header>
 
+
 <main class="wrap">
 
   <section class="hero">
     <h1 id="heroName">Shop</h1>
+
     <p id="heroDesc">
       Browse products and add them to your card.
     </p>
   </section>
 
+
   <div id="message" class="loading">
     Loading products...
   </div>
 
+
   <div id="categoryBar" class="cats" style="display:none"></div>
+
 
   <section id="productsGrid" class="grid"></section>
 
@@ -543,6 +559,7 @@
 
 
 <!-- PRODUCT DETAILS -->
+
 <div class="overlay" id="productOverlay">
 
   <div class="modal">
@@ -562,6 +579,7 @@
 
 
 <!-- CARD -->
+
 <div class="overlay" id="cartOverlay">
 
   <div class="modal">
@@ -581,6 +599,7 @@
 
 
 <!-- CHECKOUT -->
+
 <div class="overlay" id="checkoutOverlay">
 
   <div class="modal">
@@ -605,12 +624,17 @@
 <script>
 
 let shop = null;
+
 let products = [];
+
 let categories = [];
+
 let activeCategory = 'all';
 
 let selectedProduct = null;
+
 let selectedSize = null;
+
 let selectedQty = 1;
 
 let card = [];
@@ -620,12 +644,19 @@ const slug =
   new URLSearchParams(location.search).get('shop')
   || 'kailash-test-shop';
 
-const CARD_KEY = 'shop_card_' + slug;
-const CUSTOMER_KEY = 'shop_customer_' + slug;
+
+const CARD_KEY =
+  'shop_card_' + slug;
+
+
+const CUSTOMER_KEY =
+  'shop_customer_' + slug;
 
 
 const money = v =>
-  '₹' + Number(v || 0).toLocaleString('en-IN');
+  '₹' +
+  Number(v || 0)
+    .toLocaleString('en-IN');
 
 
 const esc = s =>
@@ -711,7 +742,9 @@ function updateCardCount(){
     'cartCount'
   ).textContent =
     card.reduce(
-      (n,x) => n + Number(x.quantity || 0),
+      (n,x) =>
+        n +
+        Number(x.quantity || 0),
       0
     );
 }
@@ -890,6 +923,7 @@ async function init(){
 
 
   renderCategories();
+
   renderProducts();
 
 }
@@ -1057,6 +1091,7 @@ function renderProducts(){
               ${esc(p.name)}
             </div>
 
+
             ${
               p.description
 
@@ -1067,9 +1102,11 @@ function renderProducts(){
               : ''
             }
 
+
             <div class="price">
               ${money(p.price)}
             </div>
+
 
             <div
               class="stock ${out ? 'out' : ''}">
@@ -1086,12 +1123,13 @@ function renderProducts(){
 
             </div>
 
+
             <button
               class="add"
               ${out ? 'disabled' : ''}
               onclick="openProduct('${esc(p.id)}')">
 
-              Add to Card
+              ${out ? 'Out of Stock' : 'Add to Card'}
 
             </button>
 
@@ -1122,7 +1160,26 @@ function openProduct(id){
     return;
 
 
+  const currentStock =
+    Number(
+      selectedProduct.stock || 0
+    );
+
+
+  if(currentStock <= 0){
+
+    toast(
+      'This product is out of stock'
+    );
+
+    renderProducts();
+
+    return;
+  }
+
+
   selectedSize = null;
+
   selectedQty = 1;
 
 
@@ -1162,6 +1219,10 @@ function openProduct(id){
 
         <div class="price">
           ${money(selectedProduct.price)}
+        </div>
+
+        <div class="stock">
+          In Stock · ${currentStock} available
         </div>
 
         <div class="desc">
@@ -1222,7 +1283,8 @@ function openProduct(id){
 
       <button
         type="button"
-        onclick="changeQty(1)">
+        onclick="changeQty(1)"
+        ${currentStock <= 1 ? 'disabled' : ''}>
         +
       </button>
 
@@ -1286,25 +1348,54 @@ function chooseSize(s,el){
 
 function changeQty(n){
 
+  if(!selectedProduct)
+    return;
+
+
+  const stock =
+    Number(
+      selectedProduct.stock || 0
+    );
+
+
   selectedQty =
     Math.max(
       1,
 
       Math.min(
-        Number(
-          selectedProduct?.stock ||
-          99
-        ),
-
+        stock,
         selectedQty + n
       )
     );
 
 
-  document.getElementById(
-    'detailQty'
-  ).textContent =
-    selectedQty;
+  const qtyEl =
+    document.getElementById(
+      'detailQty'
+    );
+
+
+  if(qtyEl){
+
+    qtyEl.textContent =
+      selectedQty;
+
+  }
+
+
+  const buttons =
+    document
+      .querySelectorAll(
+        '.qty button'
+      );
+
+
+  if(buttons.length >= 2){
+
+    buttons[1].disabled =
+      selectedQty >= stock;
+
+  }
 
 }
 
@@ -1317,6 +1408,26 @@ function addSelectedToCard(){
 
   if(!selectedProduct)
     return;
+
+
+  const stock =
+    Number(
+      selectedProduct.stock || 0
+    );
+
+
+  if(stock <= 0){
+
+    toast(
+      'This product is out of stock'
+    );
+
+    closeProduct();
+
+    renderProducts();
+
+    return;
+  }
 
 
   const sizes =
@@ -1354,18 +1465,31 @@ function addSelectedToCard(){
     );
 
 
+  const existingQty =
+    existing
+      ? Number(existing.quantity || 0)
+      : 0;
+
+
+  if(
+    existingQty +
+    selectedQty >
+    stock
+  ){
+
+    toast(
+      `Only ${stock} available`
+    );
+
+    return;
+  }
+
+
   if(existing){
 
     existing.quantity =
-      Math.min(
-        Number(
-          selectedProduct.stock ||
-          999
-        ),
-
-        existing.quantity +
-        selectedQty
-      );
+      existingQty +
+      selectedQty;
 
   }else{
 
@@ -1487,6 +1611,7 @@ function renderCart(){
             ${esc(x.name)}
           </div>
 
+
           <div class="rowMeta">
 
             ${money(x.price)}
@@ -1587,10 +1712,35 @@ function cardQty(i,n){
     return;
 
 
-  x.quantity += n;
+  const p =
+    products.find(
+      p =>
+        p.id ===
+        x.product_id
+    );
 
 
-  if(x.quantity <= 0){
+  if(!p){
+
+    toast(
+      'Product is no longer available'
+    );
+
+    return;
+  }
+
+
+  const stock =
+    Number(
+      p.stock || 0
+    );
+
+
+  const newQty =
+    x.quantity + n;
+
+
+  if(newQty <= 0){
 
     card.splice(
       i,
@@ -1599,43 +1749,21 @@ function cardQty(i,n){
 
   }else{
 
-    const p =
-      products.find(
-        p =>
-          p.id ===
-          x.product_id
+    if(newQty > stock){
+
+      toast(
+        `Only ${stock} available`
       );
 
-
-    if(p){
-
-      x.quantity =
-        Math.min(
-          x.quantity,
-          Number(
-            p.stock ||
-            999
-          )
-        );
-
+      return;
     }
+
+
+    x.quantity =
+      newQty;
 
   }
 
-
-  saveCard();
-
-  renderCart();
-
-}
-
-
-function removeCard(i){
-
-  card.splice(
-    i,
-    1
-  );
 
   saveCard();
 
@@ -1818,19 +1946,57 @@ function closeCheckout(){
 
 
 /* =========================
+   REFRESH PRODUCTS
+========================= */
+
+async function refreshProducts(){
+
+  if(!shop)
+    return;
+
+
+  const {data,error} =
+    await supabaseClient
+      .from('products')
+      .select(
+        'id,shop_id,category_id,name,description,price,image_url,has_sizes,sizes,stock,is_active'
+      )
+      .eq(
+        'shop_id',
+        shop.id
+      )
+      .eq(
+        'is_active',
+        true
+      )
+      .order(
+        'created_at',
+        {ascending:false}
+      );
+
+
+  if(error){
+
+    console.error(
+      'REFRESH PRODUCT ERROR',
+      error
+    );
+
+    return;
+  }
+
+
+  products =
+    data || [];
+
+
+  renderProducts();
+
+}
+
+
+/* =========================
    PLACE ORDER
-   =========================
-
-   IMPORTANT:
-   We generate the order UUID ourselves.
-
-   We DO NOT use:
-
-   .select('id').single()
-
-   because public customers should
-   not have SELECT permission on
-   the orders table.
 ========================= */
 
 async function placeOrder(e){
@@ -1856,7 +2022,7 @@ async function placeOrder(e){
   btn.disabled = true;
 
   btn.textContent =
-    'Placing Order...';
+    'Checking Stock...';
 
 
   const customer = {
@@ -1928,87 +2094,11 @@ async function placeOrder(e){
 
 
   /* =========================
-     GENERATE ORDER ID
-  ========================= */
-
-  const orderId =
-    crypto.randomUUID();
-
-
-  /* =========================
-     INSERT ORDER
-  ========================= */
-
-  const { error: oe } =
-    await supabaseClient
-      .from('orders')
-      .insert({
-
-        id:
-          orderId,
-
-        shop_id:
-          shop.id,
-
-        customer_name:
-          customer.name,
-
-        customer_phone:
-          customer.phone,
-
-        customer_address:
-          customer.address,
-
-        landmark:
-          customer.landmark ||
-          null,
-
-        pincode:
-          customer.pincode,
-
-        total_amount:
-          total,
-
-        status:
-          'new'
-
-      });
-
-
-  /* ORDER ERROR */
-
-  if(oe){
-
-    console.error(
-      'ORDER ERROR',
-      oe
-    );
-
-
-    toast(
-      oe.message ||
-      'Order could not be placed'
-    );
-
-
-    btn.disabled = false;
-
-    btn.textContent =
-      'Place Order';
-
-    return;
-  }
-
-
-  /* =========================
      PREPARE ORDER ITEMS
   ========================= */
 
   const items =
     card.map(x => ({
-
-      order_id:
-        orderId,
 
       product_id:
         x.product_id,
@@ -2017,10 +2107,10 @@ async function placeOrder(e){
         x.name,
 
       price:
-        x.price,
+        Number(x.price || 0),
 
       quantity:
-        x.quantity,
+        Number(x.quantity || 0),
 
       size:
         x.size ||
@@ -2033,30 +2123,105 @@ async function placeOrder(e){
     }));
 
 
-  /* =========================
-     INSERT ORDER ITEMS
-  ========================= */
-
-  const { error: ie } =
-    await supabaseClient
-      .from('order_items')
-      .insert(items);
-
-
-  /* ITEM ERROR */
-
-  if(ie){
-
-    console.error(
-      'ITEM ERROR',
-      ie
-    );
-
+  if(!items.length){
 
     toast(
-      ie.message ||
-      'Order items could not be saved'
+      'Your Card is empty'
     );
+
+    btn.disabled = false;
+
+    btn.textContent =
+      'Place Order';
+
+    return;
+  }
+
+
+  /* =========================
+     GENERATE ORDER ID
+  ========================= */
+
+  const orderId =
+    crypto.randomUUID();
+
+
+  btn.textContent =
+    'Placing Order...';
+
+
+  /* =========================
+     ATOMIC ORDER + STOCK
+  ========================= */
+
+  const {error} =
+    await supabaseClient.rpc(
+      'place_order_with_stock',
+      {
+
+        p_order_id:
+          orderId,
+
+        p_shop_id:
+          shop.id,
+
+        p_customer_name:
+          customer.name,
+
+        p_customer_phone:
+          customer.phone,
+
+        p_customer_address:
+          customer.address,
+
+        p_landmark:
+          customer.landmark ||
+          '',
+
+        p_pincode:
+          customer.pincode,
+
+        p_total_amount:
+          total,
+
+        p_items:
+          items
+
+      }
+    );
+
+
+  /* =========================
+     ORDER ERROR
+  ========================= */
+
+  if(error){
+
+    console.error(
+      'PLACE ORDER ERROR',
+      error
+    );
+
+
+    let message =
+      error.message ||
+      'Order could not be placed';
+
+
+    if(
+      message
+        .toLowerCase()
+        .includes('not enough stock')
+    ){
+
+      await refreshProducts();
+
+      message =
+        'Sorry, some product does not have enough stock. Please check the available quantity again.';
+    }
+
+
+    toast(message);
 
 
     btn.disabled = false;
@@ -2069,13 +2234,24 @@ async function placeOrder(e){
 
 
   /* =========================
-     SUCCESS
+     REFRESH STOCK
+  ========================= */
+
+  await refreshProducts();
+
+
+  /* =========================
+     CLEAR CARD
   ========================= */
 
   card = [];
 
   saveCard();
 
+
+  /* =========================
+     SUCCESS
+  ========================= */
 
   document.getElementById(
     'checkoutBox'
