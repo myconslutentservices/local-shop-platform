@@ -124,6 +124,7 @@ function openProduct(id){
   document.getElementById('productDetail').innerHTML=`<div class="detailTop"><div class="detailImg">${img}</div><div class="detailInfo"><h3>${esc(selectedProduct.name)}</h3><div class="price">${money(selectedProduct.price)}</div><div class="desc">${esc(selectedProduct.description||'')}</div></div></div>${selectedProduct.has_sizes&&sizes.length?`<div class="sizeTitle">Select Size</div><div class="sizes">${sizes.map(s=>`<button class="size" onclick="chooseSize('${esc(s)}',this)">${esc(s)}</button>`).join('')}</div>`:''}<div class="qty"><span>Quantity</span><button onclick="changeQty(-1)">−</button><strong id="detailQty">1</strong><button onclick="changeQty(1)">+</button></div><button class="primary" onclick="addSelectedToCard()">Add to Card</button>`;
   document.getElementById('productOverlay').classList.add('show')
 }
+function closeProduct(){document.getElementById('productOverlay').classList.remove('show')}
 function chooseSize(s,el){selectedSize=s;document.querySelectorAll('.size').forEach(x=>x.classList.remove('sel'));el.classList.add('sel')}
 function changeQty(n){selectedQty=Math.max(1,Math.min(Number(selectedProduct?.stock||99),selectedQty+n));document.getElementById('detailQty').textContent=selectedQty}
 function addSelectedToCard(){
@@ -148,18 +149,18 @@ function removeCard(i){card.splice(i,1);saveCard();renderCart()}
 function startCheckout(){if(!card.length){toast('Your Card is empty');return}closeCart();renderCheckout()}
 function renderCheckout(){
   const c=getSavedCustomer();
-  document.getElementById('checkoutBox').innerHTML=`<div class="saved">${c.name?'Your previous customer details have been loaded automatically.':''}</div><form id="checkoutForm" onsubmit="placeOrder(event)"><div class="formGrid"><div class="field"><label>Name *</label><input id="cName" required value="${esc(c.name||'')}"></div><div class="field"><label>Mobile *</label><input id="cPhone" required inputmode="tel" value="${esc(c.phone||'')}"></div><div class="field full"><label>Full Address *</label><textarea id="cAddress" required>${esc(c.address||'')}</textarea></div><div class="field"><label>Landmark</label><input id="cLandmark" value="${esc(c.landmark||'')}"></div><div class="field"><label>Pincode *</label><input id="cPincode" required inputmode="numeric" value="${esc(c.pincode||'')}"></div><div class="field full"><label>Notes</label><textarea id="cNotes" placeholder="Any delivery note...">${esc(c.notes||'')}</textarea></div></div><div class="cartTotal"><span>Order Total</span><span>${money(totalCard())}</span></div><button class="primary" id="placeBtn">Place Order</button></form>`;
+  document.getElementById('checkoutBox').innerHTML=`<div class="saved">${c.name?'Your previous customer details have been loaded automatically.':''}</div><form id="checkoutForm" onsubmit="placeOrder(event)"><div class="formGrid"><div class="field"><label>Name *</label><input id="cName" required value="${esc(c.name||'')}"></div><div class="field"><label>Mobile *</label><input id="cPhone" required inputmode="tel" value="${esc(c.phone||'')}"></div><div class="field full"><label>Full Address *</label><textarea id="cAddress" required>${esc(c.address||'')}</textarea></div><div class="field"><label>Landmark</label><input id="cLandmark" value="${esc(c.landmark||'')}"></div><div class="field"><label>Pincode *</label><input id="cPincode" required inputmode="numeric" value="${esc(c.pincode||'')}"></div></div><div class="cartTotal"><span>Order Total</span><span>${money(totalCard())}</span></div><button class="primary" id="placeBtn">Place Order</button></form>`;
   document.getElementById('checkoutOverlay').classList.add('show')
 }
 function closeCheckout(){document.getElementById('checkoutOverlay').classList.remove('show')}
 async function placeOrder(e){
   e.preventDefault();if(!shop||!card.length)return;
   const btn=document.getElementById('placeBtn');btn.disabled=true;btn.textContent='Placing Order...';
-  const customer={name:document.getElementById('cName').value.trim(),phone:document.getElementById('cPhone').value.trim(),address:document.getElementById('cAddress').value.trim(),landmark:document.getElementById('cLandmark').value.trim(),pincode:document.getElementById('cPincode').value.trim(),notes:document.getElementById('cNotes').value.trim()};
+  const customer={name:document.getElementById('cName').value.trim(),phone:document.getElementById('cPhone').value.trim(),address:document.getElementById('cAddress').value.trim(),landmark:document.getElementById('cLandmark').value.trim(),pincode:document.getElementById('cPincode').value.trim()};
   if(!/^\d{6}$/.test(customer.pincode)){toast('Enter a valid 6 digit pincode');btn.disabled=false;btn.textContent='Place Order';return}
   localStorage.setItem(CUSTOMER_KEY,JSON.stringify(customer));
   const total=totalCard();
-  const {data:order,error:oe}=await supabaseClient.from('orders').insert({shop_id:shop.id,customer_name:customer.name,customer_phone:customer.phone,customer_address:customer.address,landmark:customer.landmark||null,pincode:customer.pincode,total_amount:total,status:'new',notes:customer.notes||null}).select('id').single();
+  const {data:order,error:oe}=await supabaseClient.from('orders').insert({shop_id:shop.id,customer_name:customer.name,customer_phone:customer.phone,customer_address:customer.address,landmark:customer.landmark||null,pincode:customer.pincode,total_amount:total,status:'new'}).select('id').single();
   if(oe){console.error('ORDER ERROR',oe);toast(oe.message||'Order could not be placed');btn.disabled=false;btn.textContent='Place Order';return}
   const items=card.map(x=>({order_id:order.id,product_id:x.product_id,product_name:x.name,price:x.price,quantity:x.quantity,size:x.size||null,variant:x.variant||null}));
   const {error:ie}=await supabaseClient.from('order_items').insert(items);
