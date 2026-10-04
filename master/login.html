@@ -151,9 +151,7 @@
 
   <div class="login-box">
 
-    <div class="logo">
-      M
-    </div>
+    <div class="logo">M</div>
 
     <h1>Master Login</h1>
 
@@ -168,6 +166,7 @@
     <form id="loginForm">
 
       <div class="form-group">
+
         <label for="email">
           Email Address
         </label>
@@ -179,9 +178,11 @@
           required
           autocomplete="email"
         >
+
       </div>
 
       <div class="form-group">
+
         <label for="password">
           Password
         </label>
@@ -193,6 +194,7 @@
           required
           autocomplete="current-password"
         >
+
       </div>
 
       <button
@@ -345,14 +347,17 @@
 
 
         /*
-         * Dashboard file name:
-         * master-dashboard.html
+         * IMPORTANT:
+         * Your actual dashboard file is:
+         *
+         * master/dashboard.html
+         *
+         * So we use:
          */
 
         setTimeout(() => {
 
-          window.location.href =
-            "master-dashboard.html";
+          window.location.href = "dashboard.html";
 
         }, 700);
 
@@ -421,8 +426,7 @@
 
         if (master && master.role === "master") {
 
-          window.location.href =
-            "master-dashboard.html";
+          window.location.href = "dashboard.html";
 
         }
 
