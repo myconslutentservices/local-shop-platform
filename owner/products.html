@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Products | Local Shop Platform</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#0b1120;color:#fff;min-height:100vh}
+button,input,textarea,select{font:inherit}
+.topbar{height:64px;background:#111827;border-bottom:1px solid #263244;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:20}
+.brand{font-weight:700;font-size:18px}.brand small{display:block;color:#94a3b8;font-size:11px;font-weight:400;margin-top:3px}
+.top-actions{display:flex;align-items:center;gap:10px}.shop-name{color:#cbd5e1;font-size:13px;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{border:1px solid #334155;background:#1e293b;color:#fff;border-radius:9px;padding:9px 13px;cursor:pointer}.btn:hover{background:#334155}.btn.primary{background:#2563eb;border-color:#2563eb}.btn.primary:hover{background:#1d4ed8}.btn.danger{color:#fca5a5}.btn.small{padding:7px 10px;font-size:12px}
+.wrap{max-width:1180px;margin:auto;padding:24px}.back{display:inline-block;color:#93c5fd;text-decoration:none;margin-bottom:18px;font-size:13px}.back:hover{text-decoration:underline}
+.header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:20px}.header h1{font-size:27px}.header p{color:#94a3b8;font-size:14px;margin-top:6px}
+.toolbar{display:flex;gap:10px;margin-bottom:16px}.search{flex:1;min-width:0;background:#111827;border:1px solid #334155;color:#fff;border-radius:9px;padding:10px 12px;outline:none}.search:focus,input:focus,textarea:focus,select:focus{border-color:#2563eb}
+.card{background:#111827;border:1px solid #263244;border-radius:15px}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:820px}.table th,.table td{text-align:left;padding:13px 14px;border-bottom:1px solid #263244;font-size:13px;vertical-align:middle}.table th{color:#94a3b8;font-size:12px;font-weight:600}.table tr:last-child td{border-bottom:0}.product-img{width:48px;height:48px;border-radius:8px;object-fit:cover;background:#1e293b;border:1px solid #334155}.product-name{font-weight:600}.sub{color:#94a3b8;font-size:12px;margin-top:4px}.badge{display:inline-block;border-radius:999px;padding:5px 9px;font-size:11px}.badge.active{background:#052e16;color:#86efac}.badge.inactive{background:#3f1d1d;color:#fca5a5}.badge.stock{background:#172554;color:#93c5fd}.badge.out{background:#450a0a;color:#fca5a5}.actions{display:flex;gap:7px}
+.empty{padding:45px 15px;text-align:center;color:#64748b}.loading{padding:45px;text-align:center;color:#94a3b8}.error{display:none;background:rgba(220,38,38,.12);border:1px solid #991b1b;color:#fca5a5;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px}.success{display:none;background:rgba(22,163,74,.12);border:1px solid #166534;color:#86efac;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(2,6,23,.72);z-index:30;align-items:center;justify-content:center;padding:18px}.modal{width:min(680px,100%);max-height:92vh;overflow:auto;background:#0f172a;border:1px solid #334155;border-radius:16px;padding:20px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h2{font-size:20px}.close{border:0;background:transparent;color:#94a3b8;font-size:25px;cursor:pointer}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field.full{grid-column:1/-1}.field label{display:block;color:#cbd5e1;font-size:12px;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;background:#111827;border:1px solid #334155;color:#fff;border-radius:8px;padding:10px;outline:none}.field textarea{min-height:90px;resize:vertical}.checks{display:flex;gap:18px;flex-wrap:wrap;margin-top:2px}.check{display:flex;align-items:center;gap:7px;color:#cbd5e1;font-size:13px}.check input{width:auto}.size-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.size-item{display:flex;align-items:center;gap:7px;background:#111827;border:1px solid #263244;border-radius:8px;padding:9px}.size-item input{width:auto}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.hint{color:#64748b;font-size:11px;margin-top:5px}
+@media(max-width:650px){.topbar{padding:0 14px}.shop-name{display:none}.wrap{padding:16px}.header{align-items:flex-start}.header h1{font-size:23px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.size-grid{grid-template-columns:repeat(2,1fr)}.toolbar{flex-direction:column}.toolbar .btn{width:100%}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">Local Shop Platform<small>Owner Management Panel</small></div>
+  <div class="top-actions"><div class="shop-name" id="topShop">Loading...</div><button class="btn" id="logoutBtn">Logout</button></div>
+</header>
+
+<main class="wrap">
+  <a class="back" href="dashboard.html">← Back to Dashboard</a>
+  <div id="errorBox" class="error"></div>
+  <div id="successBox" class="success"></div>
+
+  <div class="header">
+    <div><h1>Products</h1><p>Add, edit, manage stock and control product visibility.</p></div>
+    <button class="btn primary" id="addBtn">+ Add Product</button>
+  </div>
+
+  <div class="toolbar">
+    <input class="search" id="searchInput" type="search" placeholder="Search products...">
+    <button class="btn" id="refreshBtn">Refresh</button>
+  </div>
+
+  <div class="card table-wrap">
+    <div id="productsBox" class="loading">Loading products...</div>
+  </div>
+</main>
+
+<div class="overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head"><h2 id="modalTitle">Add Product</h2><button class="close" id="closeBtn">×</button></div>
+    <form id="productForm">
+      <div class="form-grid">
+        <div class="field full"><label>Product Name *</label><input id="name" required maxlength="120" placeholder="e.g. Black T-Shirt"></div>
+        <div class="field"><label>Price (₹) *</label><input id="price" required type="number" min="0" step="0.01" placeholder="499"></div>
+        <div class="field"><label>Stock *</label><input id="stock" required type="number" min="0" step="1" value="0"></div>
+        <div class="field"><label>Category</label><select id="category"><option value="">No category</option></select></div>
+        <div class="field"><label>Image URL</label><input id="image_url" type="url" placeholder="https://..."><div class="hint">Storage upload can be added later; for now use an image URL.</div></div>
+        <div class="field full"><label>Description</label><textarea id="description" maxlength="1000" placeholder="Short product description"></textarea></div>
+        <div class="field full">
+          <label>Product Options</label>
+          <div class="checks">
+            <label class="check"><input type="checkbox" id="has_sizes"> Has sizes / variants</label>
+            <label class="check"><input type="checkbox" id="is_active" checked> Visible on website</label>
+          </div>
+        </div>
+        <div class="field full" id="sizesField" style="display:none">
+          <label>Sizes</label>
+          <div class="size-grid">
+            <label class="size-item"><input type="checkbox" value="S"> S</label>
+            <label class="size-item"><input type="checkbox" value="M"> M</label>
+            <label class="size-item"><input type="checkbox" value="L"> L</label>
+            <label class="size-item"><input type="checkbox" value="XL"> XL</label>
+            <label class="size-item"><input type="checkbox" value="XXL"> XXL</label>
+            <label class="size-item"><input type="checkbox" value="XXXL"> XXXL</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions"><button type="button" class="btn" id="cancelBtn">Cancel</button><button type="submit" class="btn primary" id="saveBtn">Save Product</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+let owner=null, shop=null, products=[], editingId=null;
+const $=id=>document.getElementById(id);
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+function money(v){return '₹'+Number(v||0).toLocaleString('en-IN',{maximumFractionDigits:2});}
+function showError(msg){$('errorBox').textContent=msg;$('errorBox').style.display='block';$('successBox').style.display='none';}
+function showSuccess(msg){$('successBox').textContent=msg;$('successBox').style.display='block';$('errorBox').style.display='none';setTimeout(()=>{$('successBox').style.display='none'},3000);}
+function clearMessages(){$('errorBox').style.display='none';$('successBox').style.display='none';}
+function openModal(product=null){
+  editingId=product?.id||null;$('modalTitle').textContent=editingId?'Edit Product':'Add Product';
+  $('name').value=product?.name||'';$('price').value=product?.price??'';$('stock').value=product?.stock??0;$('image_url').value=product?.image_url||'';$('description').value=product?.description||'';$('has_sizes').checked=!!product?.has_sizes;$('is_active').checked=product?.is_active!==false;
+  document.querySelectorAll('#sizesField input[type=checkbox]').forEach(c=>c.checked=Array.isArray(product?.sizes)?product.sizes.includes(c.value):false);
+  $('category').value=product?.category_id||'';$('sizesField').style.display=$('has_sizes').checked?'block':'none';$('modalOverlay').style.display='flex';setTimeout(()=>$('name').focus(),50);
+}
+function closeModal(){$('modalOverlay').style.display='none';editingId=null;$('productForm').reset();$('is_active').checked=true;$('stock').value=0;$('sizesField').style.display='none';}
+$('has_sizes').addEventListener('change',e=>$('sizesField').style.display=e.target.checked?'block':'none');
+$('addBtn').addEventListener('click',()=>openModal());$('closeBtn').addEventListener('click',closeModal);$('cancelBtn').addEventListener('click',closeModal);$('modalOverlay').addEventListener('click',e=>{if(e.target.id==='modalOverlay')closeModal()});$('refreshBtn').addEventListener('click',loadProducts);$('searchInput').addEventListener('input',renderProducts);
+$('logoutBtn').addEventListener('click',async()=>{await supabaseClient.auth.signOut();sessionStorage.clear();location.href='login.html'});
+
+async function verifyOwner(){
+  const {data:{user},error}=await supabaseClient.auth.getUser();
+  if(error||!user){sessionStorage.clear();location.href='login.html';return false;}
+  const {data:o,error:oErr}=await supabaseClient.from('owners').select('id,shop_id,full_name,phone,role').eq('id',user.id).single();
+  if(oErr||!o||o.role!=='owner'||!o.shop_id)throw new Error('Owner account or shop could not be verified.');
+  owner=o;
+  const {data:s,error:sErr}=await supabaseClient.from('shops').select('id,name,status').eq('id',owner.shop_id).single();
+  if(sErr||!s)throw new Error('Shop information could not be loaded.');
+  if(s.status==='suspended')throw new Error('This shop is currently suspended. Please contact support.');
+  shop=s;$('topShop').textContent=shop.name||'';return true;
+}
+async function loadCategories(){
+  const {data,error}=await supabaseClient.from('categories').select('id,name').eq('shop_id',shop.id).eq('is_active',true).order('name');
+  if(error)throw error;$('category').innerHTML='<option value="">No category</option>'+(data||[]).map(c=>`<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('');
+}
+async function loadProducts(){
+  clearMessages();$('productsBox').innerHTML='<div class="loading">Loading products...</div>';
+  try{if(!shop)await verifyOwner();const {data,error}=await supabaseClient.from('products').select('id,shop_id,category_id,name,description,price,image_url,has_sizes,sizes,stock,is_active,created_at').eq('shop_id',shop.id).order('created_at',{ascending:false});if(error)throw error;products=data||[];renderProducts();}
+  catch(err){console.error(err);$('productsBox').innerHTML='<div class="empty">Could not load products.</div>';showError(err?.message||'Products could not be loaded.');}
+}
+function renderProducts(){
+  const q=$('searchInput').value.trim().toLowerCase();const list=products.filter(p=>!q||String(p.name||'').toLowerCase().includes(q)||String(p.description||'').toLowerCase().includes(q));
+  if(!list.length){$('productsBox').innerHTML='<div class="empty">No products found. Click “+ Add Product” to create your first product.</div>';return;}
+  $('productsBox').innerHTML=`<table class="table"><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Sizes</th><th>Actions</th></tr></thead><tbody>${list.map(p=>{
+    const cat=$('category').querySelector(`option[value="${CSS.escape(p.category_id||'')}"]`)?.textContent||'—';
+    const sizes=Array.isArray(p.sizes)&&p.sizes.length?p.sizes.join(', '):'—';
+    const img=p.image_url?`<img class="product-img" src="${escapeHtml(p.image_url)}" alt="">`:'<div class="product-img"></div>';
+    return `<tr><td><div style="display:flex;gap:10px;align-items:center">${img}<div><div class="product-name">${escapeHtml(p.name)}</div><div class="sub">${escapeHtml((p.description||'').slice(0,55))}</div></div></div></td><td>${escapeHtml(cat)}</td><td><strong>${money(p.price)}</strong></td><td><span class="badge ${Number(p.stock||0)>0?'stock':'out'}">${Number(p.stock||0)>0?p.stock+' in stock':'Out of stock'}</span></td><td><span class="badge ${p.is_active?'active':'inactive'}">${p.is_active?'Visible':'Hidden'}</span></td><td>${escapeHtml(sizes)}</td><td><div class="actions"><button class="btn small" onclick="editProduct('${p.id}')">Edit</button><button class="btn small danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`;
+  }).join('')}</tbody></table>`;
+}
+window.editProduct=id=>{const p=products.find(x=>x.id===id);if(p)openModal(p)};
+window.deleteProduct=async id=>{const p=products.find(x=>x.id===id);if(!p)return;if(!confirm(`Delete “${p.name}”?`))return;clearMessages();try{const {error}=await supabaseClient.from('products').delete().eq('id',id).eq('shop_id',shop.id);if(error)throw error;showSuccess('Product deleted successfully.');await loadProducts();}catch(err){console.error(err);showError(err?.message||'Product could not be deleted.');}};
+$('productForm').addEventListener('submit',async e=>{
+  e.preventDefault();clearMessages();$('saveBtn').disabled=true;$('saveBtn').textContent='Saving...';
+  try{
+    const sizes=[...document.querySelectorAll('#sizesField input[type=checkbox]:checked')].map(x=>x.value);
+    const payload={shop_id:shop.id,category_id:$('category').value||null,name:$('name').value.trim(),description:$('description').value.trim()||null,price:Number($('price').value),image_url:$('image_url').value.trim()||null,has_sizes:$('has_sizes').checked,sizes:$('has_sizes').checked?sizes:[],stock:Math.max(0,parseInt($('stock').value||'0',10)),is_active:$('is_active').checked};
+    if(!payload.name)throw new Error('Product name is required.');if(!Number.isFinite(payload.price)||payload.price<0)throw new Error('Enter a valid price.');
+    let result;
+    if(editingId)result=await supabaseClient.from('products').update(payload).eq('id',editingId).eq('shop_id',shop.id);else result=await supabaseClient.from('products').insert(payload);
+    if(result.error)throw result.error;closeModal();showSuccess(editingId?'Product updated successfully.':'Product added successfully.');await loadProducts();
+  }catch(err){console.error(err);showError(err?.message||'Product could not be saved.');}
+  finally{$('saveBtn').disabled=false;$('saveBtn').textContent='Save Product';}
+});
+
+(async()=>{try{if(await verifyOwner()){await loadCategories();await loadProducts();}}catch(err){console.error(err);showError(err?.message||'Products page could not be loaded.');}})();
+</script>
+</body>
+</html>
