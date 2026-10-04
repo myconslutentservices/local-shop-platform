@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>All Products | Master Panel</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f5f7fb;
+      color: #172033;
+    }
+
+    /* ================= HEADER ================= */
+
+    .topbar {
+      background: #111827;
+      color: white;
+      padding: 16px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .brand small {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      color: #cbd5e1;
+      margin-top: 3px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+    }
+
+    .top-btn {
+      background: #374151;
+      color: white;
+      padding: 9px 13px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .top-btn:hover {
+      background: #4b5563;
+    }
+
+    .logout-btn {
+      background: #dc2626;
+    }
+
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
+
+    /* ================= PAGE ================= */
+
+    .container {
+      max-width: 1400px;
+      margin: auto;
+      padding: 22px;
+    }
+
+    .page-title {
+      margin-bottom: 20px;
+    }
+
+    .page-title h1 {
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+
+    .page-title p {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    /* ================= STATS ================= */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      border: 1px solid #e5e7eb;
+    }
+
+    .stat-card .label {
+      color: #64748b;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .stat-card .value {
+      font-size: 27px;
+      font-weight: 700;
+    }
+
+    /* ================= FILTERS ================= */
+
+    .filter-box {
+      background: white;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      padding: 11px 12px;
+      background: white;
+      outline: none;
+      font-size: 14px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #2563eb;
+    }
+
+    /* ================= PRODUCTS ================= */
+
+    .products-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    .products-header h2 {
+      font-size: 19px;
+    }
+
+    .result-count {
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .product-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 15px;
+      padding: 17px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+      transition: 0.2s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 20px rgba(0,0,0,0.07);
+    }
+
+    .product-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .product-name {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .shop-name {
+      font-size: 12px;
+      color: #2563eb;
+      font-weight: 700;
+      margin-top: 5px;
+    }
+
+    .category {
+      color: #64748b;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .status {
+      padding: 5px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .inactive {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .product-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .info-box {
+      background: #f8fafc;
+      border-radius: 9px;
+      padding: 10px;
+    }
+
+    .info-box span {
+      display: block;
+      color: #64748b;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    .info-box strong {
+      font-size: 15px;
+    }
+
+    .out-stock {
+      color: #dc2626;
+    }
+
+    .product-description {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.5;
+      margin-bottom: 14px;
+      min-height: 20px;
+    }
+
+    .product-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 9px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #172033;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .btn-danger:hover {
+      background: #fecaca;
+    }
+
+    /* ================= EMPTY / LOADING ================= */
+
+    .message-box {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 40px 20px;
+      text-align: center;
+      color: #64748b;
+    }
+
+    .error-box {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 15px;
+      display: none;
+      font-size: 13px;
+    }
+
+    /* ================= MODAL ================= */
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 560px;
+      background: white;
+      border-radius: 16px;
+      padding: 22px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 10px;
+    }
+
+    .modal-header h3 {
+      font-size: 20px;
+    }
+
+    .close-btn {
+      background: #f1f5f9;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 13px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 9px;
+      margin-top: 20px;
+    }
+
+    .save-btn {
+      background: #2563eb;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 9px;
+      font-weight: 700;
+    }
+
+    .cancel-btn {
+      background: #e2e8f0;
+      color: #172033;
+      padding: 10px 16px;
+      border-radius: 9px;
+      font-weight: 700;
+    }
+
+    /* ================= RESPONSIVE ================= */
+
+    @media (max-width: 1000px) {
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filter-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .filter-grid .field:first-child {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .container {
+        padding: 15px;
+      }
+
+      .page-title h1 {
+        font-size: 23px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .stat-card {
+        padding: 14px;
+      }
+
+      .stat-card .value {
+        font-size: 22px;
+      }
+
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-grid .field:first-child {
+        grid-column: auto;
+      }
+
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .full {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ================= HEADER ================= -->
+
+  <header class="topbar">
+
+    <div class="brand">
+      Pro Master Panel
+      <small>All Products Management</small>
+    </div>
+
+    <div class="top-actions">
+      <button class="top-btn" onclick="goDashboard()">
+        Dashboard
+      </button>
+
+      <button class="top-btn" onclick="goShops()">
+        Shops
+      </button>
+
+      <button class="top-btn logout-btn" onclick="logout()">
+        Logout
+      </button>
+    </div>
+
+  </header>
+
+
+  <!-- ================= MAIN ================= -->
+
+  <main class="container">
+
+    <div class="page-title">
+      <h1>All Products</h1>
+      <p>
+        View and manage products from all shops.
+      </p>
+    </div>
+
+
+    <div id="errorBox" class="error-box"></div>
+
+
+    <!-- ================= STATS ================= -->
+
+    <section class="stats">
+
+      <div class="stat-card">
+        <div class="label">Total Products</div>
+        <div class="value" id="totalProducts">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="label">Active Products</div>
+        <div class="value" id="activeProducts">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="label">Out of Stock</div>
+        <div class="value" id="outOfStock">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="label">Total Shops</div>
+        <div class="value" id="totalShops">0</div>
+      </div>
+
+    </section>
+
+
+    <!-- ================= FILTERS ================= -->
+
+    <section class="filter-box">
+
+      <div class="filter-grid">
+
+        <div class="field">
+          <label>Search Product / Shop</label>
+
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Search product or shop..."
+            oninput="applyFilters()"
+          />
+        </div>
+
+
+        <div class="field">
+          <label>Shop</label>
+
+          <select id="shopFilter" onchange="applyFilters()">
+            <option value="">All Shops</option>
+          </select>
+        </div>
+
+
+        <div class="field">
+          <label>Status</label>
+
+          <select id="statusFilter" onchange="applyFilters()">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="out">Out of Stock</option>
+          </select>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= PRODUCTS ================= -->
+
+    <div class="products-header">
+
+      <h2>Products</h2>
+
+      <div class="result-count" id="resultCount">
+        0 products
+      </div>
+
+    </div>
+
+
+    <div id="productsContainer">
+
+      <div class="message-box">
+        Loading products...
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- ================= EDIT MODAL ================= -->
+
+  <div class="modal-overlay" id="editModal">
+
+    <div class="modal">
+
+      <div class="modal-header">
+
+        <h3>Edit Product</h3>
+
+        <button
+          class="close-btn"
+          onclick="closeEditModal()"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <form id="editForm">
+
+        <input
+          type="hidden"
+          id="editId"
+        />
+
+
+        <div class="form-grid">
+
+          <div class="field full">
+            <label>Product Name</label>
+
+            <input
+              id="editName"
+              type="text"
+              required
+            />
+          </div>
+
+
+          <div class="field">
+            <label>Price</label>
+
+            <input
+              id="editPrice"
+              type="number"
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
+
+
+          <div class="field">
+            <label>Stock</label>
+
+            <input
+              id="editStock"
+              type="number"
+              min="0"
+              step="1"
+              required
+            />
+          </div>
+
+
+          <div class="field full">
+            <label>Status</label>
+
+            <select id="editActive">
+
+              <option value="true">
+                Active
+              </option>
+
+              <option value="false">
+                Inactive
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="field full">
+
+            <label>Description</label>
+
+            <textarea
+              id="editDescription"
+              rows="4"
+            ></textarea>
+
+          </div>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+          <button
+            type="button"
+            class="cancel-btn"
+            onclick="closeEditModal()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="save-btn"
+          >
+            Save Changes
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    /* =========================================================
+       GLOBAL DATA
+    ========================================================= */
+
+    let allProducts = [];
+    let allShops = [];
+    let allCategories = [];
+
+
+    /* =========================================================
+       HELPERS
+    ========================================================= */
+
+    function showError(message) {
+
+      const box = document.getElementById("errorBox");
+
+      box.textContent = message;
+      box.style.display = "block";
+
+    }
+
+
+    function clearError() {
+
+      const box = document.getElementById("errorBox");
+
+      box.textContent = "";
+      box.style.display = "none";
+
+    }
+
+
+    function formatPrice(value) {
+
+      const number = Number(value || 0);
+
+      return "₹" + number.toLocaleString("en-IN", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      });
+
+    }
+
+
+    function escapeHtml(value) {
+
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+
+    function formatDate(value) {
+
+      if (!value) return "-";
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return "-";
+      }
+
+      return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
+
+    }
+
+
+    /* =========================================================
+       NAVIGATION
+    ========================================================= */
+
+    function goDashboard() {
+
+      window.location.href = "dashboard.html";
+
+    }
+
+
+    function goShops() {
+
+      window.location.href = "shops.html";
+
+    }
+
+
+    async function logout() {
+
+      await supabaseClient.auth.signOut();
+
+      window.location.href = "login.html";
+
+    }
+
+
+    /* =========================================================
+       MASTER AUTH CHECK
+    ========================================================= */
+
+    async function verifyMaster() {
+
+      const {
+        data: {
+          session
+        }
+      } = await supabaseClient.auth.getSession();
+
+
+      if (!session) {
+
+        window.location.href = "login.html";
+        return false;
+
+      }
+
+
+      const {
+        data: owner,
+        error
+      } = await supabaseClient
+        .from("owners")
+        .select("id, full_name, role, shop_id")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+
+      if (error) {
+
+        console.error(error);
+
+        showError(
+          "Master verification failed: " +
+          error.message
+        );
+
+        return false;
+
+      }
+
+
+      if (!owner || owner.role !== "master") {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+
+        return false;
+
+      }
+
+
+      return true;
+
+    }
+
+
+    /* =========================================================
+       LOAD SHOPS
+    ========================================================= */
+
+    async function loadShops() {
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("shops")
+        .select(
+          "id, name, slug"
+        )
+        .order("name", {
+          ascending: true
+        });
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+      allShops = data || [];
+
+
+      const select =
+        document.getElementById("shopFilter");
+
+
+      select.innerHTML =
+        `<option value="">All Shops</option>`;
+
+
+      allShops.forEach(shop => {
+
+        const option =
+          document.createElement("option");
+
+        option.value = shop.id;
+
+        option.textContent =
+          shop.name || shop.slug || "Unnamed Shop";
+
+        select.appendChild(option);
+
+      });
+
+
+      document.getElementById("totalShops")
+        .textContent = allShops.length;
+
+    }
+
+
+    /* =========================================================
+       LOAD CATEGORIES
+    ========================================================= */
+
+    async function loadCategories() {
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("categories")
+        .select(
+          "id, shop_id, name"
+        );
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+      allCategories = data || [];
+
+    }
+
+
+    /* =========================================================
+       LOAD PRODUCTS
+    ========================================================= */
+
+    async function loadProducts() {
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("products")
+        .select(`
+          id,
+          shop_id,
+          category_id,
+          name,
+          description,
+          price,
+          stock,
+          is_active,
+          created_at
+        `)
+        .order("created_at", {
+          ascending: false
+        });
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+      allProducts = data || [];
+
+      updateStats();
+
+      applyFilters();
+
+    }
+
+
+    /* =========================================================
+       SHOP / CATEGORY HELPERS
+    ========================================================= */
+
+    function getShop(shopId) {
+
+      return allShops.find(
+        shop => shop.id === shopId
+      );
+
+    }
+
+
+    function getCategory(categoryId) {
+
+      return allCategories.find(
+        category => category.id === categoryId
+      );
+
+    }
+
+
+    /* =========================================================
+       STATS
+    ========================================================= */
+
+    function updateStats() {
+
+      const total =
+        allProducts.length;
+
+
+      const active =
+        allProducts.filter(
+          product => product.is_active === true
+        ).length;
+
+
+      const out =
+        allProducts.filter(
+          product =>
+            Number(product.stock || 0) <= 0
+        ).length;
+
+
+      document.getElementById("totalProducts")
+        .textContent = total;
+
+
+      document.getElementById("activeProducts")
+        .textContent = active;
+
+
+      document.getElementById("outOfStock")
+        .textContent = out;
+
+    }
+
+
+    /* =========================================================
+       FILTERS
+    ========================================================= */
+
+    function applyFilters() {
+
+      const search =
+        document.getElementById("searchInput")
+          .value
+          .trim()
+          .toLowerCase();
+
+
+      const shopId =
+        document.getElementById("shopFilter")
+          .value;
+
+
+      const status =
+        document.getElementById("statusFilter")
+          .value;
+
+
+      let filtered =
+        [...allProducts];
+
+
+      if (search) {
+
+        filtered =
+          filtered.filter(product => {
+
+            const shop =
+              getShop(product.shop_id);
+
+            const productName =
+              String(product.name || "")
+                .toLowerCase();
+
+            const shopName =
+              String(
+                shop?.name ||
+                shop?.slug ||
+                ""
+              ).toLowerCase();
+
+            return (
+              productName.includes(search) ||
+              shopName.includes(search)
+            );
+
+          });
+
+      }
+
+
+      if (shopId) {
+
+        filtered =
+          filtered.filter(
+            product =>
+              product.shop_id === shopId
+          );
+
+      }
+
+
+      if (status === "active") {
+
+        filtered =
+          filtered.filter(
+            product =>
+              product.is_active === true
+          );
+
+      }
+
+
+      if (status === "inactive") {
+
+        filtered =
+          filtered.filter(
+            product =>
+              product.is_active !== true
+          );
+
+      }
+
+
+      if (status === "out") {
+
+        filtered =
+          filtered.filter(
+            product =>
+              Number(product.stock || 0) <= 0
+          );
+
+      }
+
+
+      renderProducts(filtered);
+
+    }
+
+
+    /* =========================================================
+       RENDER PRODUCTS
+    ========================================================= */
+
+    function renderProducts(products) {
+
+      const container =
+        document.getElementById(
+          "productsContainer"
+        );
+
+
+      document.getElementById("resultCount")
+        .textContent =
+          `${products.length} product${products.length === 1 ? "" : "s"}`;
+
+
+      if (!products.length) {
+
+        container.innerHTML = `
+          <div class="message-box">
+            No products found.
+          </div>
+        `;
+
+        return;
+
+      }
+
+
+      const grid =
+        document.createElement("div");
+
+      grid.className =
+        "products-grid";
+
+
+      products.forEach(product => {
+
+        const shop =
+          getShop(product.shop_id);
+
+        const category =
+          getCategory(product.category_id);
+
+
+        const stock =
+          Number(product.stock || 0);
+
+
+        const isActive =
+          product.is_active === true;
+
+
+        const stockClass =
+          stock <= 0
+            ? "out-stock"
+            : "";
+
+
+        const card =
+          document.createElement("div");
+
+        card.className =
+          "product-card";
+
+
+        card.innerHTML = `
+
+          <div class="product-top">
+
+            <div>
+
+              <div class="product-name">
+                ${escapeHtml(product.name || "Unnamed Product")}
+              </div>
+
+              <div class="shop-name">
+                ${escapeHtml(
+                  shop?.name ||
+                  shop?.slug ||
+                  "Unknown Shop"
+                )}
+              </div>
+
+              <div class="category">
+                Category:
+                ${escapeHtml(
+                  category?.name ||
+                  "No Category"
+                )}
+              </div>
+
+            </div>
+
+
+            <span class="status ${
+              isActive
+                ? "active"
+                : "inactive"
+            }">
+
+              ${
+                isActive
+                  ? "Active"
+                  : "Inactive"
+              }
+
+            </span>
+
+          </div>
+
+
+          <div class="product-info">
+
+            <div class="info-box">
+
+              <span>Price</span>
+
+              <strong>
+                ${formatPrice(product.price)}
+              </strong>
+
+            </div>
+
+
+            <div class="info-box">
+
+              <span>Stock</span>
+
+              <strong class="${stockClass}">
+                ${stock}
+              </strong>
+
+            </div>
+
+
+            <div class="info-box">
+
+              <span>Product ID</span>
+
+              <strong style="font-size:11px;">
+                ${escapeHtml(
+                  String(product.id).slice(0, 8)
+                )}...
+              </strong>
+
+            </div>
+
+
+            <div class="info-box">
+
+              <span>Created</span>
+
+              <strong style="font-size:12px;">
+                ${formatDate(product.created_at)}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="product-description">
+
+            ${
+              product.description
+                ? escapeHtml(product.description)
+                : "No description added."
+            }
+
+          </div>
+
+
+          <div class="product-actions">
+
+            <button
+              class="btn btn-primary"
+              onclick="openEditModal('${product.id}')"
+            >
+              Edit
+            </button>
+
+
+            <button
+              class="btn btn-secondary"
+              onclick="toggleProductStatus('${product.id}')"
+            >
+              ${
+                isActive
+                  ? "Set Inactive"
+                  : "Set Active"
+              }
+            </button>
+
+
+            ${
+              shop?.slug
+                ? `
+                  <button
+                    class="btn btn-secondary"
+                    onclick="openShop('${escapeHtml(shop.slug)}')"
+                  >
+                    Open Shop
+                  </button>
+                `
+                : ""
+            }
+
+          </div>
+
+        `;
+
+
+        grid.appendChild(card);
+
+      });
+
+
+      container.innerHTML = "";
+
+      container.appendChild(grid);
+
+    }
+
+
+    /* =========================================================
+       EDIT PRODUCT
+    ========================================================= */
+
+    function openEditModal(productId) {
+
+      const product =
+        allProducts.find(
+          item => item.id === productId
+        );
+
+
+      if (!product) {
+
+        showError("Product not found.");
+
+        return;
+
+      }
+
+
+      document.getElementById("editId")
+        .value = product.id;
+
+
+      document.getElementById("editName")
+        .value = product.name || "";
+
+
+      document.getElementById("editPrice")
+        .value =
+          product.price ?? 0;
+
+
+      document.getElementById("editStock")
+        .value =
+          product.stock ?? 0;
+
+
+      document.getElementById("editActive")
+        .value =
+          product.is_active === true
+            ? "true"
+            : "false";
+
+
+      document.getElementById("editDescription")
+        .value =
+          product.description || "";
+
+
+      document.getElementById("editModal")
+        .style.display = "flex";
+
+    }
+
+
+    function closeEditModal() {
+
+      document.getElementById("editModal")
+        .style.display = "none";
+
+    }
+
+
+    /* =========================================================
+       SAVE PRODUCT
+    ========================================================= */
+
+    document.getElementById("editForm")
+      .addEventListener(
+        "submit",
+        async function(event) {
+
+          event.preventDefault();
+
+          clearError();
+
+
+          const id =
+            document.getElementById("editId")
+              .value;
+
+
+          const name =
+            document.getElementById("editName")
+              .value.trim();
+
+
+          const price =
+            Number(
+              document.getElementById("editPrice")
+                .value
+            );
+
+
+          const stock =
+            Number(
+              document.getElementById("editStock")
+                .value
+            );
+
+
+          const isActive =
+            document.getElementById("editActive")
+              .value === "true";
+
+
+          const description =
+            document.getElementById("editDescription")
+              .value.trim();
+
+
+          if (!name) {
+
+            showError("Product name is required.");
+
+            return;
+
+          }
+
+
+          if (price < 0) {
+
+            showError("Price cannot be negative.");
+
+            return;
+
+          }
+
+
+          if (stock < 0) {
+
+            showError("Stock cannot be negative.");
+
+            return;
+
+          }
+
+
+          const saveButton =
+            document.querySelector(
+              "#editForm .save-btn"
+            );
+
+
+          saveButton.disabled = true;
+
+          saveButton.textContent =
+            "Saving...";
+
+
+          try {
+
+            const {
+              error
+            } = await supabaseClient
+              .from("products")
+              .update({
+
+                name: name,
+
+                price: price,
+
+                stock: stock,
+
+                is_active: isActive,
+
+                description:
+                  description || null
+
+              })
+              .eq("id", id);
+
+
+            if (error) {
+
+              throw error;
+
+            }
+
+
+            closeEditModal();
+
+            await loadProducts();
+
+          } catch (error) {
+
+            console.error(
+              "PRODUCT UPDATE ERROR:",
+              error
+            );
+
+            showError(
+              error?.message ||
+              "Product could not be updated."
+            );
+
+          } finally {
+
+            saveButton.disabled = false;
+
+            saveButton.textContent =
+              "Save Changes";
+
+          }
+
+        }
+      );
+
+
+    /* =========================================================
+       TOGGLE PRODUCT STATUS
+    ========================================================= */
+
+    async function toggleProductStatus(productId) {
+
+      clearError();
+
+
+      const product =
+        allProducts.find(
+          item => item.id === productId
+        );
+
+
+      if (!product) {
+
+        showError("Product not found.");
+
+        return;
+
+      }
+
+
+      const newStatus =
+        product.is_active !== true;
+
+
+      const actionText =
+        newStatus
+          ? "activate"
+          : "deactivate";
+
+
+      const confirmed =
+        confirm(
+          `Are you sure you want to ${actionText} "${product.name}"?`
+        );
+
+
+      if (!confirmed) return;
+
+
+      try {
+
+        const {
+          error
+        } = await supabaseClient
+          .from("products")
+          .update({
+            is_active: newStatus
+          })
+          .eq("id", productId);
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        await loadProducts();
+
+      } catch (error) {
+
+        console.error(
+          "STATUS UPDATE ERROR:",
+          error
+        );
+
+        showError(
+          error?.message ||
+          "Product status could not be updated."
+        );
+
+      }
+
+    }
+
+
+    /* =========================================================
+       OPEN SHOP
+    ========================================================= */
+
+    function openShop(slug) {
+
+      if (!slug) return;
+
+
+      const url =
+        `../${encodeURIComponent(slug)}/`;
+
+
+      window.open(
+        url,
+        "_blank"
+      );
+
+    }
+
+
+    /* =========================================================
+       URL SHOP FILTER
+    ========================================================= */
+
+    function applyUrlFilter() {
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+
+      const shopSlug =
+        params.get("shop");
+
+
+      if (!shopSlug) return;
+
+
+      const shop =
+        allShops.find(
+          item =>
+            item.slug === shopSlug
+        );
+
+
+      if (!shop) return;
+
+
+      document.getElementById("shopFilter")
+        .value = shop.id;
+
+
+      applyFilters();
+
+    }
+
+
+    /* =========================================================
+       START
+    ========================================================= */
+
+    async function startPage() {
+
+      clearError();
+
+
+      try {
+
+        const isMaster =
+          await verifyMaster();
+
+
+        if (!isMaster) return;
+
+
+        await loadShops();
+
+        await loadCategories();
+
+        await loadProducts();
+
+        applyUrlFilter();
+
+
+      } catch (error) {
+
+        console.error(
+          "ALL PRODUCTS ERROR:",
+          error
+        );
+
+        showError(
+          error?.message ||
+          "Products could not be loaded."
+        );
+
+      }
+
+    }
+
+
+    /* =========================================================
+       CLOSE MODAL ON OUTSIDE CLICK
+    ========================================================= */
+
+    document.getElementById("editModal")
+      .addEventListener(
+        "click",
+        function(event) {
+
+          if (
+            event.target ===
+            document.getElementById("editModal")
+          ) {
+
+            closeEditModal();
+
+          }
+
+        }
+      );
+
+
+    /* =========================================================
+       PAGE LOAD
+    ========================================================= */
+
+    window.addEventListener(
+      "load",
+      startPage
+    );
+
+  </script>
+
+</body>
+</html>
