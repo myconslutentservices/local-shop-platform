@@ -2,9 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Owners - Master Panel</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Owner Login | Local Shop Platform</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase.js"></script>
@@ -17,314 +21,236 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background: #0b0f14;
-      color: #ffffff;
       min-height: 100vh;
-    }
-
-    .topbar {
-      height: 70px;
-      background: #111820;
-      border-bottom: 1px solid #26313d;
+      font-family: Arial, sans-serif;
+      background: #0b1120;
+      color: #ffffff;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 30px;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-wrapper {
+      width: 100%;
+      max-width: 420px;
     }
 
     .brand {
-      font-size: 22px;
-      font-weight: 700;
-    }
-
-    .brand span {
-      color: #35d07f;
-    }
-
-    .back-btn {
-      text-decoration: none;
-      color: #fff;
-      background: #1b2530;
-      border: 1px solid #344352;
-      padding: 10px 16px;
-      border-radius: 8px;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-
-    .page-title {
+      text-align: center;
       margin-bottom: 25px;
     }
 
-    .page-title h1 {
-      font-size: 30px;
-      margin-bottom: 8px;
+    .brand-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 15px;
+      border-radius: 16px;
+      background: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
     }
 
-    .page-title p {
-      color: #9ba8b5;
+    .brand h1 {
+      font-size: 25px;
+      margin-bottom: 7px;
+    }
+
+    .brand p {
+      color: #94a3b8;
+      font-size: 14px;
     }
 
     .card {
-      background: #111820;
-      border: 1px solid #26313d;
-      border-radius: 14px;
+      background: #111827;
+      border: 1px solid #263244;
+      border-radius: 18px;
       padding: 28px;
-      margin-bottom: 25px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
     }
 
     .card h2 {
-      margin-bottom: 22px;
       font-size: 21px;
+      margin-bottom: 7px;
     }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+    .subtitle {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 25px;
     }
 
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .form-group.full {
-      grid-column: 1 / -1;
+    .field {
+      margin-bottom: 18px;
     }
 
     label {
-      color: #c9d2db;
+      display: block;
+      margin-bottom: 8px;
       font-size: 14px;
-      font-weight: 600;
+      color: #cbd5e1;
     }
 
-    input,
-    select {
+    input {
       width: 100%;
-      padding: 13px 14px;
-      background: #0b0f14;
-      color: #fff;
-      border: 1px solid #344352;
-      border-radius: 8px;
+      height: 48px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 0 14px;
       outline: none;
       font-size: 15px;
     }
 
-    input:focus,
-    select:focus {
-      border-color: #35d07f;
+    input:focus {
+      border-color: #3b82f6;
     }
 
-    select option {
-      background: #111820;
-      color: #fff;
+    .password-box {
+      position: relative;
     }
 
-    .password-row {
-      display: flex;
-      gap: 8px;
+    .password-box input {
+      padding-right: 70px;
     }
 
-    .password-row input {
-      flex: 1;
-    }
-
-    .show-btn {
-      border: 1px solid #344352;
-      background: #1b2530;
-      color: #fff;
-      border-radius: 8px;
-      padding: 0 15px;
-      cursor: pointer;
-    }
-
-    .submit-btn {
-      margin-top: 25px;
-      width: 100%;
-      padding: 14px;
+    .show-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
       border: none;
-      border-radius: 9px;
-      background: #35d07f;
-      color: #06100a;
-      font-size: 16px;
-      font-weight: 700;
+      background: transparent;
+      color: #60a5fa;
       cursor: pointer;
+      font-size: 13px;
     }
 
-    .submit-btn:hover {
-      opacity: 0.9;
+    .login-btn {
+      width: 100%;
+      height: 50px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 5px;
     }
 
-    .submit-btn:disabled {
-      opacity: 0.5;
+    .login-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .login-btn:disabled {
+      opacity: 0.6;
       cursor: not-allowed;
     }
 
     .message {
       display: none;
-      margin-top: 20px;
-      padding: 14px;
-      border-radius: 8px;
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
       line-height: 1.5;
     }
 
-    .success {
+    .message.success {
       display: block;
-      background: #10291d;
-      border: 1px solid #1e7044;
-      color: #7ef0aa;
+      background: rgba(22, 163, 74, 0.12);
+      border: 1px solid #166534;
+      color: #86efac;
     }
 
-    .error {
+    .message.error {
       display: block;
-      background: #2c1515;
-      border: 1px solid #793535;
-      color: #ff8f8f;
+      background: rgba(220, 38, 38, 0.12);
+      border: 1px solid #991b1b;
+      color: #fca5a5;
     }
 
-    .owner-result {
+    .footer {
+      text-align: center;
       margin-top: 20px;
-      padding: 18px;
-      background: #0b0f14;
-      border: 1px solid #26313d;
-      border-radius: 10px;
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    .loading {
       display: none;
-    }
-
-    .owner-result p {
-      margin: 7px 0;
-      color: #cbd5df;
-    }
-
-    .owner-result strong {
-      color: #fff;
-    }
-
-    @media (max-width: 700px) {
-      .topbar {
-        padding: 0 15px;
-      }
-
-      .container {
-        margin: 25px auto;
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .form-group.full {
-        grid-column: auto;
-      }
-
-      .card {
-        padding: 20px;
-      }
-
-      .page-title h1 {
-        font-size: 25px;
-      }
+      margin-top: 12px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="topbar">
+  <div class="login-wrapper">
+
     <div class="brand">
-      <span>Pro</span> Master Panel
-    </div>
+      <div class="brand-icon">LS</div>
 
-    <a href="dashboard.html" class="back-btn">
-      ← Dashboard
-    </a>
-  </div>
+      <h1>Local Shop Platform</h1>
 
-  <div class="container">
-
-    <div class="page-title">
-      <h1>Owner Management</h1>
-      <p>Create a shop owner account and connect it to a shop.</p>
+      <p>Owner Management Panel</p>
     </div>
 
     <div class="card">
 
-      <h2>➕ Create New Owner</h2>
+      <h2>Owner Login</h2>
 
-      <form id="ownerForm">
+      <p class="subtitle">
+        Login to manage your shop
+      </p>
 
-        <div class="form-grid">
+      <form id="loginForm">
 
-          <div class="form-group">
-            <label for="fullName">Owner Full Name</label>
+        <div class="field">
+          <label for="email">
+            Email Address
+          </label>
+
+          <input
+            type="email"
+            id="email"
+            placeholder="owner@example.com"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="field">
+
+          <label for="password">
+            Password
+          </label>
+
+          <div class="password-box">
 
             <input
-              type="text"
-              id="fullName"
-              placeholder="Enter owner name"
+              type="password"
+              id="password"
+              placeholder="Enter password"
+              autocomplete="current-password"
               required
             >
-          </div>
 
-          <div class="form-group">
-            <label for="phone">Phone Number</label>
-
-            <input
-              type="tel"
-              id="phone"
-              placeholder="Enter phone number"
+            <button
+              type="button"
+              class="show-password"
+              id="showPassword"
             >
-          </div>
-
-          <div class="form-group">
-            <label for="email">Owner Login Email</label>
-
-            <input
-              type="email"
-              id="email"
-              placeholder="owner@example.com"
-              required
-            >
-          </div>
-
-          <div class="form-group">
-            <label for="password">Temporary Password</label>
-
-            <div class="password-row">
-
-              <input
-                type="password"
-                id="password"
-                placeholder="Minimum 6 characters"
-                minlength="6"
-                required
-              >
-
-              <button
-                type="button"
-                class="show-btn"
-                id="showPassword"
-              >
-                Show
-              </button>
-
-            </div>
-          </div>
-
-          <div class="form-group full">
-
-            <label for="shop">Select Shop</label>
-
-            <select id="shop" required>
-              <option value="">Loading shops...</option>
-            </select>
+              Show
+            </button>
 
           </div>
 
@@ -332,44 +258,102 @@
 
         <button
           type="submit"
-          class="submit-btn"
-          id="submitBtn"
+          class="login-btn"
+          id="loginBtn"
         >
-          Create Owner
+          Login
         </button>
+
+        <div
+          class="loading"
+          id="loading"
+        >
+          Checking account...
+        </div>
+
+        <div
+          class="message"
+          id="message"
+        ></div>
 
       </form>
 
-      <div id="message" class="message"></div>
+    </div>
 
-      <div id="ownerResult" class="owner-result"></div>
-
+    <div class="footer">
+      © 2026 Local Shop Platform
     </div>
 
   </div>
 
+
   <script>
 
-    const form = document.getElementById("ownerForm");
+    const loginForm =
+      document.getElementById("loginForm");
 
-    const fullName = document.getElementById("fullName");
-    const phone = document.getElementById("phone");
-    const email = document.getElementById("email");
-    const password = document.getElementById("password");
-    const shop = document.getElementById("shop");
+    const emailInput =
+      document.getElementById("email");
 
-    const submitBtn = document.getElementById("submitBtn");
+    const passwordInput =
+      document.getElementById("password");
 
-    const message = document.getElementById("message");
-    const ownerResult = document.getElementById("ownerResult");
+    const loginBtn =
+      document.getElementById("loginBtn");
 
-    const showPassword = document.getElementById("showPassword");
+    const loading =
+      document.getElementById("loading");
+
+    const message =
+      document.getElementById("message");
+
+    const showPassword =
+      document.getElementById("showPassword");
 
 
-    function showMessage(text, type) {
+    // --------------------------------
+    // SHOW / HIDE PASSWORD
+    // --------------------------------
+
+    showPassword.addEventListener(
+      "click",
+      () => {
+
+        if (
+          passwordInput.type === "password"
+        ) {
+
+          passwordInput.type = "text";
+
+          showPassword.textContent =
+            "Hide";
+
+        } else {
+
+          passwordInput.type =
+            "password";
+
+          showPassword.textContent =
+            "Show";
+        }
+
+      }
+    );
+
+
+    // --------------------------------
+    // MESSAGE
+    // --------------------------------
+
+    function showMessage(
+      text,
+      type
+    ) {
 
       message.textContent = text;
-      message.className = "message " + type;
+
+      message.className =
+        "message " + type;
 
     }
 
@@ -377,406 +361,380 @@
     function clearMessage() {
 
       message.textContent = "";
-      message.className = "message";
+
+      message.className =
+        "message";
 
     }
 
 
-    showPassword.addEventListener("click", () => {
+    // --------------------------------
+    // LOGIN
+    // --------------------------------
 
-      if (password.type === "password") {
+    loginForm.addEventListener(
+      "submit",
+      async (event) => {
 
-        password.type = "text";
-        showPassword.textContent = "Hide";
+        event.preventDefault();
 
-      } else {
+        clearMessage();
 
-        password.type = "password";
-        showPassword.textContent = "Show";
+        const email =
+          emailInput.value
+            .trim()
+            .toLowerCase();
 
-      }
+        const password =
+          passwordInput.value;
 
-    });
 
+        if (!email || !password) {
 
-    async function verifyMaster() {
-
-      const {
-        data: { session },
-        error: sessionError
-      } = await supabaseClient.auth.getSession();
-
-
-      if (sessionError || !session) {
-
-        window.location.href = "login.html";
-
-        return false;
-
-      }
-
-
-      const {
-        data: master,
-        error: roleError
-      } = await supabaseClient
-        .from("owners")
-        .select("full_name, role, shop_id")
-        .eq("id", session.user.id)
-        .single();
-
-
-      if (
-        roleError ||
-        !master ||
-        master.role !== "master"
-      ) {
-
-        await supabaseClient.auth.signOut();
-
-        window.location.href = "login.html";
-
-        return false;
-
-      }
-
-
-      return true;
-
-    }
-
-
-    async function loadShops() {
-
-      shop.innerHTML =
-        '<option value="">Loading shops...</option>';
-
-
-      const {
-        data,
-        error
-      } = await supabaseClient
-        .from("shops")
-        .select("id, name, slug")
-        .eq("status", "active")
-        .order("name");
-
-
-      if (error) {
-
-        console.error("SHOP LOAD ERROR:", error);
-
-        shop.innerHTML =
-          '<option value="">Failed to load shops</option>';
-
-        return;
-
-      }
-
-
-      if (!data || data.length === 0) {
-
-        shop.innerHTML =
-          '<option value="">No active shops found</option>';
-
-        return;
-
-      }
-
-
-      shop.innerHTML =
-        '<option value="">Select a shop</option>';
-
-
-      data.forEach(item => {
-
-        const option = document.createElement("option");
-
-        option.value = item.id;
-
-        option.textContent =
-          `${item.name} (${item.slug})`;
-
-        shop.appendChild(option);
-
-      });
-
-    }
-
-
-    form.addEventListener("submit", async (event) => {
-
-      event.preventDefault();
-
-      clearMessage();
-
-      ownerResult.style.display = "none";
-
-
-      const nameValue =
-        fullName.value.trim();
-
-      const phoneValue =
-        phone.value.trim();
-
-      const emailValue =
-        email.value.trim().toLowerCase();
-
-      const passwordValue =
-        password.value;
-
-      const shopValue =
-        shop.value;
-
-
-      if (
-        !nameValue ||
-        !emailValue ||
-        !passwordValue ||
-        !shopValue
-      ) {
-
-        showMessage(
-          "Please fill all required fields.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      if (passwordValue.length < 6) {
-
-        showMessage(
-          "Password must be at least 6 characters.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      submitBtn.disabled = true;
-
-      submitBtn.textContent =
-        "Creating Owner...";
-
-
-      try {
-
-        /*
-          Get the currently logged-in Master session.
-        */
-
-        const {
-          data: sessionData,
-          error: sessionError
-        } = await supabaseClient.auth.getSession();
-
-
-        if (
-          sessionError ||
-          !sessionData?.session?.access_token
-        ) {
-
-          throw new Error(
-            "Master session expired. Please login again."
+          showMessage(
+            "Email and password are required.",
+            "error"
           );
 
+          return;
         }
 
 
-        const accessToken =
-          sessionData.session.access_token;
+        loginBtn.disabled = true;
 
+        loginBtn.textContent =
+          "Logging in...";
 
-        /*
-          Call the create-owner Edge Function directly.
-        */
-
-        const response = await fetch(
-          `${SUPABASE_URL}/functions/v1/create-owner`,
-          {
-            method: "POST",
-
-            headers: {
-              "Authorization":
-                `Bearer ${accessToken}`,
-
-              "apikey":
-                SUPABASE_PUBLISHABLE_KEY,
-
-              "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-
-              full_name:
-                nameValue,
-
-              email:
-                emailValue,
-
-              password:
-                passwordValue,
-
-              phone:
-                phoneValue,
-
-              shop_id:
-                shopValue
-
-            })
-          }
-        );
-
-
-        /*
-          Read the Edge Function response.
-        */
-
-        let data = null;
-
-        try {
-
-          data = await response.json();
-
-        } catch (jsonError) {
-
-          data = null;
-
-        }
-
-
-        console.log(
-          "CREATE OWNER STATUS:",
-          response.status
-        );
-
-        console.log(
-          "CREATE OWNER RESPONSE:",
-          data
-        );
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            data?.error ||
-            data?.message ||
-            `Edge Function returned HTTP ${response.status}`
-          );
-
-        }
-
-
-        if (!data || !data.success) {
-
-          throw new Error(
-            data?.error ||
-            "Owner creation failed."
-          );
-
-        }
-
-
-        showMessage(
-          "✅ Owner created successfully!",
-          "success"
-        );
-
-
-        ownerResult.innerHTML = `
-
-          <p>
-            <strong>Owner:</strong>
-            ${data.owner.full_name}
-          </p>
-
-          <p>
-            <strong>Email:</strong>
-            ${emailValue}
-          </p>
-
-          <p>
-            <strong>Phone:</strong>
-            ${data.owner.phone || "Not provided"}
-          </p>
-
-          <p>
-            <strong>Shop:</strong>
-            ${data.shop.name}
-          </p>
-
-          <p>
-            <strong>Role:</strong>
-            ${data.owner.role}
-          </p>
-
-          <p>
-            <strong>Owner ID:</strong>
-            ${data.owner.id}
-          </p>
-
-        `;
-
-
-        ownerResult.style.display =
+        loading.style.display =
           "block";
 
 
-        form.reset();
+        try {
+
+          // --------------------------------
+          // SUPABASE AUTH LOGIN
+          // --------------------------------
+
+          const {
+            data,
+            error
+          } =
+            await supabaseClient.auth
+              .signInWithPassword({
+                email,
+                password
+              });
 
 
-        await loadShops();
+          if (error) {
 
+            throw new Error(
+              error.message
+            );
+
+          }
+
+
+          if (!data?.user) {
+
+            throw new Error(
+              "Login failed. User not found."
+            );
+
+          }
+
+
+          const userId =
+            data.user.id;
+
+
+          console.log(
+            "AUTH USER:",
+            userId
+          );
+
+
+          // --------------------------------
+          // GET OWNER PROFILE
+          // --------------------------------
+
+          const {
+            data: owner,
+            error: ownerError
+          } =
+            await supabaseClient
+              .from("owners")
+              .select(
+                "id, shop_id, full_name, phone, role"
+              )
+              .eq("id", userId)
+              .single();
+
+
+          if (ownerError) {
+
+            throw new Error(
+              "Owner profile not found."
+            );
+
+          }
+
+
+          console.log(
+            "OWNER PROFILE:",
+            owner
+          );
+
+
+          // --------------------------------
+          // ROLE CHECK
+          // --------------------------------
+
+          if (
+            owner.role !== "owner"
+          ) {
+
+            await supabaseClient.auth
+              .signOut();
+
+            throw new Error(
+              "This account is not an owner account."
+            );
+
+          }
+
+
+          // --------------------------------
+          // SHOP CHECK
+          // --------------------------------
+
+          if (!owner.shop_id) {
+
+            await supabaseClient.auth
+              .signOut();
+
+            throw new Error(
+              "No shop is assigned to this owner."
+            );
+
+          }
+
+
+          // --------------------------------
+          // GET SHOP
+          // --------------------------------
+
+          const {
+            data: shop,
+            error: shopError
+          } =
+            await supabaseClient
+              .from("shops")
+              .select(
+                "id, name, slug, status"
+              )
+              .eq(
+                "id",
+                owner.shop_id
+              )
+              .single();
+
+
+          if (shopError) {
+
+            throw new Error(
+              "Shop information could not be loaded."
+            );
+
+          }
+
+
+          if (!shop) {
+
+            throw new Error(
+              "Assigned shop not found."
+            );
+
+          }
+
+
+          console.log(
+            "OWNER SHOP:",
+            shop
+          );
+
+
+          // --------------------------------
+          // SHOP STATUS
+          // --------------------------------
+
+          if (
+            shop.status ===
+            "suspended"
+          ) {
+
+            await supabaseClient.auth
+              .signOut();
+
+            throw new Error(
+              "This shop is currently suspended. Please contact support."
+            );
+
+          }
+
+
+          // --------------------------------
+          // SAVE OWNER INFO
+          // --------------------------------
+
+          sessionStorage.setItem(
+            "owner_id",
+            owner.id
+          );
+
+          sessionStorage.setItem(
+            "owner_name",
+            owner.full_name || ""
+          );
+
+          sessionStorage.setItem(
+            "owner_shop_id",
+            owner.shop_id
+          );
+
+          sessionStorage.setItem(
+            "owner_shop_name",
+            shop.name || ""
+          );
+
+          sessionStorage.setItem(
+            "owner_shop_slug",
+            shop.slug || ""
+          );
+
+
+          // --------------------------------
+          // SUCCESS
+          // --------------------------------
+
+          showMessage(
+            "Login successful. Opening dashboard...",
+            "success"
+          );
+
+
+          // --------------------------------
+          // NEXT PAGE
+          // --------------------------------
+
+          setTimeout(
+            () => {
+
+              window.location.href =
+                "dashboard.html";
+
+            },
+            700
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "OWNER LOGIN ERROR:",
+            error
+          );
+
+
+          showMessage(
+            error?.message ||
+            "Login failed. Please try again.",
+            "error"
+          );
+
+
+          loginBtn.disabled =
+            false;
+
+          loginBtn.textContent =
+            "Login";
+
+          loading.style.display =
+            "none";
+
+        }
+
+      }
+    );
+
+
+    // --------------------------------
+    // CHECK EXISTING SESSION
+    // --------------------------------
+
+    async function checkExistingSession() {
+
+      try {
+
+        const {
+          data
+        } =
+          await supabaseClient.auth
+            .getSession();
+
+
+        if (
+          !data?.session?.user
+        ) {
+
+          return;
+
+        }
+
+
+        const userId =
+          data.session.user.id;
+
+
+        const {
+          data: owner
+        } =
+          await supabaseClient
+            .from("owners")
+            .select(
+              "id, shop_id, full_name, role"
+            )
+            .eq(
+              "id",
+              userId
+            )
+            .maybeSingle();
+
+
+        if (
+          owner &&
+          owner.role === "owner" &&
+          owner.shop_id
+        ) {
+
+          window.location.href =
+            "dashboard.html";
+
+        }
 
       } catch (error) {
 
-        console.error(
-          "CREATE OWNER ERROR:",
+        console.log(
+          "SESSION CHECK:",
           error
         );
 
-
-        showMessage(
-          "❌ " + error.message,
-          "error"
-        );
-
-
-      } finally {
-
-        submitBtn.disabled = false;
-
-        submitBtn.textContent =
-          "Create Owner";
-
       }
-
-    });
-
-
-    async function init() {
-
-      const isMaster =
-        await verifyMaster();
-
-
-      if (!isMaster) {
-        return;
-      }
-
-
-      await loadShops();
 
     }
 
 
-    init();
+    checkExistingSession();
 
   </script>
 
