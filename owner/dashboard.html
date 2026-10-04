@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owner Dashboard | Local Shop Platform</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,sans-serif;background:#0b1120;color:#fff;min-height:100vh}
+    button{font:inherit}
+    .topbar{height:64px;background:#111827;border-bottom:1px solid #263244;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:10}
+    .brand{font-weight:700;font-size:18px}.brand small{display:block;color:#94a3b8;font-size:11px;font-weight:400;margin-top:3px}
+    .top-actions{display:flex;align-items:center;gap:10px}
+    .shop-name{color:#cbd5e1;font-size:13px;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .logout{border:1px solid #334155;background:#1e293b;color:#fff;border-radius:9px;padding:9px 13px;cursor:pointer}
+    .logout:hover{background:#334155}
+    .wrap{max-width:1180px;margin:auto;padding:24px}
+    .welcome{margin-bottom:22px}.welcome h1{font-size:27px;margin-bottom:6px}.welcome p{color:#94a3b8;font-size:14px}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .card{background:#111827;border:1px solid #263244;border-radius:15px;padding:18px}
+    .stat-label{color:#94a3b8;font-size:13px;margin-bottom:10px}.stat{font-size:27px;font-weight:700}.muted{color:#64748b;font-size:12px;margin-top:6px}
+    .section{margin-top:22px}.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.section-title h2{font-size:18px}
+    .refresh{border:1px solid #334155;background:#1e293b;color:#fff;border-radius:8px;padding:7px 11px;cursor:pointer;font-size:12px}
+    .orders{overflow:auto}.order{min-width:700px;display:grid;grid-template-columns:1.3fr 1fr .8fr .8fr .8fr;gap:12px;padding:14px 0;border-bottom:1px solid #263244;align-items:center}
+    .order:first-child{padding-top:4px}.customer{font-weight:600}.sub{color:#94a3b8;font-size:12px;margin-top:4px}
+    .badge{display:inline-block;border-radius:999px;padding:5px 9px;font-size:11px;background:#1e293b;color:#cbd5e1}
+    .badge.new{background:#172554;color:#93c5fd}.badge.accepted,.badge.processing{background:#422006;color:#fdba74}.badge.ready{background:#052e16;color:#86efac}.badge.delivered{background:#064e3b;color:#6ee7b7}.badge.rejected,.badge.cancelled{background:#450a0a;color:#fca5a5}
+    .empty{text-align:center;padding:35px 10px;color:#64748b}
+    .info{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .info-row{display:flex;justify-content:space-between;gap:15px;border-bottom:1px solid #263244;padding:11px 0;font-size:13px}.info-row:last-child{border-bottom:0}.info-row span:first-child{color:#94a3b8}
+    .subscription{border:1px solid #263244;border-radius:15px;padding:18px;background:#111827}
+    .sub-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.active{color:#86efac}.expired{color:#fca5a5}.pending{color:#fdba74}
+    .error{display:none;background:rgba(220,38,38,.12);border:1px solid #991b1b;color:#fca5a5;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px}
+    .loading{padding:35px;text-align:center;color:#94a3b8}
+    @media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.info{grid-template-columns:1fr}}
+    @media(max-width:520px){.topbar{padding:0 14px}.shop-name{display:none}.wrap{padding:16px}.grid{grid-template-columns:1fr 1fr;gap:10px}.card{padding:14px}.stat{font-size:22px}.welcome h1{font-size:23px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Local Shop Platform<small>Owner Management Panel</small></div>
+    <div class="top-actions">
+      <div class="shop-name" id="topShop">Loading...</div>
+      <button class="logout" id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div id="errorBox" class="error"></div>
+
+    <div class="welcome">
+      <h1>Welcome, <span id="ownerName">Owner</span> 👋</h1>
+      <p>Manage your shop, products, orders and subscription from one place.</p>
+    </div>
+
+    <section class="grid">
+      <div class="card"><div class="stat-label">Today's Orders</div><div class="stat" id="todayOrders">0</div></div>
+      <div class="card"><div class="stat-label">Today's Revenue</div><div class="stat" id="todayRevenue">₹0</div></div>
+      <div class="card"><div class="stat-label">Total Orders</div><div class="stat" id="totalOrders">0</div></div>
+      <div class="card"><div class="stat-label">Products</div><div class="stat" id="totalProducts">0</div></div>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><h2>Recent Orders</h2><button class="refresh" id="refreshBtn">Refresh</button></div>
+      <div class="card orders" id="ordersBox"><div class="loading">Loading orders...</div></div>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><h2>Shop Information</h2></div>
+      <div class="info">
+        <div class="card">
+          <div class="info-row"><span>Shop Name</span><strong id="shopInfoName">—</strong></div>
+          <div class="info-row"><span>Phone</span><strong id="shopPhone">—</strong></div>
+          <div class="info-row"><span>WhatsApp</span><strong id="shopWhatsapp">—</strong></div>
+          <div class="info-row"><span>Status</span><strong id="shopStatus">—</strong></div>
+        </div>
+        <div class="subscription">
+          <div class="sub-top"><h3>Subscription</h3><strong id="subStatus">Not found</strong></div>
+          <div class="info-row"><span>Plan</span><strong id="subPlan">—</strong></div>
+          <div class="info-row"><span>Amount</span><strong id="subAmount">—</strong></div>
+          <div class="info-row"><span>Expires</span><strong id="subExpiry">—</strong></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+const ownerId = sessionStorage.getItem("owner_id");
+const sessionShopId = sessionStorage.getItem("owner_shop_id");
+
+let owner = null;
+let shop = null;
+
+function showError(msg){
+  const el=document.getElementById("errorBox");
+  el.textContent=msg;
+  el.style.display="block";
+}
+function money(v){return "₹"+Number(v||0).toLocaleString("en-IN",{maximumFractionDigits:2})}
+function dateText(v){
+  if(!v) return "—";
+  return new Date(v).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"});
+}
+function statusClass(s){return String(s||"").toLowerCase().replaceAll("_","-")}
+function escapeHtml(s){
+  return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+
+async function logout(){
+  await supabaseClient.auth.signOut();
+  sessionStorage.clear();
+  window.location.href="login.html";
+}
+document.getElementById("logoutBtn").addEventListener("click",logout);
+document.getElementById("refreshBtn").addEventListener("click",loadDashboard);
+
+async function loadDashboard(){
+  try{
+    document.getElementById("ordersBox").innerHTML='<div class="loading">Loading orders...</div>';
+
+    const {data:{user},error:sessionError}=await supabaseClient.auth.getUser();
+    if(sessionError || !user){
+      sessionStorage.clear();
+      window.location.href="login.html";
+      return;
+    }
+
+    const {data:o,error:oErr}=await supabaseClient
+      .from("owners")
+      .select("id,shop_id,full_name,phone,role")
+      .eq("id",user.id)
+      .single();
+
+    if(oErr || !o || o.role!=="owner" || !o.shop_id) throw new Error("Owner account or shop could not be verified.");
+    owner=o;
+
+    const {data:s,error:sErr}=await supabaseClient
+      .from("shops")
+      .select("id,name,slug,phone,whatsapp,address,description,status")
+      .eq("id",owner.shop_id)
+      .single();
+
+    if(sErr || !s) throw new Error("Shop information could not be loaded.");
+    shop=s;
+
+    if(shop.status==="suspended") throw new Error("This shop is currently suspended. Please contact support.");
+
+    document.getElementById("ownerName").textContent=owner.full_name||"Owner";
+    document.getElementById("topShop").textContent=shop.name||"";
+    document.getElementById("shopInfoName").textContent=shop.name||"—";
+    document.getElementById("shopPhone").textContent=shop.phone||"—";
+    document.getElementById("shopWhatsapp").textContent=shop.whatsapp||"—";
+    document.getElementById("shopStatus").textContent=shop.status||"—";
+
+    const {data:orders,error:ordersErr}=await supabaseClient
+      .from("orders")
+      .select("id,customer_name,customer_phone,total_amount,status,created_at")
+      .eq("shop_id",shop.id)
+      .order("created_at",{ascending:false})
+      .limit(20);
+
+    if(ordersErr) throw ordersErr;
+
+    const list=orders||[];
+    document.getElementById("totalOrders").textContent=list.length;
+
+    const today=new Date(); today.setHours(0,0,0,0);
+    const todayList=list.filter(x=>new Date(x.created_at)>=today);
+    document.getElementById("todayOrders").textContent=todayList.length;
+    document.getElementById("todayRevenue").textContent=money(
+      todayList.reduce((sum,x)=>sum+Number(x.total_amount||0),0)
+    );
+
+    renderOrders(list);
+
+    const {count:productCount,error:productErr}=await supabaseClient
+      .from("products").select("id",{count:"exact",head:true}).eq("shop_id",shop.id);
+    if(productErr) throw productErr;
+    document.getElementById("totalProducts").textContent=productCount??0;
+
+    const {data:sub,error:subErr}=await supabaseClient
+      .from("subscriptions")
+      .select("plan_name,amount,starts_at,expires_at,status")
+      .eq("shop_id",shop.id)
+      .order("created_at",{ascending:false})
+      .limit(1).maybeSingle();
+
+    if(subErr) throw subErr;
+    if(sub) {
+      document.getElementById("subStatus").textContent=sub.status||"—";
+      document.getElementById("subStatus").className=(sub.status==="active"?"active":sub.status==="expired"||sub.status==="suspended"?"expired":"pending");
+      document.getElementById("subPlan").textContent=sub.plan_name||"28_day";
+      document.getElementById("subAmount").textContent=money(sub.amount);
+      document.getElementById("subExpiry").textContent=dateText(sub.expires_at);
+    }
+
+  }catch(err){
+    console.error("OWNER DASHBOARD ERROR:",err);
+    showError(err?.message||"Dashboard could not be loaded.");
+    document.getElementById("ordersBox").innerHTML='<div class="empty">Could not load orders.</div>';
+  }
+}
+
+function renderOrders(list){
+  if(!list.length){
+    document.getElementById("ordersBox").innerHTML='<div class="empty">No orders yet.</div>';
+    return;
+  }
+  const html=list.map(o=>`
+    <div class="order">
+      <div><div class="customer">${escapeHtml(o.customer_name||"Customer")}</div><div class="sub">${escapeHtml(o.customer_phone||"")}</div></div>
+      <div><div>${dateText(o.created_at)}</div><div class="sub">Order #${escapeHtml(String(o.id).slice(0,8))}</div></div>
+      <div><strong>${money(o.total_amount)}</strong></div>
+      <div><span class="badge ${statusClass(o.status)}">${escapeHtml(o.status||"new")}</span></div>
+      <div><span class="sub">Shop order</span></div>
+    </div>`).join("");
+  document.getElementById("ordersBox").innerHTML=html;
+}
+
+loadDashboard();
+</script>
+</body>
+</html>
