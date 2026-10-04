@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Shop</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f7f9;
+      color: #111827;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .shop-name {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .shop-description {
+      margin-top: 6px;
+      color: #d1d5db;
+      font-size: 14px;
+    }
+
+    .shop-contact {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #e5e7eb;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 25px 16px 50px;
+    }
+
+    .loading,
+    .error,
+    .empty {
+      background: white;
+      padding: 30px;
+      border-radius: 14px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .error {
+      color: #b91c1c;
+    }
+
+    .section-title {
+      font-size: 22px;
+      margin-bottom: 15px;
+    }
+
+    .categories {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    .category-btn {
+      border: 1px solid #d1d5db;
+      background: white;
+      padding: 10px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .category-btn.active {
+      background: #111827;
+      color: white;
+      border-color: #111827;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .product {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,.06);
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .product:hover {
+      transform: translateY(-3px);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background: #e5e7eb;
+      display: block;
+    }
+
+    .product-info {
+      padding: 15px;
+    }
+
+    .product-name {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .product-description {
+      margin-top: 7px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.4;
+      min-height: 36px;
+    }
+
+    .product-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      gap: 10px;
+    }
+
+    .price {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .stock {
+      font-size: 12px;
+      color: #15803d;
+    }
+
+    .out {
+      color: #b91c1c;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      z-index: 1000;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 850px;
+      max-height: 92vh;
+      overflow-y: auto;
+      background: white;
+      border-radius: 18px;
+      position: relative;
+    }
+
+    .close {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(0,0,0,.65);
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .modal-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .modal-image {
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+      object-fit: cover;
+      background: #e5e7eb;
+    }
+
+    .modal-info {
+      padding: 35px 25px;
+    }
+
+    .modal-name {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .modal-price {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .modal-description {
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 7px;
+    }
+
+    .sizes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .size-btn {
+      min-width: 48px;
+      padding: 10px 14px;
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .size-btn.selected {
+      background: #111827;
+      color: white;
+      border-color: #111827;
+    }
+
+    .quantity {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .quantity button {
+      width: 38px;
+      height: 38px;
+      border: 1px solid #d1d5db;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .quantity-value {
+      min-width: 30px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .buy-btn {
+      width: 100%;
+      border: 0;
+      background: #111827;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 16px;
+      margin-top: 8px;
+    }
+
+    .buy-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .status-box {
+      max-width: 700px;
+      margin: 50px auto;
+      background: white;
+      padding: 35px;
+      border-radius: 18px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .products {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 650px) {
+      .products {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .product-image {
+        height: 170px;
+      }
+
+      .product-info {
+        padding: 12px;
+      }
+
+      .product-name {
+        font-size: 15px;
+      }
+
+      .product-description {
+        font-size: 12px;
+      }
+
+      .price {
+        font-size: 16px;
+      }
+
+      .modal-content {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-image {
+        min-height: 280px;
+        max-height: 350px;
+      }
+
+      .modal-info {
+        padding: 25px 18px;
+      }
+
+      .modal-name {
+        font-size: 24px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .products {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .product-image {
+        height: 145px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="shop-name" id="shopName">Loading...</div>
+      <div class="shop-description" id="shopDescription"></div>
+      <div class="shop-contact" id="shopContact"></div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <div id="loadingBox" class="loading">
+      Loading shop...
+    </div>
+
+    <div id="errorBox" class="error" style="display:none;"></div>
+
+    <div id="shopContent" style="display:none;">
+
+      <h2 class="section-title">Categories</h2>
+
+      <div id="categories" class="categories"></div>
+
+      <h2 class="section-title">Products</h2>
+
+      <div id="products" class="products"></div>
+
+    </div>
+
+  </main>
+
+  <!-- PRODUCT MODAL -->
+
+  <div id="productModal" class="modal-overlay">
+
+    <div class="modal">
+
+      <button class="close" onclick="closeProduct()">×</button>
+
+      <div class="modal-content">
+
+        <img
+          id="modalImage"
+          class="modal-image"
+          src=""
+          alt="Product"
+        >
+
+        <div class="modal-info">
+
+          <div id="modalName" class="modal-name"></div>
+
+          <div id="modalPrice" class="modal-price"></div>
+
+          <div id="modalDescription" class="modal-description"></div>
+
+          <div id="sizeField" class="field" style="display:none;">
+
+            <label>Select Size</label>
+
+            <div id="sizes" class="sizes"></div>
+
+          </div>
+
+          <div class="field">
+
+            <label>Quantity</label>
+
+            <div class="quantity">
+
+              <button onclick="changeQuantity(-1)">−</button>
+
+              <div id="quantityValue" class="quantity-value">1</div>
+
+              <button onclick="changeQuantity(1)">+</button>
+
+            </div>
+
+          </div>
+
+          <button
+            id="buyButton"
+            class="buy-btn"
+            onclick="buyProduct()"
+          >
+            Buy / Order Now
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+<script>
+
+  let shop = null;
+  let categories = [];
+  let products = [];
+  let selectedCategory = "all";
+
+  let selectedProduct = null;
+  let selectedSize = null;
+  let quantity = 1;
+
+
+  /* --------------------------------
+     GET SHOP SLUG
+  -------------------------------- */
+
+  function getShopSlug() {
+
+    const params = new URLSearchParams(window.location.search);
+
+    return params.get("shop") || "kailash-test-shop";
+
+  }
+
+
+  /* --------------------------------
+     ESCAPE HTML
+  -------------------------------- */
+
+  function escapeHtml(value) {
+
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  }
+
+
+  /* --------------------------------
+     MONEY
+  -------------------------------- */
+
+  function money(value) {
+
+    const number = Number(value || 0);
+
+    return "₹" + number.toLocaleString("en-IN");
+
+  }
+
+
+  /* --------------------------------
+     LOAD SHOP
+  -------------------------------- */
+
+  async function loadShop() {
+
+    try {
+
+      const slug = getShopSlug();
+
+      const { data, error } = await supabaseClient
+        .from("shops")
+        .select("*")
+        .eq("slug", slug)
+        .eq("status", "active")
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!data) {
+
+        showError(
+          "Shop not found or this shop is currently unavailable."
+        );
+
+        return;
+
+      }
+
+      shop = data;
+
+      document.title = shop.name || "Shop";
+
+      document.getElementById("shopName").textContent =
+        shop.name || "Shop";
+
+      document.getElementById("shopDescription").textContent =
+        shop.description || "";
+
+      const contact = [];
+
+      if (shop.phone) {
+        contact.push("📞 " + shop.phone);
+      }
+
+      if (shop.whatsapp) {
+        contact.push("WhatsApp: " + shop.whatsapp);
+      }
+
+      if (shop.address) {
+        contact.push("📍 " + shop.address);
+      }
+
+      document.getElementById("shopContact").textContent =
+        contact.join("  •  ");
+
+      await Promise.all([
+        loadCategories(),
+        loadProducts()
+      ]);
+
+      document.getElementById("loadingBox").style.display = "none";
+      document.getElementById("shopContent").style.display = "block";
+
+      renderCategories();
+      renderProducts();
+
+    } catch (error) {
+
+      console.error(error);
+
+      showError(
+        "Unable to load this shop. Please try again."
+      );
+
+    }
+
+  }
+
+
+  /* --------------------------------
+     LOAD CATEGORIES
+  -------------------------------- */
+
+  async function loadCategories() {
+
+    const { data, error } = await supabaseClient
+      .from("categories")
+      .select("*")
+      .eq("shop_id", shop.id)
+      .eq("is_active", true)
+      .order("name");
+
+    if (error) throw error;
+
+    categories = data || [];
+
+  }
+
+
+  /* --------------------------------
+     LOAD PRODUCTS
+  -------------------------------- */
+
+  async function loadProducts() {
+
+    const { data, error } = await supabaseClient
+      .from("products")
+      .select("*")
+      .eq("shop_id", shop.id)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    products = data || [];
+
+  }
+
+
+  /* --------------------------------
+     CATEGORIES
+  -------------------------------- */
+
+  function renderCategories() {
+
+    const box = document.getElementById("categories");
+
+    let html = `
+      <button
+        class="category-btn ${selectedCategory === "all" ? "active" : ""}"
+        onclick="selectCategory('all')"
+      >
+        All Products
+      </button>
+    `;
+
+    categories.forEach(category => {
+
+      html += `
+        <button
+          class="category-btn ${
+            selectedCategory === category.id ? "active" : ""
+          }"
+          onclick="selectCategory('${category.id}')"
+        >
+          ${escapeHtml(category.name)}
+        </button>
+      `;
+
+    });
+
+    box.innerHTML = html;
+
+  }
+
+
+  function selectCategory(categoryId) {
+
+    selectedCategory = categoryId;
+
+    renderCategories();
+    renderProducts();
+
+  }
+
+
+  /* --------------------------------
+     PRODUCTS
+  -------------------------------- */
+
+  function renderProducts() {
+
+    const box = document.getElementById("products");
+
+    let list = products;
+
+    if (selectedCategory !== "all") {
+
+      list = products.filter(
+        product => product.category_id === selectedCategory
+      );
+
+    }
+
+    if (!list.length) {
+
+      box.innerHTML = `
+        <div class="empty" style="grid-column:1/-1;">
+          No products available in this category.
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    box.innerHTML = list.map(product => {
+
+      const outOfStock =
+        Number(product.stock || 0) <= 0;
+
+      const image =
+        product.image_url ||
+        "https://via.placeholder.com/600x500?text=Product";
+
+      return `
+
+        <div
+          class="product"
+          onclick="openProduct('${product.id}')"
+        >
+
+          <img
+            class="product-image"
+            src="${escapeHtml(image)}"
+            alt="${escapeHtml(product.name)}"
+            onerror="this.src='https://via.placeholder.com/600x500?text=Product'"
+          >
+
+          <div class="product-info">
+
+            <div class="product-name">
+              ${escapeHtml(product.name)}
+            </div>
+
+            <div class="product-description">
+              ${escapeHtml(product.description || "")}
+            </div>
+
+            <div class="product-bottom">
+
+              <div>
+
+                <div class="price">
+                  ${money(product.price)}
+                </div>
+
+                <div class="stock ${outOfStock ? "out" : ""}">
+                  ${
+                    outOfStock
+                      ? "Out of Stock"
+                      : "In Stock"
+                  }
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+  }
+
+
+  /* --------------------------------
+     OPEN PRODUCT
+  -------------------------------- */
+
+  function openProduct(productId) {
+
+    const product =
+      products.find(p => p.id === productId);
+
+    if (!product) return;
+
+    selectedProduct = product;
+    selectedSize = null;
+    quantity = 1;
+
+    document.getElementById("modalName").textContent =
+      product.name || "Product";
+
+    document.getElementById("modalPrice").textContent =
+      money(product.price);
+
+    document.getElementById("modalDescription").textContent =
+      product.description || "No description available.";
+
+    document.getElementById("quantityValue").textContent =
+      quantity;
+
+    const image =
+      product.image_url ||
+      "https://via.placeholder.com/600x500?text=Product";
+
+    document.getElementById("modalImage").src = image;
+
+
+    /* SIZES */
+
+    const sizeField =
+      document.getElementById("sizeField");
+
+    const sizesBox =
+      document.getElementById("sizes");
+
+    let sizes = [];
+
+    if (Array.isArray(product.sizes)) {
+
+      sizes = product.sizes;
+
+    } else if (
+      product.sizes &&
+      typeof product.sizes === "object"
+    ) {
+
+      sizes = Object.keys(product.sizes);
+
+    }
+
+
+    if (product.has_sizes && sizes.length) {
+
+      sizeField.style.display = "block";
+
+      sizesBox.innerHTML = sizes.map(size => `
+
+        <button
+          class="size-btn"
+          onclick="selectSize('${escapeHtml(size)}', this)"
+        >
+          ${escapeHtml(size)}
+        </button>
+
+      `).join("");
+
+    } else {
+
+      sizeField.style.display = "none";
+
+      sizesBox.innerHTML = "";
+
+    }
+
+
+    const buyButton =
+      document.getElementById("buyButton");
+
+    if (Number(product.stock || 0) <= 0) {
+
+      buyButton.disabled = true;
+      buyButton.textContent = "Out of Stock";
+
+    } else {
+
+      buyButton.disabled = false;
+      buyButton.textContent = "Buy / Order Now";
+
+    }
+
+
+    document
+      .getElementById("productModal")
+      .classList.add("show");
+
+  }
+
+
+  /* --------------------------------
+     CLOSE PRODUCT
+  -------------------------------- */
+
+  function closeProduct() {
+
+    document
+      .getElementById("productModal")
+      .classList.remove("show");
+
+    selectedProduct = null;
+    selectedSize = null;
+
+  }
+
+
+  /* --------------------------------
+     SELECT SIZE
+  -------------------------------- */
+
+  function selectSize(size, button) {
+
+    selectedSize = size;
+
+    document
+      .querySelectorAll(".size-btn")
+      .forEach(btn => {
+        btn.classList.remove("selected");
+      });
+
+    button.classList.add("selected");
+
+  }
+
+
+  /* --------------------------------
+     QUANTITY
+  -------------------------------- */
+
+  function changeQuantity(change) {
+
+    if (!selectedProduct) return;
+
+    const stock =
+      Number(selectedProduct.stock || 0);
+
+    quantity += change;
+
+    if (quantity < 1) {
+      quantity = 1;
+    }
+
+    if (quantity > stock) {
+      quantity = stock;
+    }
+
+    document.getElementById("quantityValue").textContent =
+      quantity;
+
+  }
+
+
+  /* --------------------------------
+     BUY
+  -------------------------------- */
+
+  function buyProduct() {
+
+    if (!selectedProduct) return;
+
+    if (Number(selectedProduct.stock || 0) <= 0) {
+
+      alert("This product is out of stock.");
+
+      return;
+
+    }
+
+
+    if (
+      selectedProduct.has_sizes &&
+      selectedProduct.sizes &&
+      !selectedSize
+    ) {
+
+      alert("Please select a size.");
+
+      return;
+
+    }
+
+
+    /*
+      NEXT STEP:
+      Customer order form will be connected here.
+    */
+
+    alert(
+      "Product selected successfully!\n\n" +
+      "Product: " + selectedProduct.name + "\n" +
+      "Quantity: " + quantity +
+      (
+        selectedSize
+          ? "\nSize: " + selectedSize
+          : ""
+      ) +
+      "\n\nNext step: Customer details & order."
+    );
+
+  }
+
+
+  /* --------------------------------
+     ERROR
+  -------------------------------- */
+
+  function showError(message) {
+
+    document.getElementById("loadingBox").style.display =
+      "none";
+
+    const box =
+      document.getElementById("errorBox");
+
+    box.textContent = message;
+    box.style.display = "block";
+
+  }
+
+
+  /* --------------------------------
+     START
+  -------------------------------- */
+
+  loadShop();
+
+</script>
+
+</body>
+</html>
