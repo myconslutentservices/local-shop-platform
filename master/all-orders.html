@@ -1,0 +1,2564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>All Orders | Master Panel</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f5f7fb;
+      color: #172033;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+    }
+
+    .topbar {
+      background: #111827;
+      color: #fff;
+      padding: 16px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .brand small {
+      display: block;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 400;
+      margin-top: 3px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .top-btn {
+      background: #374151;
+      color: white;
+      padding: 9px 13px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .top-btn:hover {
+      background: #4b5563;
+    }
+
+    .logout-btn {
+      background: #dc2626;
+    }
+
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
+
+    .container {
+      max-width: 1500px;
+      margin: auto;
+      padding: 22px;
+    }
+
+    .page-title {
+      margin-bottom: 20px;
+    }
+
+    .page-title h1 {
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+
+    .page-title p {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    /* STATS */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 17px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.04);
+    }
+
+    .stat-label {
+      color: #64748b;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    /* ERROR */
+
+    .error-box {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 13px;
+    }
+
+    /* FILTERS */
+
+    .filter-box {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.04);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr;
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 12px;
+      color: #475569;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      padding: 10px 11px;
+      background: #fff;
+      outline: none;
+      font-size: 14px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #2563eb;
+    }
+
+    /* HEADER */
+
+    .orders-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    .orders-header h2 {
+      font-size: 19px;
+    }
+
+    .result-count {
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    /* TABLE */
+
+    .table-wrapper {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      overflow-x: auto;
+      box-shadow: 0 4px 16px rgba(0,0,0,.04);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1150px;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #475569;
+      font-size: 12px;
+      text-align: left;
+      padding: 13px;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 13px;
+      border-bottom: 1px solid #eef2f7;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .order-id {
+      font-weight: 700;
+      color: #2563eb;
+    }
+
+    .shop-text {
+      font-weight: 700;
+    }
+
+    .customer-name {
+      font-weight: 700;
+    }
+
+    .phone {
+      color: #64748b;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .amount {
+      font-weight: 700;
+    }
+
+    /* BADGES */
+
+    .badge {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-new {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .status-confirmed {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-preparing {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-out {
+      background: #ede9fe;
+      color: #6d28d9;
+    }
+
+    .status-delivered {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .payment-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .payment-paid {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .payment-failed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .payment-refunded {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    /* CONTROLS */
+
+    .control-select {
+      min-width: 145px;
+      padding: 7px 8px;
+      font-size: 12px;
+    }
+
+    .payment-select {
+      min-width: 110px;
+    }
+
+    .view-btn {
+      background: #2563eb;
+      color: white;
+      padding: 8px 11px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .view-btn:hover {
+      background: #1d4ed8;
+    }
+
+    /* EMPTY */
+
+    .message-box {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 40px 20px;
+      text-align: center;
+      color: #64748b;
+    }
+
+    /* MODAL */
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,.68);
+      z-index: 100;
+      padding: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 650px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: white;
+      border-radius: 17px;
+      padding: 22px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .modal-header h3 {
+      font-size: 20px;
+    }
+
+    .close-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      font-size: 18px;
+    }
+
+    .detail-section {
+      border: 1px solid #e5e7eb;
+      border-radius: 11px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .detail-section h4 {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .detail-item {
+      background: #f8fafc;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .detail-item span {
+      display: block;
+      color: #64748b;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    .detail-item strong {
+      font-size: 13px;
+      word-break: break-word;
+    }
+
+    /* ITEMS */
+
+    .items-table {
+      width: 100%;
+      min-width: 0;
+      border-collapse: collapse;
+    }
+
+    .items-table th,
+    .items-table td {
+      padding: 9px 7px;
+      font-size: 12px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 15px;
+    }
+
+    .close-main {
+      background: #e2e8f0;
+      color: #172033;
+      padding: 10px 16px;
+      border-radius: 9px;
+      font-weight: 700;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1150px) {
+      .stats {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .filter-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .container {
+        padding: 15px;
+      }
+
+      .page-title h1 {
+        font-size: 23px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modal {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+
+  <header class="topbar">
+
+    <div class="brand">
+      Pro Master Panel
+      <small>All Orders Management</small>
+    </div>
+
+    <div class="top-actions">
+
+      <button class="top-btn" onclick="goDashboard()">
+        Dashboard
+      </button>
+
+      <button class="top-btn" onclick="goShops()">
+        Shops
+      </button>
+
+      <button class="top-btn logout-btn" onclick="logout()">
+        Logout
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <main class="container">
+
+    <div class="page-title">
+
+      <h1>All Orders</h1>
+
+      <p>
+        View and manage customer orders from all shops.
+      </p>
+
+    </div>
+
+
+    <div id="errorBox" class="error-box"></div>
+
+
+    <!-- STATS -->
+
+    <section class="stats">
+
+      <div class="stat-card">
+        <div class="stat-label">Total Orders</div>
+        <div class="stat-value" id="totalOrders">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Today's Orders</div>
+        <div class="stat-value" id="todayOrders">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Today's Revenue</div>
+        <div class="stat-value" id="todayRevenue">₹0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Cancelled Orders</div>
+        <div class="stat-value" id="cancelledOrders">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Pending Payments</div>
+        <div class="stat-value" id="pendingPayments">0</div>
+      </div>
+
+    </section>
+
+
+    <!-- FILTERS -->
+
+    <section class="filter-box">
+
+      <div class="filter-grid">
+
+        <div class="field">
+
+          <label>
+            Search
+          </label>
+
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Customer, phone or Order ID..."
+            oninput="applyFilters()"
+          />
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Shop
+          </label>
+
+          <select
+            id="shopFilter"
+            onchange="applyFilters()"
+          >
+            <option value="">
+              All Shops
+            </option>
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Order Status
+          </label>
+
+          <select
+            id="statusFilter"
+            onchange="applyFilters()"
+          >
+
+            <option value="">
+              All Status
+            </option>
+
+            <option value="new">
+              New
+            </option>
+
+            <option value="confirmed">
+              Confirmed
+            </option>
+
+            <option value="preparing">
+              Preparing
+            </option>
+
+            <option value="out_for_delivery">
+              Out for Delivery
+            </option>
+
+            <option value="delivered">
+              Delivered
+            </option>
+
+            <option value="cancelled">
+              Cancelled
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Payment Status
+          </label>
+
+          <select
+            id="paymentFilter"
+            onchange="applyFilters()"
+          >
+
+            <option value="">
+              All Payments
+            </option>
+
+            <option value="pending">
+              Pending
+            </option>
+
+            <option value="paid">
+              Paid
+            </option>
+
+            <option value="failed">
+              Failed
+            </option>
+
+            <option value="refunded">
+              Refunded
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ORDERS -->
+
+    <div class="orders-header">
+
+      <h2>
+        Orders
+      </h2>
+
+      <div
+        class="result-count"
+        id="resultCount"
+      >
+        0 orders
+      </div>
+
+    </div>
+
+
+    <div id="ordersContainer">
+
+      <div class="message-box">
+        Loading orders...
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- ORDER DETAIL MODAL -->
+
+  <div
+    class="modal-overlay"
+    id="orderModal"
+  >
+
+    <div class="modal">
+
+      <div class="modal-header">
+
+        <h3>
+          Order Details
+        </h3>
+
+        <button
+          class="close-btn"
+          onclick="closeOrderModal()"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div id="orderDetails">
+
+        Loading...
+
+      </div>
+
+
+      <div class="modal-footer">
+
+        <button
+          class="close-main"
+          onclick="closeOrderModal()"
+        >
+          Close
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    /* =====================================================
+       GLOBAL DATA
+    ===================================================== */
+
+    let allOrders = [];
+    let allShops = [];
+
+
+    /* =====================================================
+       HELPERS
+    ===================================================== */
+
+    function showError(message) {
+
+      const box =
+        document.getElementById("errorBox");
+
+      box.textContent = message;
+      box.style.display = "block";
+
+    }
+
+
+    function clearError() {
+
+      const box =
+        document.getElementById("errorBox");
+
+      box.textContent = "";
+      box.style.display = "none";
+
+    }
+
+
+    function formatPrice(value) {
+
+      return "₹" +
+        Number(value || 0).toLocaleString(
+          "en-IN",
+          {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+          }
+        );
+
+    }
+
+
+    function escapeHtml(value) {
+
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+
+    function formatDateTime(value) {
+
+      if (!value) return "-";
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return "-";
+      }
+
+      return date.toLocaleString(
+        "en-IN",
+        {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+      );
+
+    }
+
+
+    function getShop(shopId) {
+
+      return allShops.find(
+        shop => shop.id === shopId
+      );
+
+    }
+
+
+    /* =====================================================
+       NAVIGATION
+    ===================================================== */
+
+    function goDashboard() {
+
+      window.location.href =
+        "dashboard.html";
+
+    }
+
+
+    function goShops() {
+
+      window.location.href =
+        "shops.html";
+
+    }
+
+
+    async function logout() {
+
+      await supabaseClient.auth.signOut();
+
+      window.location.href =
+        "login.html";
+
+    }
+
+
+    /* =====================================================
+       MASTER AUTH
+    ===================================================== */
+
+    async function verifyMaster() {
+
+      const {
+        data: {
+          session
+        }
+      } =
+        await supabaseClient.auth.getSession();
+
+
+      if (!session) {
+
+        window.location.href =
+          "login.html";
+
+        return false;
+
+      }
+
+
+      const {
+        data: owner,
+        error
+      } =
+        await supabaseClient
+          .from("owners")
+          .select(
+            "id, full_name, role, shop_id"
+          )
+          .eq(
+            "id",
+            session.user.id
+          )
+          .maybeSingle();
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+      if (
+        !owner ||
+        owner.role !== "master"
+      ) {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+          "login.html";
+
+        return false;
+
+      }
+
+
+      return true;
+
+    }
+
+
+    /* =====================================================
+       LOAD SHOPS
+    ===================================================== */
+
+    async function loadShops() {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("shops")
+          .select(
+            "id, name, slug"
+          )
+          .order(
+            "name",
+            {
+              ascending: true
+            }
+          );
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+      allShops =
+        data || [];
+
+
+      const select =
+        document.getElementById(
+          "shopFilter"
+        );
+
+
+      select.innerHTML =
+        `<option value="">All Shops</option>`;
+
+
+      allShops.forEach(shop => {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          shop.id;
+
+        option.textContent =
+          shop.name ||
+          shop.slug ||
+          "Unnamed Shop";
+
+        select.appendChild(
+          option
+        );
+
+      });
+
+    }
+
+
+    /* =====================================================
+       LOAD ORDERS
+    ===================================================== */
+
+    async function loadOrders() {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("orders")
+          .select(`
+            id,
+            shop_id,
+            customer_name,
+            customer_phone,
+            customer_address,
+            customer_landmark,
+            customer_pincode,
+            landmark,
+            pincode,
+            total_amount,
+            status,
+            payment_status,
+            notes,
+            created_at,
+            updated_at
+          `)
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+      allOrders =
+        data || [];
+
+
+      updateStats();
+
+      applyFilters();
+
+    }
+
+
+    /* =====================================================
+       TODAY CHECK
+    ===================================================== */
+
+    function isToday(dateValue) {
+
+      if (!dateValue) {
+        return false;
+      }
+
+
+      const date =
+        new Date(dateValue);
+
+
+      const now =
+        new Date();
+
+
+      return (
+        date.getFullYear() ===
+          now.getFullYear() &&
+
+        date.getMonth() ===
+          now.getMonth() &&
+
+        date.getDate() ===
+          now.getDate()
+      );
+
+    }
+
+
+    /* =====================================================
+       STATS
+    ===================================================== */
+
+    function updateStats() {
+
+      const total =
+        allOrders.length;
+
+
+      const today =
+        allOrders.filter(
+          order =>
+            isToday(order.created_at)
+        );
+
+
+      const cancelled =
+        allOrders.filter(
+          order =>
+            order.status ===
+            "cancelled"
+        );
+
+
+      const pendingPayments =
+        allOrders.filter(
+          order =>
+            order.payment_status ===
+            "pending"
+        );
+
+
+      const todayRevenue =
+        today.reduce(
+          (sum, order) => {
+
+            if (
+              order.payment_status === "paid" &&
+              order.status !== "cancelled"
+            ) {
+
+              return (
+                sum +
+                Number(
+                  order.total_amount || 0
+                )
+              );
+
+            }
+
+            return sum;
+
+          },
+          0
+        );
+
+
+      document.getElementById(
+        "totalOrders"
+      ).textContent =
+        total;
+
+
+      document.getElementById(
+        "todayOrders"
+      ).textContent =
+        today.length;
+
+
+      document.getElementById(
+        "todayRevenue"
+      ).textContent =
+        formatPrice(
+          todayRevenue
+        );
+
+
+      document.getElementById(
+        "cancelledOrders"
+      ).textContent =
+        cancelled.length;
+
+
+      document.getElementById(
+        "pendingPayments"
+      ).textContent =
+        pendingPayments.length;
+
+    }
+
+
+    /* =====================================================
+       FILTERS
+    ===================================================== */
+
+    function applyFilters() {
+
+      const search =
+        document.getElementById(
+          "searchInput"
+        )
+        .value
+        .trim()
+        .toLowerCase();
+
+
+      const shopId =
+        document.getElementById(
+          "shopFilter"
+        ).value;
+
+
+      const status =
+        document.getElementById(
+          "statusFilter"
+        ).value;
+
+
+      const payment =
+        document.getElementById(
+          "paymentFilter"
+        ).value;
+
+
+      let filtered =
+        [...allOrders];
+
+
+      if (search) {
+
+        filtered =
+          filtered.filter(
+            order => {
+
+              const orderId =
+                String(
+                  order.id || ""
+                ).toLowerCase();
+
+
+              const customer =
+                String(
+                  order.customer_name || ""
+                ).toLowerCase();
+
+
+              const phone =
+                String(
+                  order.customer_phone || ""
+                ).toLowerCase();
+
+
+              return (
+                orderId.includes(search) ||
+                customer.includes(search) ||
+                phone.includes(search)
+              );
+
+            }
+          );
+
+      }
+
+
+      if (shopId) {
+
+        filtered =
+          filtered.filter(
+            order =>
+              order.shop_id === shopId
+          );
+
+      }
+
+
+      if (status) {
+
+        filtered =
+          filtered.filter(
+            order =>
+              order.status === status
+          );
+
+      }
+
+
+      if (payment) {
+
+        filtered =
+          filtered.filter(
+            order =>
+              order.payment_status === payment
+          );
+
+      }
+
+
+      renderOrders(filtered);
+
+    }
+
+
+    /* =====================================================
+       STATUS LABEL
+    ===================================================== */
+
+    function getStatusLabel(status) {
+
+      const labels = {
+
+        new:
+          "New",
+
+        confirmed:
+          "Confirmed",
+
+        preparing:
+          "Preparing",
+
+        out_for_delivery:
+          "Out for Delivery",
+
+        delivered:
+          "Delivered",
+
+        cancelled:
+          "Cancelled"
+
+      };
+
+
+      return labels[status] ||
+        status ||
+        "Unknown";
+
+    }
+
+
+    function getStatusClass(status) {
+
+      const classes = {
+
+        new:
+          "status-new",
+
+        confirmed:
+          "status-confirmed",
+
+        preparing:
+          "status-preparing",
+
+        out_for_delivery:
+          "status-out",
+
+        delivered:
+          "status-delivered",
+
+        cancelled:
+          "status-cancelled"
+
+      };
+
+
+      return classes[status] ||
+        "status-new";
+
+    }
+
+
+    function getPaymentLabel(status) {
+
+      const labels = {
+
+        pending:
+          "Pending",
+
+        paid:
+          "Paid",
+
+        failed:
+          "Failed",
+
+        refunded:
+          "Refunded"
+
+      };
+
+
+      return labels[status] ||
+        status ||
+        "Pending";
+
+    }
+
+
+    function getPaymentClass(status) {
+
+      const classes = {
+
+        pending:
+          "payment-pending",
+
+        paid:
+          "payment-paid",
+
+        failed:
+          "payment-failed",
+
+        refunded:
+          "payment-refunded"
+
+      };
+
+
+      return classes[status] ||
+        "payment-pending";
+
+    }
+
+
+    /* =====================================================
+       RENDER ORDERS
+    ===================================================== */
+
+    function renderOrders(orders) {
+
+      const container =
+        document.getElementById(
+          "ordersContainer"
+        );
+
+
+      document.getElementById(
+        "resultCount"
+      ).textContent =
+        `${orders.length} order${orders.length === 1 ? "" : "s"}`;
+
+
+      if (!orders.length) {
+
+        container.innerHTML = `
+          <div class="message-box">
+            No orders found.
+          </div>
+        `;
+
+        return;
+
+      }
+
+
+      let html = `
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>Order</th>
+
+                <th>Shop</th>
+
+                <th>Customer</th>
+
+                <th>Amount</th>
+
+                <th>Order Status</th>
+
+                <th>Payment</th>
+
+                <th>Date</th>
+
+                <th>Action</th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+      `;
+
+
+      orders.forEach(order => {
+
+        const shop =
+          getShop(order.shop_id);
+
+
+        const shortId =
+          String(order.id)
+            .slice(0, 8)
+            .toUpperCase();
+
+
+        html += `
+
+          <tr>
+
+            <td>
+
+              <div class="order-id">
+                #${escapeHtml(shortId)}
+              </div>
+
+              <div class="phone">
+                ${escapeHtml(
+                  String(order.id)
+                )}
+              </div>
+
+            </td>
+
+
+            <td>
+
+              <div class="shop-text">
+                ${escapeHtml(
+                  shop?.name ||
+                  shop?.slug ||
+                  "Unknown Shop"
+                )}
+              </div>
+
+            </td>
+
+
+            <td>
+
+              <div class="customer-name">
+                ${escapeHtml(
+                  order.customer_name ||
+                  "-"
+                )}
+              </div>
+
+              <div class="phone">
+                ${escapeHtml(
+                  order.customer_phone ||
+                  "-"
+                )}
+              </div>
+
+            </td>
+
+
+            <td>
+
+              <div class="amount">
+                ${formatPrice(
+                  order.total_amount
+                )}
+              </div>
+
+            </td>
+
+
+            <td>
+
+              <select
+                class="control-select"
+                onchange="changeOrderStatus(
+                  '${order.id}',
+                  this.value
+                )"
+              >
+
+                <option
+                  value="new"
+                  ${
+                    order.status === "new"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  New
+                </option>
+
+                <option
+                  value="confirmed"
+                  ${
+                    order.status === "confirmed"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  Confirmed
+                </option>
+
+                <option
+                  value="preparing"
+                  ${
+                    order.status === "preparing"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  Preparing
+                </option>
+
+                <option
+                  value="out_for_delivery"
+                  ${
+                    order.status === "out_for_delivery"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  Out for Delivery
+                </option>
+
+                <option
+                  value="delivered"
+                  ${
+                    order.status === "delivered"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  Delivered
+                </option>
+
+                <option
+                  value="cancelled"
+                  ${
+                    order.status === "cancelled"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  Cancelled
+                </option>
+
+              </select>
+
+              <div style="margin-top:6px;">
+                <span class="badge ${
+                  getStatusClass(order.status)
+                }">
+                  ${getStatusLabel(order.status)}
+                </span>
+              </div>
+
+            </td>
+
+
+            <td>
+
+              <select
+                class="control-select payment-select"
+                onchange="changePaymentStatus(
+                  '${order.id}',
+                  this.value
+                )"
+              >
+
+                <option
+                  value="pending"
+                  ${
+                    order.payment_status === "pending"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  Pending
+                </option>
+
+                <option
+                  value="paid"
+                  ${
+                    order.payment_status === "paid"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  Paid
+                </option>
+
+                <option
+                  value="failed"
+                  ${
+                    order.payment_status === "failed"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  Failed
+                </option>
+
+                <option
+                  value="refunded"
+                  ${
+                    order.payment_status === "refunded"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  Refunded
+                </option>
+
+              </select>
+
+              <div style="margin-top:6px;">
+                <span class="badge ${
+                  getPaymentClass(
+                    order.payment_status
+                  )
+                }">
+                  ${getPaymentLabel(
+                    order.payment_status
+                  )}
+                </span>
+              </div>
+
+            </td>
+
+
+            <td>
+
+              ${formatDateTime(
+                order.created_at
+              )}
+
+            </td>
+
+
+            <td>
+
+              <button
+                class="view-btn"
+                onclick="viewOrder('${order.id}')"
+              >
+                View
+              </button>
+
+            </td>
+
+          </tr>
+
+        `;
+
+      });
+
+
+      html += `
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      `;
+
+
+      container.innerHTML =
+        html;
+
+    }
+
+
+    /* =====================================================
+       CHANGE ORDER STATUS
+    ===================================================== */
+
+    async function changeOrderStatus(
+      orderId,
+      newStatus
+    ) {
+
+      clearError();
+
+
+      const order =
+        allOrders.find(
+          item =>
+            item.id === orderId
+        );
+
+
+      if (!order) {
+
+        showError(
+          "Order not found."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .from("orders")
+            .update({
+              status: newStatus
+            })
+            .eq("id", orderId);
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        await loadOrders();
+
+      } catch (error) {
+
+        console.error(
+          "ORDER STATUS ERROR:",
+          error
+        );
+
+        showError(
+          error?.message ||
+          "Order status could not be updated."
+        );
+
+        await loadOrders();
+
+      }
+
+    }
+
+
+    /* =====================================================
+       CHANGE PAYMENT STATUS
+    ===================================================== */
+
+    async function changePaymentStatus(
+      orderId,
+      newPaymentStatus
+    ) {
+
+      clearError();
+
+
+      const order =
+        allOrders.find(
+          item =>
+            item.id === orderId
+        );
+
+
+      if (!order) {
+
+        showError(
+          "Order not found."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .from("orders")
+            .update({
+              payment_status:
+                newPaymentStatus
+            })
+            .eq("id", orderId);
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        await loadOrders();
+
+      } catch (error) {
+
+        console.error(
+          "PAYMENT STATUS ERROR:",
+          error
+        );
+
+        showError(
+          error?.message ||
+          "Payment status could not be updated."
+        );
+
+        await loadOrders();
+
+      }
+
+    }
+
+
+    /* =====================================================
+       VIEW ORDER
+    ===================================================== */
+
+    async function viewOrder(orderId) {
+
+      clearError();
+
+
+      const order =
+        allOrders.find(
+          item =>
+            item.id === orderId
+        );
+
+
+      if (!order) {
+
+        showError(
+          "Order not found."
+        );
+
+        return;
+
+      }
+
+
+      const modal =
+        document.getElementById(
+          "orderModal"
+        );
+
+
+      const details =
+        document.getElementById(
+          "orderDetails"
+        );
+
+
+      modal.style.display =
+        "flex";
+
+
+      details.innerHTML = `
+        <div class="message-box">
+          Loading order details...
+        </div>
+      `;
+
+
+      try {
+
+        const {
+          data: items,
+          error
+        } =
+          await supabaseClient
+            .from("order_items")
+            .select(`
+              product_id,
+              product_name,
+              price,
+              quantity,
+              size,
+              variant
+            `)
+            .eq(
+              "order_id",
+              orderId
+            );
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        renderOrderDetails(
+          order,
+          items || []
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "ORDER DETAILS ERROR:",
+          error
+        );
+
+
+        details.innerHTML = `
+
+          <div class="message-box">
+            Could not load order items.
+            <br><br>
+            ${escapeHtml(
+              error?.message ||
+              "Unknown error"
+            )}
+          </div>
+
+        `;
+
+      }
+
+    }
+
+
+    /* =====================================================
+       RENDER ORDER DETAILS
+    ===================================================== */
+
+    function renderOrderDetails(
+      order,
+      items
+    ) {
+
+      const shop =
+        getShop(order.shop_id);
+
+
+      let itemsHtml = "";
+
+
+      if (!items.length) {
+
+        itemsHtml = `
+          <tr>
+            <td colspan="6">
+              No order items found.
+            </td>
+          </tr>
+        `;
+
+      } else {
+
+        items.forEach(item => {
+
+          const lineTotal =
+            Number(item.price || 0) *
+            Number(item.quantity || 0);
+
+
+          itemsHtml += `
+
+            <tr>
+
+              <td>
+                ${escapeHtml(
+                  item.product_name || "-"
+                )}
+              </td>
+
+              <td>
+                ${formatPrice(
+                  item.price
+                )}
+              </td>
+
+              <td>
+                ${item.quantity || 0}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  item.size || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  item.variant || "-"
+                )}
+              </td>
+
+              <td>
+                ${formatPrice(
+                  lineTotal
+                )}
+              </td>
+
+            </tr>
+
+          `;
+
+        });
+
+      }
+
+
+      const address =
+        order.customer_address ||
+        "-";
+
+
+      const landmark =
+        order.landmark ||
+        order.customer_landmark ||
+        "-";
+
+
+      const pincode =
+        order.pincode ||
+        order.customer_pincode ||
+        "-";
+
+
+      document.getElementById(
+        "orderDetails"
+      ).innerHTML = `
+
+        <div class="detail-section">
+
+          <h4>
+            Order Information
+          </h4>
+
+          <div class="detail-grid">
+
+            <div class="detail-item">
+
+              <span>Order ID</span>
+
+              <strong>
+                ${escapeHtml(
+                  order.id
+                )}
+              </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+              <span>Shop</span>
+
+              <strong>
+                ${escapeHtml(
+                  shop?.name ||
+                  shop?.slug ||
+                  "Unknown Shop"
+                )}
+              </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+              <span>Order Status</span>
+
+              <strong>
+                <span class="badge ${
+                  getStatusClass(
+                    order.status
+                  )
+                }">
+                  ${getStatusLabel(
+                    order.status
+                  )}
+                </span>
+              </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+              <span>Payment Status</span>
+
+              <strong>
+                <span class="badge ${
+                  getPaymentClass(
+                    order.payment_status
+                  )
+                }">
+                  ${getPaymentLabel(
+                    order.payment_status
+                  )}
+                </span>
+              </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+              <span>Total Amount</span>
+
+              <strong>
+                ${formatPrice(
+                  order.total_amount
+                )}
+              </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+              <span>Created</span>
+
+              <strong>
+                ${formatDateTime(
+                  order.created_at
+                )}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="detail-section">
+
+          <h4>
+            Customer Details
+          </h4>
+
+          <div class="detail-grid">
+
+            <div class="detail-item">
+
+              <span>Name</span>
+
+              <strong>
+                ${escapeHtml(
+                  order.customer_name ||
+                  "-"
+                )}
+              </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+              <span>Phone</span>
+
+              <strong>
+                ${escapeHtml(
+                  order.customer_phone ||
+                  "-"
+                )}
+              </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+              <span>Address</span>
+
+              <strong>
+                ${escapeHtml(
+                  address
+                )}
+              </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+              <span>Landmark</span>
+
+              <strong>
+                ${escapeHtml(
+                  landmark
+                )}
+              </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+              <span>Pincode</span>
+
+              <strong>
+                ${escapeHtml(
+                  pincode
+                )}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="detail-section">
+
+          <h4>
+            Ordered Products
+          </h4>
+
+          <div style="overflow-x:auto;">
+
+            <table class="items-table">
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Product
+                  </th>
+
+                  <th>
+                    Price
+                  </th>
+
+                  <th>
+                    Qty
+                  </th>
+
+                  <th>
+                    Size
+                  </th>
+
+                  <th>
+                    Variant
+                  </th>
+
+                  <th>
+                    Total
+                  </th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                ${itemsHtml}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+
+        ${
+          order.notes
+            ? `
+              <div class="detail-section">
+
+                <h4>
+                  Notes
+                </h4>
+
+                <div>
+                  ${escapeHtml(
+                    order.notes
+                  )}
+                </div>
+
+              </div>
+            `
+            : ""
+        }
+
+      `;
+
+    }
+
+
+    /* =====================================================
+       CLOSE MODAL
+    ===================================================== */
+
+    function closeOrderModal() {
+
+      document.getElementById(
+        "orderModal"
+      ).style.display =
+        "none";
+
+    }
+
+
+    /* =====================================================
+       URL SHOP FILTER
+    ===================================================== */
+
+    function applyUrlFilter() {
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+
+      const shopId =
+        params.get("shop_id");
+
+
+      if (!shopId) return;
+
+
+      const exists =
+        allShops.some(
+          shop =>
+            shop.id === shopId
+        );
+
+
+      if (!exists) return;
+
+
+      document.getElementById(
+        "shopFilter"
+      ).value =
+        shopId;
+
+
+      applyFilters();
+
+    }
+
+
+    /* =====================================================
+       START
+    ===================================================== */
+
+    async function startPage() {
+
+      clearError();
+
+
+      try {
+
+        const isMaster =
+          await verifyMaster();
+
+
+        if (!isMaster) return;
+
+
+        await loadShops();
+
+        await loadOrders();
+
+        applyUrlFilter();
+
+
+      } catch (error) {
+
+        console.error(
+          "ALL ORDERS ERROR:",
+          error
+        );
+
+
+        showError(
+          error?.message ||
+          "Orders could not be loaded."
+        );
+
+      }
+
+    }
+
+
+    /* =====================================================
+       OUTSIDE MODAL CLICK
+    ===================================================== */
+
+    document.getElementById(
+      "orderModal"
+    ).addEventListener(
+      "click",
+      function(event) {
+
+        if (
+          event.target ===
+          document.getElementById(
+            "orderModal"
+          )
+        ) {
+
+          closeOrderModal();
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       PAGE LOAD
+    ===================================================== */
+
+    window.addEventListener(
+      "load",
+      startPage
+    );
+
+  </script>
+
+</body>
+</html>
