@@ -36,6 +36,40 @@
     .loading{padding:35px;text-align:center;color:#94a3b8}
     @media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.info{grid-template-columns:1fr}}
     @media(max-width:520px){.topbar{padding:0 14px}.shop-name{display:none}.wrap{padding:16px}.grid{grid-template-columns:1fr 1fr;gap:10px}.card{padding:14px}.stat{font-size:22px}.welcome h1{font-size:23px}}
+  
+    .products-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+    .primary{border:1px solid #2563eb;background:#2563eb;color:#fff;border-radius:9px;padding:9px 14px;cursor:pointer;font-weight:600}
+    .primary:hover{background:#1d4ed8}
+    .search{flex:1;min-width:190px;border:1px solid #334155;background:#0f172a;color:#fff;border-radius:9px;padding:10px 12px;outline:none}
+    .search::placeholder{color:#64748b}
+    .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .product-card{background:#111827;border:1px solid #263244;border-radius:14px;overflow:hidden}
+    .product-img{height:170px;background:#0f172a;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:12px}
+    .product-img img{width:100%;height:100%;object-fit:cover}
+    .product-body{padding:14px}
+    .product-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .product-name{font-weight:700;font-size:16px}
+    .product-price{font-weight:700;color:#86efac;white-space:nowrap}
+    .product-meta{color:#94a3b8;font-size:12px;margin-top:7px;line-height:1.5}
+    .product-actions{display:flex;gap:8px;margin-top:13px}
+    .secondary{border:1px solid #334155;background:#1e293b;color:#fff;border-radius:8px;padding:8px 11px;cursor:pointer;font-size:12px}
+    .danger{border:1px solid #7f1d1d;background:#450a0a;color:#fecaca;border-radius:8px;padding:8px 11px;cursor:pointer;font-size:12px}
+    .out{color:#fca5a5}.in{color:#86efac}.hidden-status{color:#fbbf24}
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.68);z-index:50;padding:20px;overflow:auto}
+    .modal.show{display:flex;align-items:center;justify-content:center}
+    .modal-box{width:min(650px,100%);background:#111827;border:1px solid #334155;border-radius:15px;padding:20px}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .close{border:0;background:transparent;color:#94a3b8;font-size:25px;cursor:pointer}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}
+    .field label{font-size:12px;color:#94a3b8}
+    .field input,.field textarea,.field select{width:100%;border:1px solid #334155;background:#0f172a;color:#fff;border-radius:8px;padding:10px;outline:none}
+    .field textarea{min-height:90px;resize:vertical}
+    .checks{display:flex;gap:12px;flex-wrap:wrap}.check{display:flex;align-items:center;gap:6px;font-size:12px;color:#cbd5e1}
+    .modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:16px}
+    @media(max-width:850px){.product-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:560px){.product-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal{padding:10px}}
+
   </style>
 </head>
 <body>
@@ -59,7 +93,7 @@
       <div class="card"><div class="stat-label">Today's Orders</div><div class="stat" id="todayOrders">0</div></div>
       <div class="card"><div class="stat-label">Today's Revenue</div><div class="stat" id="todayRevenue">₹0</div></div>
       <div class="card"><div class="stat-label">Total Orders</div><div class="stat" id="totalOrders">0</div></div>
-      <div class="card"><div class="stat-label">Products</div><div class="stat" id="totalProducts">0</div></div>
+      <div class="card" style="cursor:pointer" onclick="document.getElementById('productsSection').scrollIntoView({behavior:'smooth'})"><div class="stat-label">Products</div><div class="stat" id="totalProducts">0</div><div class="muted">Manage products →</div></div>
     </section>
 
     <section class="section">
@@ -84,6 +118,83 @@
         </div>
       </div>
     </section>
+
+    <section class="section" id="productsSection">
+      <div class="section-title">
+        <h2>Products</h2>
+        <button class="primary" id="addProductBtn">+ Add Product</button>
+      </div>
+      <div class="products-toolbar">
+        <input class="search" id="productSearch" placeholder="Search products...">
+        <button class="refresh" id="refreshProductsBtn">Refresh</button>
+      </div>
+      <div class="product-grid" id="productsBox">
+        <div class="card loading">Loading products...</div>
+      </div>
+    </section>
+
+    <div class="modal" id="productModal">
+      <div class="modal-box">
+        <div class="modal-head">
+          <h3 id="modalTitle">Add Product</h3>
+          <button class="close" id="closeProductModal">&times;</button>
+        </div>
+
+        <form id="productForm">
+          <input type="hidden" id="productId">
+          <div class="form-grid">
+            <div class="field">
+              <label>Product Name *</label>
+              <input id="productName" required maxlength="150">
+            </div>
+            <div class="field">
+              <label>Price (₹) *</label>
+              <input id="productPrice" type="number" min="0" step="0.01" required>
+            </div>
+            <div class="field">
+              <label>Stock</label>
+              <input id="productStock" type="number" min="0" step="1" value="0">
+            </div>
+            <div class="field">
+              <label>Category</label>
+              <select id="productCategory">
+                <option value="">No category</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label>Image URL</label>
+              <input id="productImage" type="url" placeholder="https://...">
+            </div>
+            <div class="field full">
+              <label>Description</label>
+              <textarea id="productDescription" maxlength="1000"></textarea>
+            </div>
+            <div class="field full">
+              <label>Sizes (optional)</label>
+              <div class="checks">
+                <label class="check"><input type="checkbox" value="S" class="sizeCheck"> S</label>
+                <label class="check"><input type="checkbox" value="M" class="sizeCheck"> M</label>
+                <label class="check"><input type="checkbox" value="L" class="sizeCheck"> L</label>
+                <label class="check"><input type="checkbox" value="XL" class="sizeCheck"> XL</label>
+                <label class="check"><input type="checkbox" value="XXL" class="sizeCheck"> XXL</label>
+                <label class="check"><input type="checkbox" value="XXXL" class="sizeCheck"> XXXL</label>
+              </div>
+            </div>
+            <div class="field full">
+              <div class="checks">
+                <label class="check"><input type="checkbox" id="hasSizes"> Enable sizes</label>
+                <label class="check"><input type="checkbox" id="productActive" checked> Visible on shop</label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="secondary" id="cancelProductBtn">Cancel</button>
+            <button type="submit" class="primary" id="saveProductBtn">Save Product</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </main>
 
 <script>
@@ -153,6 +264,9 @@ async function loadDashboard(){
     document.getElementById("shopPhone").textContent=shop.phone||"—";
     document.getElementById("shopWhatsapp").textContent=shop.whatsapp||"—";
     document.getElementById("shopStatus").textContent=shop.status||"—";
+
+    await loadCategories();
+    await loadProducts();
 
     const {data:orders,error:ordersErr}=await supabaseClient
       .from("orders")
