@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,44 +12,55 @@
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
     }
 
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f6f8;
-      color: #111;
+      background: #f5f7fb;
+      color: #1f2937;
     }
 
     .topbar {
-      background: #111;
+      background: #111827;
       color: white;
-      padding: 18px 22px;
+      padding: 18px 25px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 15px;
     }
 
     .topbar h1 {
-      margin: 0;
-      font-size: 21px;
+      font-size: 22px;
     }
 
-    .logout {
-      border: 0;
-      background: white;
-      color: #111;
-      padding: 9px 15px;
-      border-radius: 7px;
+    .topbar p {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
       cursor: pointer;
-      font-weight: bold;
+      font-weight: 600;
+    }
+
+    .logout-btn:hover {
+      background: #dc2626;
     }
 
     .container {
-      max-width: 1200px;
+      width: 100%;
+      max-width: 1400px;
       margin: auto;
-      padding: 25px 18px;
+      padding: 25px;
     }
 
     .welcome {
@@ -58,112 +68,132 @@
     }
 
     .welcome h2 {
-      margin: 0 0 6px;
+      font-size: 26px;
+      margin-bottom: 6px;
     }
 
     .welcome p {
-      margin: 0;
-      color: #666;
-    }
-
-    .status {
-      padding: 12px 15px;
-      border-radius: 8px;
-      background: #e9f8ee;
-      color: #18733b;
-      margin-bottom: 22px;
-      font-size: 14px;
+      color: #6b7280;
     }
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 18px;
+      margin-bottom: 30px;
     }
 
-    .card {
+    .stat-card {
       background: white;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 22px;
-      box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: 0.2s;
     }
 
-    .card-title {
-      color: #666;
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 20px rgba(0,0,0,0.09);
+    }
+
+    .stat-title {
+      color: #6b7280;
       font-size: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
-    .number {
+    .stat-value {
       font-size: 30px;
-      font-weight: bold;
+      font-weight: 700;
+      color: #111827;
     }
 
-    .section {
-      margin-top: 25px;
-    }
-
-    .section h2 {
+    .section-title {
       font-size: 20px;
       margin-bottom: 15px;
     }
 
-    .quick-links {
+    .quick-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 15px;
     }
 
-    .quick-link {
+    .quick-card {
       background: white;
+      border-radius: 12px;
       padding: 20px;
-      border-radius: 10px;
-      text-decoration: none;
-      color: #111;
-      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
-      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid #eef0f4;
     }
 
-    .quick-link:hover {
-      background: #eeeeee;
+    .quick-card:hover {
+      transform: translateY(-2px);
+      border-color: #d1d5db;
     }
 
-    .error {
-      background: #ffe9e9;
-      color: #b00020;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+    .quick-card h3 {
+      font-size: 16px;
+      margin-bottom: 7px;
+    }
+
+    .quick-card p {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .error-box {
       display: none;
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #fecaca;
     }
 
-    @media (max-width: 700px) {
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6b7280;
+    }
 
-      .topbar {
-        align-items: flex-start;
-      }
-
+    @media (max-width: 1000px) {
       .stats {
         grid-template-columns: repeat(2, 1fr);
       }
 
-      .quick-links {
-        grid-template-columns: 1fr;
-      }
-
-      .number {
-        font-size: 25px;
+      .quick-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media (max-width: 450px) {
+    @media (max-width: 600px) {
+      .topbar {
+        padding: 15px;
+      }
+
+      .topbar h1 {
+        font-size: 18px;
+      }
+
+      .container {
+        padding: 15px;
+      }
+
+      .welcome h2 {
+        font-size: 22px;
+      }
 
       .stats {
         grid-template-columns: 1fr;
       }
 
-      .topbar h1 {
-        font-size: 18px;
+      .quick-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -172,173 +202,100 @@
 <body>
 
   <header class="topbar">
+    <div>
+      <h1>Master Dashboard</h1>
+      <p>Local Shop Platform</p>
+    </div>
 
-    <h1>Master Dashboard</h1>
-
-    <button
-      class="logout"
-      onclick="logout()"
-    >
+    <button class="logout-btn" onclick="logout()">
       Logout
     </button>
-
   </header>
-
 
   <main class="container">
 
+    <div id="errorBox" class="error-box"></div>
+
     <div class="welcome">
       <h2 id="welcomeText">Welcome, Master</h2>
-      <p>Local Shop Platform Control Center</p>
+      <p>Manage your complete Local Shop Platform from here.</p>
     </div>
 
-
-    <div
-      id="errorBox"
-      class="error"
-    ></div>
-
-
-    <div class="status">
-      🟢 Master session verified
+    <div id="loadingBox" class="loading">
+      Loading dashboard...
     </div>
 
+    <div id="dashboardContent" style="display:none;">
 
-    <div class="stats">
+      <!-- STATS -->
+      <div class="stats">
 
-      <div class="card">
-        <div class="card-title">
-          Total Shops
+        <div class="stat-card" onclick="openPage('all-shops.html')">
+          <div class="stat-title">Total Shops</div>
+          <div class="stat-value" id="totalShops">0</div>
         </div>
 
-        <div
-          class="number"
-          id="shopsCount"
-        >
-          —
+        <div class="stat-card" onclick="openPage('all-owners.html')">
+          <div class="stat-title">Total Owners</div>
+          <div class="stat-value" id="totalOwners">0</div>
         </div>
+
+        <div class="stat-card" onclick="openPage('all-products.html')">
+          <div class="stat-title">Total Products</div>
+          <div class="stat-value" id="totalProducts">0</div>
+        </div>
+
+        <div class="stat-card" onclick="openPage('all-orders.html')">
+          <div class="stat-title">Total Orders</div>
+          <div class="stat-value" id="totalOrders">0</div>
+        </div>
+
       </div>
 
+      <!-- QUICK ACCESS -->
+      <h2 class="section-title">Quick Access</h2>
 
-      <div class="card">
-        <div class="card-title">
-          Total Owners
+      <div class="quick-grid">
+
+        <div class="quick-card" onclick="openPage('all-shops.html')">
+          <h3>All Shops</h3>
+          <p>View and manage all registered shops.</p>
         </div>
 
-        <div
-          class="number"
-          id="ownersCount"
-        >
-          —
-        </div>
-      </div>
-
-
-      <div class="card">
-        <div class="card-title">
-          Total Products
+        <div class="quick-card" onclick="openPage('all-owners.html')">
+          <h3>All Owners</h3>
+          <p>View and manage shop owners.</p>
         </div>
 
-        <div
-          class="number"
-          id="productsCount"
-        >
-          —
-        </div>
-      </div>
-
-
-      <div class="card">
-        <div class="card-title">
-          Total Orders
+        <div class="quick-card" onclick="openPage('all-products.html')">
+          <h3>All Products</h3>
+          <p>View products across all shops.</p>
         </div>
 
-        <div
-          class="number"
-          id="ordersCount"
-        >
-          —
-        </div>
-      </div>
-
-
-      <div class="card">
-        <div class="card-title">
-          Open Support Tickets
+        <div class="quick-card" onclick="openPage('all-orders.html')">
+          <h3>All Orders</h3>
+          <p>View and manage customer orders.</p>
         </div>
 
-        <div
-          class="number"
-          id="ticketsCount"
-        >
-          —
-        </div>
-      </div>
-
-
-      <div class="card">
-        <div class="card-title">
-          Active Subscriptions
+        <div class="quick-card" onclick="openPage('support.html')">
+          <h3>Support Center</h3>
+          <p>Manage owner support tickets.</p>
         </div>
 
-        <div
-          class="number"
-          id="subscriptionsCount"
-        >
-          —
+        <div class="quick-card" onclick="openPage('website-status.html')">
+          <h3>Website Status</h3>
+          <p>Monitor shop website status.</p>
         </div>
-      </div>
 
-    </div>
+        <div class="quick-card" onclick="openPage('notifications.html')">
+          <h3>Notifications</h3>
+          <p>Manage platform notifications.</p>
+        </div>
 
-
-    <div class="section">
-
-      <h2>Quick Access</h2>
-
-      <div class="quick-links">
-
-        <a
-          class="quick-link"
-          href="#"
-        >
-          🏪 All Shops
-        </a>
-
-        <a
-          class="quick-link"
-          href="#"
-        >
-          👤 All Owners
-        </a>
-
-        <a
-          class="quick-link"
-          href="#"
-        >
-          📦 All Products
-        </a>
-
-        <a
-          class="quick-link"
-          href="#"
-        >
-          🛒 All Orders
-        </a>
-
-        <a
-          class="quick-link"
-          href="#"
-        >
-          💳 Subscriptions
-        </a>
-
-        <a
-          class="quick-link"
-          href="#"
-        >
-          🎫 Support Center
-        </a>
+        <div class="quick-card" onclick="openPage('settings.html')">
+          <h3>Settings</h3>
+          <p>Manage master platform settings.</p>
+        </div>
 
       </div>
 
@@ -346,325 +303,207 @@
 
   </main>
 
-
   <script>
 
-    // ==========================================
-    // VERIFY MASTER SESSION
-    // ==========================================
+    function showError(message) {
+      const box = document.getElementById("errorBox");
+      box.textContent = message;
+      box.style.display = "block";
+    }
+
+    function openPage(page) {
+      window.location.href = page;
+    }
 
     async function verifyMaster() {
 
-      const {
-        data: sessionData,
-        error: sessionError
-      } = await supabaseClient.auth.getSession();
+      try {
 
+        const {
+          data: { session },
+          error: sessionError
+        } = await supabaseClient.auth.getSession();
 
-      if (
-        sessionError ||
-        !sessionData.session
-      ) {
+        if (sessionError) {
+          throw sessionError;
+        }
 
-        window.location.href =
-          "login.html";
+        if (!session) {
+          window.location.href = "login.html";
+          return false;
+        }
 
-        return null;
+        const userId = session.user.id;
+
+        const {
+          data: master,
+          error
+        } = await supabaseClient
+          .from("owners")
+          .select("full_name, role, shop_id")
+          .eq("id", userId)
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        if (!master || master.role !== "master") {
+
+          await supabaseClient.auth.signOut();
+
+          window.location.href = "login.html";
+
+          return false;
+        }
+
+        document.getElementById("welcomeText").textContent =
+          "Welcome, " + (master.full_name || "Master");
+
+        return true;
+
+      } catch (error) {
+
+        console.error("MASTER VERIFY ERROR:", error);
+
+        showError(
+          error?.message ||
+          "Master verification failed."
+        );
+
+        return false;
       }
-
-
-      const user =
-        sessionData.session.user;
-
-
-      // Verify owner/master record
-      const {
-        data: master,
-        error: roleError
-      } = await supabaseClient
-
-        .from("owners")
-
-        .select(
-          "full_name, role, shop_id"
-        )
-
-        .eq(
-          "id",
-          user.id
-        )
-
-        .single();
-
-
-      if (
-        roleError ||
-        !master ||
-        master.role !== "master"
-      ) {
-
-        await supabaseClient.auth.signOut();
-
-        window.location.href =
-          "login.html";
-
-        return null;
-      }
-
-
-      document.getElementById(
-        "welcomeText"
-      ).textContent =
-        "Welcome, " +
-        (master.full_name || "Master");
-
-
-      return user;
     }
 
 
-    // ==========================================
-    // LOAD DASHBOARD COUNTS
-    // ==========================================
+    async function getCount(table, filters = null) {
+
+      let query = supabaseClient
+        .from(table)
+        .select("*", {
+          count: "exact",
+          head: true
+        });
+
+      if (filters) {
+        for (const filter of filters) {
+          if (filter.type === "eq") {
+            query = query.eq(filter.column, filter.value);
+          }
+
+          if (filter.type === "neq") {
+            query = query.neq(filter.column, filter.value);
+          }
+
+          if (filter.type === "in") {
+            query = query.in(filter.column, filter.value);
+          }
+        }
+      }
+
+      const { count, error } = await query;
+
+      if (error) {
+        throw error;
+      }
+
+      return count || 0;
+    }
+
 
     async function loadDashboard() {
 
       try {
 
-        // Shops
-        const {
-          count: shopsCount,
-          error: shopsError
-        } = await supabaseClient
+        const [
+          shops,
+          owners,
+          products,
+          orders
+        ] = await Promise.all([
 
-          .from("shops")
+          getCount("shops"),
 
-          .select(
-            "id",
+          getCount("owners", [
             {
-              count: "exact",
-              head: true
+              type: "eq",
+              column: "role",
+              value: "owner"
             }
-          );
+          ]),
+
+          getCount("products"),
+
+          getCount("orders")
+
+        ]);
 
 
-        if (shopsError)
-          throw shopsError;
+        document.getElementById("totalShops").textContent =
+          shops;
+
+        document.getElementById("totalOwners").textContent =
+          owners;
+
+        document.getElementById("totalProducts").textContent =
+          products;
+
+        document.getElementById("totalOrders").textContent =
+          orders;
 
 
-        // Owners
-        const {
-          count: ownersCount,
-          error: ownersError
-        } = await supabaseClient
+        document.getElementById("loadingBox").style.display =
+          "none";
 
-          .from("owners")
-
-          .select(
-            "id",
-            {
-              count: "exact",
-              head: true
-            }
-          );
-
-
-        if (ownersError)
-          throw ownersError;
-
-
-        // Products
-        const {
-          count: productsCount,
-          error: productsError
-        } = await supabaseClient
-
-          .from("products")
-
-          .select(
-            "id",
-            {
-              count: "exact",
-              head: true
-            }
-          );
-
-
-        if (productsError)
-          throw productsError;
-
-
-        // Orders
-        const {
-          count: ordersCount,
-          error: ordersError
-        } = await supabaseClient
-
-          .from("orders")
-
-          .select(
-            "id",
-            {
-              count: "exact",
-              head: true
-            }
-          );
-
-
-        if (ordersError)
-          throw ordersError;
-
-
-        // Support tickets
-        const {
-          count: ticketsCount,
-          error: ticketsError
-        } = await supabaseClient
-
-          .from("support_tickets")
-
-          .select(
-            "id",
-            {
-              count: "exact",
-              head: true
-            }
-          )
-          .in(
-            "status",
-            [
-              "open",
-              "in_progress"
-            ]
-          );
-
-
-        if (ticketsError)
-          throw ticketsError;
-
-
-        // Active subscriptions
-        const {
-          count: subscriptionsCount,
-          error: subscriptionsError
-        } = await supabaseClient
-
-          .from("subscriptions")
-
-          .select(
-            "id",
-            {
-              count: "exact",
-              head: true
-            }
-          )
-          .eq(
-            "status",
-            "active"
-          );
-
-
-        if (subscriptionsError)
-          throw subscriptionsError;
-
-
-        // Display results
-
-        document.getElementById(
-          "shopsCount"
-        ).textContent =
-          shopsCount ?? 0;
-
-
-        document.getElementById(
-          "ownersCount"
-        ).textContent =
-          ownersCount ?? 0;
-
-
-        document.getElementById(
-          "productsCount"
-        ).textContent =
-          productsCount ?? 0;
-
-
-        document.getElementById(
-          "ordersCount"
-        ).textContent =
-          ordersCount ?? 0;
-
-
-        document.getElementById(
-          "ticketsCount"
-        ).textContent =
-          ticketsCount ?? 0;
-
-
-        document.getElementById(
-          "subscriptionsCount"
-        ).textContent =
-          subscriptionsCount ?? 0;
-
+        document.getElementById("dashboardContent").style.display =
+          "block";
 
       } catch (error) {
 
-        console.error(
-          "Dashboard Error:",
-          error
+        console.error("DASHBOARD LOAD ERROR:", error);
+
+        document.getElementById("loadingBox").style.display =
+          "none";
+
+        showError(
+          error?.message ||
+          "Dashboard data could not be loaded."
         );
-
-        const errorBox =
-          document.getElementById(
-            "errorBox"
-          );
-
-        errorBox.style.display =
-          "block";
-
-        errorBox.textContent =
-          "❌ Dashboard Error: " +
-          error.message;
       }
-
     }
 
-
-    // ==========================================
-    // LOGOUT
-    // ==========================================
 
     async function logout() {
 
-      await supabaseClient.auth.signOut();
+      try {
 
-      window.location.href =
-        "login.html";
+        await supabaseClient.auth.signOut();
+
+      } catch (error) {
+
+        console.error("LOGOUT ERROR:", error);
+
+      }
+
+      window.location.href = "login.html";
     }
 
-
-    // ==========================================
-    // START DASHBOARD
-    // ==========================================
 
     async function startDashboard() {
 
-      const user =
-        await verifyMaster();
+      const isMaster = await verifyMaster();
 
-
-      if (!user)
+      if (!isMaster) {
         return;
-
+      }
 
       await loadDashboard();
-
     }
 
 
-    startDashboard();
+    window.addEventListener("load", startDashboard);
 
   </script>
 
 </body>
-
 </html>
