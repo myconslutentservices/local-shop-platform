@@ -203,11 +203,18 @@ const sessionShopId = sessionStorage.getItem("owner_shop_id");
 
 let owner = null;
 let shop = null;
+let categories = [];
+let products = [];
 
 function showError(msg){
   const el=document.getElementById("errorBox");
   el.textContent=msg;
   el.style.display="block";
+}
+function clearError(){
+  const el=document.getElementById("errorBox");
+  el.textContent="";
+  el.style.display="none";
 }
 function money(v){return "₹"+Number(v||0).toLocaleString("en-IN",{maximumFractionDigits:2})}
 function dateText(v){
@@ -226,9 +233,233 @@ async function logout(){
 }
 document.getElementById("logoutBtn").addEventListener("click",logout);
 document.getElementById("refreshBtn").addEventListener("click",loadDashboard);
+document.getElementById("refreshProductsBtn").addEventListener("click",loadProducts);
+document.getElementById("productSearch").addEventListener("input",renderProducts);
+document.getElementById("addProductBtn").addEventListener("click",()=>openProductModal());
+document.getElementById("closeProductModal").addEventListener("click",closeProductModal);
+document.getElementById("cancelProductBtn").addEventListener("click",closeProductModal);
+document.getElementById("productForm").addEventListener("submit",saveProduct);
+
+async function loadCategories(){
+  const select=document.getElementById("productCategory");
+  select.innerHTML='<option value="">No category</option>';
+  if(!shop?.id) return;
+
+  const {data,error}=await supabaseClient
+    .from("categories")
+    .select("id,name,is_active")
+    .eq("shop_id",shop.id)
+    .order("name",{ascending:true});
+
+  if(error){
+    console.warn("Categories could not be loaded:",error);
+    categories=[];
+    return;
+  }
+
+  categories=(data||[]).filter(c=>c.is_active!==false);
+  categories.forEach(c=>{
+    const option=document.createElement("option");
+    option.value=c.id;
+    option.textContent=c.name;
+    select.appendChild(option);
+  });
+}
+
+async function loadProducts(){
+  if(!shop?.id) return;
+  const box=document.getElementById("productsBox");
+  box.innerHTML='<div class="card loading">Loading products...</div>';
+
+  const {data,error}=await supabaseClient
+    .from("products")
+    .select("id,shop_id,category_id,name,description,price,image_url,has_sizes,sizes,stock,is_active,created_at")
+    .eq("shop_id",shop.id)
+    .order("created_at",{ascending:false});
+
+  if(error){
+    console.error("PRODUCT LOAD ERROR:",error);
+    box.innerHTML='<div class="card empty">Could not load products.</div>';
+    showError(error.message||"Products could not be loaded.");
+    return;
+  }
+
+  products=data||[];
+  document.getElementById("totalProducts").textContent=products.length;
+  renderProducts();
+}
+
+function categoryName(id){
+  const c=categories.find(x=>x.id===id);
+  return c?.name||"No category";
+}
+
+function renderProducts(){
+  const box=document.getElementById("productsBox");
+  const q=(document.getElementById("productSearch").value||"").trim().toLowerCase();
+  const list=products.filter(p=>
+    !q || String(p.name||"").toLowerCase().includes(q) ||
+    String(p.description||"").toLowerCase().includes(q) ||
+    categoryName(p.category_id).toLowerCase().includes(q)
+  );
+
+  if(!list.length){
+    box.innerHTML='<div class="card empty">No products found. Click + Add Product to create one.</div>';
+    return;
+  }
+
+  box.innerHTML=list.map(p=>{
+    const stock=Number(p.stock||0);
+    const sizes=Array.isArray(p.sizes)?p.sizes:[];
+    const status=stock<=0 ? '<span class="out">Out of Stock</span>' : '<span class="in">Stock: '+stock+'</span>';
+    const visibility=p.is_active ? '<span class="in">Visible</span>' : '<span class="hidden-status">Hidden</span>';
+    const sizeText=p.has_sizes && sizes.length ? ' · Sizes: '+escapeHtml(sizes.join(', ')) : '';
+    const img=p.image_url
+      ? '<img src="'+escapeHtml(p.image_url)+'" alt="'+escapeHtml(p.name)+'" onerror="this.parentElement.innerHTML=\'<span>No image</span>\'">'
+      : '<span>No image</span>';
+
+    return `<article class="product-card">
+      <div class="product-img">${img}</div>
+      <div class="product-body">
+        <div class="product-head">
+          <div class="product-name">${escapeHtml(p.name)}</div>
+          <div class="product-price">${money(p.price)}</div>
+        </div>
+        <div class="product-meta">${escapeHtml(categoryName(p.category_id))}<br>${status} · ${visibility}${sizeText}</div>
+        ${p.description?`<div class="product-meta">${escapeHtml(p.description)}</div>`:""}
+        <div class="product-actions">
+          <button class="secondary" type="button" onclick="openProductModal('${p.id}')">Edit</button>
+          <button class="danger" type="button" onclick="deleteProduct('${p.id}')">Delete</button>
+        </div>
+      </div>
+    </article>`;
+  }).join("");
+}
+
+function resetProductForm(){
+  document.getElementById("productForm").reset();
+  document.getElementById("productId").value="";
+  document.getElementById("productStock").value="0";
+  document.getElementById("productActive").checked=true;
+  document.querySelectorAll(".sizeCheck").forEach(x=>x.checked=false);
+  document.getElementById("modalTitle").textContent="Add Product";
+  document.getElementById("saveProductBtn").textContent="Save Product";
+}
+
+function openProductModal(id=null){
+  clearError();
+  resetProductForm();
+  if(id){
+    const p=products.find(x=>x.id===id);
+    if(!p) return;
+    document.getElementById("modalTitle").textContent="Edit Product";
+    document.getElementById("saveProductBtn").textContent="Update Product";
+    document.getElementById("productId").value=p.id;
+    document.getElementById("productName").value=p.name||"";
+    document.getElementById("productPrice").value=p.price??"";
+    document.getElementById("productStock").value=p.stock??0;
+    document.getElementById("productCategory").value=p.category_id||"";
+    document.getElementById("productImage").value=p.image_url||"";
+    document.getElementById("productDescription").value=p.description||"";
+    document.getElementById("hasSizes").checked=!!p.has_sizes;
+    document.getElementById("productActive").checked=p.is_active!==false;
+    const sizes=Array.isArray(p.sizes)?p.sizes:[];
+    document.querySelectorAll(".sizeCheck").forEach(x=>x.checked=sizes.includes(x.value));
+  }
+  document.getElementById("productModal").classList.add("show");
+}
+
+function closeProductModal(){
+  document.getElementById("productModal").classList.remove("show");
+}
+
+async function saveProduct(e){
+  e.preventDefault();
+  clearError();
+  if(!shop?.id){showError("Shop could not be verified.");return;}
+
+  const id=document.getElementById("productId").value.trim();
+  const name=document.getElementById("productName").value.trim();
+  const price=Number(document.getElementById("productPrice").value);
+  const stock=Math.max(0,parseInt(document.getElementById("productStock").value||"0",10));
+  const categoryId=document.getElementById("productCategory").value||null;
+  const imageUrl=document.getElementById("productImage").value.trim()||null;
+  const description=document.getElementById("productDescription").value.trim()||null;
+  const hasSizes=document.getElementById("hasSizes").checked;
+  const sizes=hasSizes ? Array.from(document.querySelectorAll(".sizeCheck:checked")).map(x=>x.value) : [];
+  const isActive=document.getElementById("productActive").checked;
+
+  if(!name){showError("Product name is required.");return;}
+  if(!Number.isFinite(price)||price<0){showError("Please enter a valid price.");return;}
+
+  const btn=document.getElementById("saveProductBtn");
+  btn.disabled=true;
+  btn.textContent=id?"Updating...":"Saving...";
+
+  try{
+    const payload={
+      shop_id:shop.id,
+      category_id:categoryId,
+      name,
+      description,
+      price,
+      image_url:imageUrl,
+      has_sizes:hasSizes,
+      sizes,
+      stock,
+      is_active:isActive
+    };
+
+    let result;
+    if(id){
+      result=await supabaseClient.from("products").update(payload).eq("id",id).eq("shop_id",shop.id);
+    }else{
+      result=await supabaseClient.from("products").insert(payload);
+    }
+
+    if(result.error) throw result.error;
+    closeProductModal();
+    await loadProducts();
+    await loadDashboardStatsOnly();
+  }catch(err){
+    console.error("SAVE PRODUCT ERROR:",err);
+    showError(err?.message||"Product could not be saved.");
+  }finally{
+    btn.disabled=false;
+    btn.textContent=id?"Update Product":"Save Product";
+  }
+}
+
+async function deleteProduct(id){
+  const p=products.find(x=>x.id===id);
+  if(!p) return;
+  if(!confirm(`Delete "${p.name}"?`)) return;
+
+  try{
+    const {error}=await supabaseClient
+      .from("products")
+      .delete()
+      .eq("id",id)
+      .eq("shop_id",shop.id);
+    if(error) throw error;
+    await loadProducts();
+    await loadDashboardStatsOnly();
+  }catch(err){
+    console.error("DELETE PRODUCT ERROR:",err);
+    showError(err?.message||"Product could not be deleted.");
+  }
+}
+
+async function loadDashboardStatsOnly(){
+  if(!shop?.id) return;
+  const {count,error}=await supabaseClient
+    .from("products").select("id",{count:"exact",head:true}).eq("shop_id",shop.id);
+  if(!error) document.getElementById("totalProducts").textContent=count??0;
+}
 
 async function loadDashboard(){
   try{
+    clearError();
     document.getElementById("ordersBox").innerHTML='<div class="loading">Loading orders...</div>';
 
     const {data:{user},error:sessionError}=await supabaseClient.auth.getUser();
@@ -279,20 +510,11 @@ async function loadDashboard(){
 
     const list=orders||[];
     document.getElementById("totalOrders").textContent=list.length;
-
     const today=new Date(); today.setHours(0,0,0,0);
     const todayList=list.filter(x=>new Date(x.created_at)>=today);
     document.getElementById("todayOrders").textContent=todayList.length;
-    document.getElementById("todayRevenue").textContent=money(
-      todayList.reduce((sum,x)=>sum+Number(x.total_amount||0),0)
-    );
-
+    document.getElementById("todayRevenue").textContent=money(todayList.reduce((sum,x)=>sum+Number(x.total_amount||0),0));
     renderOrders(list);
-
-    const {count:productCount,error:productErr}=await supabaseClient
-      .from("products").select("id",{count:"exact",head:true}).eq("shop_id",shop.id);
-    if(productErr) throw productErr;
-    document.getElementById("totalProducts").textContent=productCount??0;
 
     const {data:sub,error:subErr}=await supabaseClient
       .from("subscriptions")
@@ -309,7 +531,6 @@ async function loadDashboard(){
       document.getElementById("subAmount").textContent=money(sub.amount);
       document.getElementById("subExpiry").textContent=dateText(sub.expires_at);
     }
-
   }catch(err){
     console.error("OWNER DASHBOARD ERROR:",err);
     showError(err?.message||"Dashboard could not be loaded.");
@@ -335,5 +556,6 @@ function renderOrders(list){
 
 loadDashboard();
 </script>
+
 </body>
 </html>
