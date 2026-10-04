@@ -142,17 +142,36 @@
 
   <script>
 
+    // ==========================================
+    // MASTER LOGIN
+    // ==========================================
+
     async function login() {
 
-      const emailInput = document.getElementById("email");
-      const passwordInput = document.getElementById("password");
-      const loginButton = document.getElementById("loginButton");
-      const message = document.getElementById("message");
+      const emailInput =
+        document.getElementById("email");
 
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
+      const passwordInput =
+        document.getElementById("password");
 
-      // Check input
+      const loginButton =
+        document.getElementById("loginButton");
+
+      const message =
+        document.getElementById("message");
+
+
+      const email =
+        emailInput.value.trim();
+
+      const password =
+        passwordInput.value;
+
+
+      // ==========================================
+      // CHECK INPUT
+      // ==========================================
+
       if (!email || !password) {
 
         message.textContent =
@@ -161,10 +180,18 @@
         return;
       }
 
-      // Loading state
+
+      // ==========================================
+      // LOADING STATE
+      // ==========================================
+
       loginButton.disabled = true;
-      loginButton.textContent = "Logging in...";
-      message.textContent = "Checking login...";
+
+      loginButton.textContent =
+        "Logging in...";
+
+      message.textContent =
+        "Checking login...";
 
 
       try {
@@ -173,7 +200,10 @@
         // 1. SUPABASE AUTH LOGIN
         // ==========================================
 
-        const { data, error } =
+        const {
+          data,
+          error
+        } =
           await supabaseClient.auth.signInWithPassword({
 
             email: email,
@@ -182,16 +212,24 @@
           });
 
 
-        // Login failed
+        // ==========================================
+        // LOGIN FAILED
+        // ==========================================
+
         if (error) {
 
-          console.error("LOGIN ERROR:", error);
+          console.error(
+            "LOGIN ERROR:",
+            error
+          );
 
           message.textContent =
             "❌ " + error.message;
 
           loginButton.disabled = false;
-          loginButton.textContent = "Login";
+
+          loginButton.textContent =
+            "Login";
 
           return;
         }
@@ -214,23 +252,27 @@
         const {
           data: master,
           error: roleError
-        } = await supabaseClient
+        } =
+          await supabaseClient
 
-          .from("owners")
+            .from("owners")
 
-          .select(
-            "full_name, role, shop_id"
-          )
+            .select(
+              "full_name, role, shop_id"
+            )
 
-          .eq(
-            "id",
-            data.user.id
-          )
+            .eq(
+              "id",
+              data.user.id
+            )
 
-          .single();
+            .single();
 
 
-        // Role query failed
+        // ==========================================
+        // ROLE QUERY FAILED
+        // ==========================================
+
         if (roleError) {
 
           console.error(
@@ -244,7 +286,9 @@
             "❌ " + roleError.message;
 
           loginButton.disabled = false;
-          loginButton.textContent = "Login";
+
+          loginButton.textContent =
+            "Login";
 
           return;
         }
@@ -270,7 +314,9 @@
             "❌ Access denied. Master account required.";
 
           loginButton.disabled = false;
-          loginButton.textContent = "Login";
+
+          loginButton.textContent =
+            "Login";
 
           return;
         }
@@ -285,14 +331,32 @@
           master
         );
 
+
         message.textContent =
-          "✅ Master verified successfully!";
+          "✅ Master verified. Opening Dashboard...";
 
 
         loginButton.textContent =
-          "Login Successful";
+          "Opening Dashboard...";
+
+
+        // ==========================================
+        // 5. REDIRECT TO MASTER DASHBOARD
+        // ==========================================
+
+        setTimeout(() => {
+
+          window.location.href =
+            "master-dashboard.html";
+
+        }, 500);
 
       }
+
+
+      // ==========================================
+      // UNEXPECTED ERROR
+      // ==========================================
 
       catch (error) {
 
@@ -307,7 +371,9 @@
           "❌ " + error.message;
 
         loginButton.disabled = false;
-        loginButton.textContent = "Login";
+
+        loginButton.textContent =
+          "Login";
       }
 
     }
