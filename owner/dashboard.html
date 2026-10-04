@@ -68,7 +68,12 @@
     .checks{display:flex;gap:12px;flex-wrap:wrap}.check{display:flex;align-items:center;gap:6px;font-size:12px;color:#cbd5e1}
     .modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:16px}
     @media(max-width:850px){.product-grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:560px){.product-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal{padding:10px}}
+    .category-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .category-card{background:#111827;border:1px solid #263244;border-radius:12px;padding:14px}
+    .category-name{font-weight:700;font-size:15px}.category-desc{color:#94a3b8;font-size:12px;margin-top:5px;min-height:30px}
+    .category-actions{display:flex;gap:8px;margin-top:12px}.category-actions button{flex:1}
+    @media(max-width:850px){.category-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:560px){.category-grid{grid-template-columns:1fr}.product-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal{padding:10px}}
 
   </style>
 </head>
@@ -119,6 +124,20 @@
       </div>
     </section>
 
+    <section class="section" id="categoriesSection">
+      <div class="section-title">
+        <h2>Categories</h2>
+        <button class="primary" id="addCategoryBtn">+ Add Category</button>
+      </div>
+      <div class="products-toolbar">
+        <input class="search" id="categorySearch" placeholder="Search categories...">
+        <button class="refresh" id="refreshCategoriesBtn">Refresh</button>
+      </div>
+      <div class="category-grid" id="categoriesBox">
+        <div class="card loading">Loading categories...</div>
+      </div>
+    </section>
+
     <section class="section" id="productsSection">
       <div class="section-title">
         <h2>Products</h2>
@@ -132,6 +151,35 @@
         <div class="card loading">Loading products...</div>
       </div>
     </section>
+
+    <div class="modal" id="categoryModal">
+      <div class="modal-box">
+        <div class="modal-head">
+          <h3 id="categoryModalTitle">Add Category</h3>
+          <button class="close" id="closeCategoryModal">&times;</button>
+        </div>
+        <form id="categoryForm">
+          <input type="hidden" id="categoryId">
+          <div class="form-grid">
+            <div class="field full">
+              <label>Category Name *</label>
+              <input id="categoryName" required maxlength="100" placeholder="e.g. T-Shirts">
+            </div>
+            <div class="field full">
+              <label>Description</label>
+              <textarea id="categoryDescription" maxlength="500" placeholder="Category description"></textarea>
+            </div>
+            <div class="field full">
+              <label class="check"><input type="checkbox" id="categoryActive" checked> Active category</label>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="secondary" id="cancelCategoryBtn">Cancel</button>
+            <button type="submit" class="primary" id="saveCategoryBtn">Save Category</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <div class="modal" id="productModal">
       <div class="modal-box">
@@ -239,31 +287,127 @@ document.getElementById("addProductBtn").addEventListener("click",()=>openProduc
 document.getElementById("closeProductModal").addEventListener("click",closeProductModal);
 document.getElementById("cancelProductBtn").addEventListener("click",closeProductModal);
 document.getElementById("productForm").addEventListener("submit",saveProduct);
+document.getElementById("refreshCategoriesBtn").addEventListener("click",loadCategories);
+document.getElementById("categorySearch").addEventListener("input",renderCategories);
+document.getElementById("addCategoryBtn").addEventListener("click",()=>openCategoryModal());
+document.getElementById("closeCategoryModal").addEventListener("click",closeCategoryModal);
+document.getElementById("cancelCategoryBtn").addEventListener("click",closeCategoryModal);
+document.getElementById("categoryForm").addEventListener("submit",saveCategory);
 
 async function loadCategories(){
+  const box=document.getElementById("categoriesBox");
   const select=document.getElementById("productCategory");
-  select.innerHTML='<option value="">No category</option>';
+  if(select) select.innerHTML='<option value="">No category</option>';
   if(!shop?.id) return;
+  box.innerHTML='<div class="card loading">Loading categories...</div>';
 
   const {data,error}=await supabaseClient
     .from("categories")
-    .select("id,name,is_active")
+    .select("id,shop_id,name,description,is_active,created_at")
     .eq("shop_id",shop.id)
     .order("name",{ascending:true});
 
   if(error){
     console.warn("Categories could not be loaded:",error);
     categories=[];
+    box.innerHTML='<div class="card empty">Could not load categories. Check Categories RLS policy.</div>';
+    if(select) select.innerHTML='<option value="">No category</option>';
     return;
   }
 
-  categories=(data||[]).filter(c=>c.is_active!==false);
-  categories.forEach(c=>{
-    const option=document.createElement("option");
-    option.value=c.id;
-    option.textContent=c.name;
-    select.appendChild(option);
-  });
+  categories=data||[];
+  if(select){
+    categories.filter(c=>c.is_active!==false).forEach(c=>{
+      const option=document.createElement("option");
+      option.value=c.id; option.textContent=c.name; select.appendChild(option);
+    });
+  }
+  renderCategories();
+  renderProducts();
+}
+
+function renderCategories(){
+  const box=document.getElementById("categoriesBox");
+  const q=(document.getElementById("categorySearch").value||"").trim().toLowerCase();
+  const list=categories.filter(c=>!q || String(c.name||"").toLowerCase().includes(q) || String(c.description||"").toLowerCase().includes(q));
+  if(!list.length){
+    box.innerHTML='<div class="card empty">No categories yet. Click + Add Category to create one.</div>';
+    return;
+  }
+  box.innerHTML=list.map(c=>`
+    <article class="category-card">
+      <div class="category-name">${escapeHtml(c.name)}</div>
+      <div class="category-desc">${escapeHtml(c.description||"No description")}</div>
+      <div class="product-meta">${c.is_active!==false?'<span class="in">Active</span>':'<span class="hidden-status">Inactive</span>'}</div>
+      <div class="category-actions">
+        <button class="secondary" type="button" onclick="openCategoryModal('${c.id}')">Edit</button>
+        <button class="danger" type="button" onclick="deleteCategory('${c.id}')">Delete</button>
+      </div>
+    </article>`).join("");
+}
+
+function resetCategoryForm(){
+  document.getElementById("categoryForm").reset();
+  document.getElementById("categoryId").value="";
+  document.getElementById("categoryActive").checked=true;
+  document.getElementById("categoryModalTitle").textContent="Add Category";
+  document.getElementById("saveCategoryBtn").textContent="Save Category";
+}
+
+function openCategoryModal(id=null){
+  clearError(); resetCategoryForm();
+  if(id){
+    const c=categories.find(x=>x.id===id); if(!c) return;
+    document.getElementById("categoryModalTitle").textContent="Edit Category";
+    document.getElementById("saveCategoryBtn").textContent="Update Category";
+    document.getElementById("categoryId").value=c.id;
+    document.getElementById("categoryName").value=c.name||"";
+    document.getElementById("categoryDescription").value=c.description||"";
+    document.getElementById("categoryActive").checked=c.is_active!==false;
+  }
+  document.getElementById("categoryModal").classList.add("show");
+}
+
+function closeCategoryModal(){document.getElementById("categoryModal").classList.remove("show");}
+
+async function saveCategory(e){
+  e.preventDefault(); clearError();
+  if(!shop?.id){showError("Shop could not be verified.");return;}
+  const id=document.getElementById("categoryId").value.trim();
+  const name=document.getElementById("categoryName").value.trim();
+  const description=document.getElementById("categoryDescription").value.trim()||null;
+  const isActive=document.getElementById("categoryActive").checked;
+  if(!name){showError("Category name is required.");return;}
+  const btn=document.getElementById("saveCategoryBtn");
+  btn.disabled=true; btn.textContent=id?"Updating...":"Saving...";
+  try{
+    const payload={shop_id:shop.id,name,description,is_active:isActive};
+    const result=id
+      ? await supabaseClient.from("categories").update(payload).eq("id",id).eq("shop_id",shop.id)
+      : await supabaseClient.from("categories").insert(payload);
+    if(result.error) throw result.error;
+    closeCategoryModal();
+    await loadCategories();
+  }catch(err){
+    console.error("SAVE CATEGORY ERROR:",err);
+    showError(err?.message||"Category could not be saved.");
+  }finally{
+    btn.disabled=false; btn.textContent=id?"Update Category":"Save Category";
+  }
+}
+
+async function deleteCategory(id){
+  const c=categories.find(x=>x.id===id); if(!c) return;
+  if(!confirm(`Delete category "${c.name}"? Products using this category may need to be reassigned first.`)) return;
+  try{
+    const {error}=await supabaseClient.from("categories").delete().eq("id",id).eq("shop_id",shop.id);
+    if(error) throw error;
+    await loadCategories();
+    await loadProducts();
+  }catch(err){
+    console.error("DELETE CATEGORY ERROR:",err);
+    showError(err?.message||"Category could not be deleted.");
+  }
 }
 
 async function loadProducts(){
