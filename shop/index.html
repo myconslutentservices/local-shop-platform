@@ -24,7 +24,7 @@
 
     button,
     input,
-    select {
+    textarea {
       font: inherit;
     }
 
@@ -153,7 +153,6 @@
       align-items: center;
       justify-content: space-between;
       margin-top: 14px;
-      gap: 10px;
     }
 
     .price {
@@ -299,7 +298,8 @@
       font-weight: 700;
     }
 
-    .buy-btn {
+    .buy-btn,
+    .place-order-btn {
       width: 100%;
       border: 0;
       background: #111827;
@@ -312,18 +312,120 @@
       margin-top: 8px;
     }
 
-    .buy-btn:disabled {
+    .buy-btn:disabled,
+    .place-order-btn:disabled {
       opacity: .5;
       cursor: not-allowed;
     }
 
-    .status-box {
-      max-width: 700px;
-      margin: 50px auto;
+    .order-modal {
+      width: 100%;
+      max-width: 600px;
+      max-height: 92vh;
+      overflow-y: auto;
       background: white;
-      padding: 35px;
       border-radius: 18px;
+      padding: 25px;
+      position: relative;
+    }
+
+    .order-title {
+      font-size: 25px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      padding-right: 40px;
+    }
+
+    .summary {
+      background: #f3f4f6;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 22px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .summary-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .summary-total {
+      border-top: 1px solid #d1d5db;
+      padding-top: 10px;
+      margin-top: 10px;
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: #111827;
+    }
+
+    .form-group textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .required {
+      color: #dc2626;
+    }
+
+    .success-box {
       text-align: center;
+      padding: 35px 20px;
+    }
+
+    .success-icon {
+      font-size: 55px;
+      margin-bottom: 12px;
+    }
+
+    .success-title {
+      font-size: 25px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .order-number {
+      color: #6b7280;
+      margin-bottom: 22px;
+    }
+
+    .continue-btn {
+      border: 0;
+      background: #111827;
+      color: white;
+      padding: 13px 22px;
+      border-radius: 9px;
+      cursor: pointer;
+      font-weight: 700;
     }
 
     @media (max-width: 900px) {
@@ -374,6 +476,10 @@
       .modal-name {
         font-size: 24px;
       }
+
+      .order-modal {
+        padding: 20px;
+      }
     }
 
     @media (max-width: 400px) {
@@ -390,94 +496,88 @@
 
 <body>
 
-  <header class="header">
-    <div class="header-inner">
-      <div class="shop-name" id="shopName">Loading...</div>
-      <div class="shop-description" id="shopDescription"></div>
-      <div class="shop-contact" id="shopContact"></div>
-    </div>
-  </header>
+<header class="header">
+  <div class="header-inner">
+    <div class="shop-name" id="shopName">Loading...</div>
+    <div class="shop-description" id="shopDescription"></div>
+    <div class="shop-contact" id="shopContact"></div>
+  </div>
+</header>
 
-  <main class="container">
+<main class="container">
 
-    <div id="loadingBox" class="loading">
-      Loading shop...
-    </div>
+  <div id="loadingBox" class="loading">
+    Loading shop...
+  </div>
 
-    <div id="errorBox" class="error" style="display:none;"></div>
+  <div id="errorBox" class="error" style="display:none;"></div>
 
-    <div id="shopContent" style="display:none;">
+  <div id="shopContent" style="display:none;">
 
-      <h2 class="section-title">Categories</h2>
+    <h2 class="section-title">Categories</h2>
 
-      <div id="categories" class="categories"></div>
+    <div id="categories" class="categories"></div>
 
-      <h2 class="section-title">Products</h2>
+    <h2 class="section-title">Products</h2>
 
-      <div id="products" class="products"></div>
+    <div id="products" class="products"></div>
 
-    </div>
+  </div>
 
-  </main>
+</main>
 
-  <!-- PRODUCT MODAL -->
 
-  <div id="productModal" class="modal-overlay">
+<!-- PRODUCT MODAL -->
 
-    <div class="modal">
+<div id="productModal" class="modal-overlay">
 
-      <button class="close" onclick="closeProduct()">×</button>
+  <div class="modal">
 
-      <div class="modal-content">
+    <button class="close" onclick="closeProduct()">×</button>
 
-        <img
-          id="modalImage"
-          class="modal-image"
-          src=""
-          alt="Product"
-        >
+    <div class="modal-content">
 
-        <div class="modal-info">
+      <img id="modalImage" class="modal-image" src="" alt="Product">
 
-          <div id="modalName" class="modal-name"></div>
+      <div class="modal-info">
 
-          <div id="modalPrice" class="modal-price"></div>
+        <div id="modalName" class="modal-name"></div>
 
-          <div id="modalDescription" class="modal-description"></div>
+        <div id="modalPrice" class="modal-price"></div>
 
-          <div id="sizeField" class="field" style="display:none;">
+        <div id="modalDescription" class="modal-description"></div>
 
-            <label>Select Size</label>
+        <div id="sizeField" class="field" style="display:none;">
 
-            <div id="sizes" class="sizes"></div>
+          <label>Select Size</label>
 
-          </div>
-
-          <div class="field">
-
-            <label>Quantity</label>
-
-            <div class="quantity">
-
-              <button onclick="changeQuantity(-1)">−</button>
-
-              <div id="quantityValue" class="quantity-value">1</div>
-
-              <button onclick="changeQuantity(1)">+</button>
-
-            </div>
-
-          </div>
-
-          <button
-            id="buyButton"
-            class="buy-btn"
-            onclick="buyProduct()"
-          >
-            Buy / Order Now
-          </button>
+          <div id="sizes" class="sizes"></div>
 
         </div>
+
+        <div class="field">
+
+          <label>Quantity</label>
+
+          <div class="quantity">
+
+            <button onclick="changeQuantity(-1)">−</button>
+
+            <div id="quantityValue" class="quantity-value">1</div>
+
+            <button onclick="changeQuantity(1)">+</button>
+
+          </div>
+
+        </div>
+
+        <button
+          id="buyButton"
+          class="buy-btn"
+          onclick="openOrderForm()"
+        >
+          Buy / Order Now
+        </button>
 
       </div>
 
@@ -485,12 +585,193 @@
 
   </div>
 
+</div>
+
+
+<!-- ORDER FORM -->
+
+<div id="orderModal" class="modal-overlay">
+
+  <div class="order-modal">
+
+    <button class="close" onclick="closeOrderForm()">×</button>
+
+    <div id="orderFormContent">
+
+      <div class="order-title">
+        Complete Your Order
+      </div>
+
+      <div class="summary">
+
+        <div class="summary-row">
+          <span>Product</span>
+          <strong id="summaryProduct"></strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Price</span>
+          <strong id="summaryPrice"></strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Quantity</span>
+          <strong id="summaryQuantity"></strong>
+        </div>
+
+        <div class="summary-row" id="summarySizeRow" style="display:none;">
+          <span>Size</span>
+          <strong id="summarySize"></strong>
+        </div>
+
+        <div class="summary-row summary-total">
+          <span>Total</span>
+          <strong id="summaryTotal"></strong>
+        </div>
+
+      </div>
+
+
+      <form id="orderForm" onsubmit="placeOrder(event)">
+
+        <div class="form-group">
+
+          <label>
+            Full Name <span class="required">*</span>
+          </label>
+
+          <input
+            id="customerName"
+            type="text"
+            placeholder="Enter your name"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Mobile Number <span class="required">*</span>
+          </label>
+
+          <input
+            id="customerPhone"
+            type="tel"
+            placeholder="Enter mobile number"
+            inputmode="numeric"
+            maxlength="10"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Full Address <span class="required">*</span>
+          </label>
+
+          <textarea
+            id="customerAddress"
+            placeholder="House no., street, area, city..."
+            required
+          ></textarea>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>Landmark</label>
+
+          <input
+            id="customerLandmark"
+            type="text"
+            placeholder="Nearby landmark"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Pincode <span class="required">*</span>
+          </label>
+
+          <input
+            id="customerPincode"
+            type="text"
+            placeholder="Enter pincode"
+            inputmode="numeric"
+            maxlength="6"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>Notes</label>
+
+          <textarea
+            id="customerNotes"
+            placeholder="Any special instructions..."
+          ></textarea>
+
+        </div>
+
+
+        <button
+          id="placeOrderButton"
+          class="place-order-btn"
+          type="submit"
+        >
+          Place Order
+        </button>
+
+      </form>
+
+    </div>
+
+
+    <div id="orderSuccess" class="success-box" style="display:none;">
+
+      <div class="success-icon">✅</div>
+
+      <div class="success-title">
+        Order Placed Successfully!
+      </div>
+
+      <div class="order-number">
+        Order ID:
+        <strong id="successOrderId"></strong>
+      </div>
+
+      <button
+        class="continue-btn"
+        onclick="finishOrder()"
+      >
+        Continue Shopping
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
 
 <script>
 
   let shop = null;
   let categories = [];
   let products = [];
+
   let selectedCategory = "all";
 
   let selectedProduct = null;
@@ -498,9 +779,9 @@
   let quantity = 1;
 
 
-  /* --------------------------------
-     GET SHOP SLUG
-  -------------------------------- */
+  /* ================================
+     SHOP SLUG
+  ================================= */
 
   function getShopSlug() {
 
@@ -511,9 +792,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      ESCAPE HTML
-  -------------------------------- */
+  ================================= */
 
   function escapeHtml(value) {
 
@@ -527,22 +808,20 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      MONEY
-  -------------------------------- */
+  ================================= */
 
   function money(value) {
 
-    const number = Number(value || 0);
-
-    return "₹" + number.toLocaleString("en-IN");
+    return "₹" + Number(value || 0).toLocaleString("en-IN");
 
   }
 
 
-  /* --------------------------------
+  /* ================================
      LOAD SHOP
-  -------------------------------- */
+  ================================= */
 
   async function loadShop() {
 
@@ -596,13 +875,18 @@
       document.getElementById("shopContact").textContent =
         contact.join("  •  ");
 
+
       await Promise.all([
         loadCategories(),
         loadProducts()
       ]);
 
-      document.getElementById("loadingBox").style.display = "none";
-      document.getElementById("shopContent").style.display = "block";
+
+      document.getElementById("loadingBox").style.display =
+        "none";
+
+      document.getElementById("shopContent").style.display =
+        "block";
 
       renderCategories();
       renderProducts();
@@ -620,9 +904,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      LOAD CATEGORIES
-  -------------------------------- */
+  ================================= */
 
   async function loadCategories() {
 
@@ -640,9 +924,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      LOAD PRODUCTS
-  -------------------------------- */
+  ================================= */
 
   async function loadProducts() {
 
@@ -660,22 +944,26 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      CATEGORIES
-  -------------------------------- */
+  ================================= */
 
   function renderCategories() {
 
-    const box = document.getElementById("categories");
+    const box =
+      document.getElementById("categories");
 
     let html = `
       <button
-        class="category-btn ${selectedCategory === "all" ? "active" : ""}"
+        class="category-btn ${
+          selectedCategory === "all" ? "active" : ""
+        }"
         onclick="selectCategory('all')"
       >
         All Products
       </button>
     `;
+
 
     categories.forEach(category => {
 
@@ -692,6 +980,7 @@
 
     });
 
+
     box.innerHTML = html;
 
   }
@@ -707,23 +996,27 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      PRODUCTS
-  -------------------------------- */
+  ================================= */
 
   function renderProducts() {
 
-    const box = document.getElementById("products");
+    const box =
+      document.getElementById("products");
 
     let list = products;
+
 
     if (selectedCategory !== "all") {
 
       list = products.filter(
-        product => product.category_id === selectedCategory
+        product =>
+          product.category_id === selectedCategory
       );
 
     }
+
 
     if (!list.length) {
 
@@ -746,6 +1039,7 @@
       const image =
         product.image_url ||
         "https://via.placeholder.com/600x500?text=Product";
+
 
       return `
 
@@ -779,12 +1073,16 @@
                   ${money(product.price)}
                 </div>
 
-                <div class="stock ${outOfStock ? "out" : ""}">
+                <div class="stock ${
+                  outOfStock ? "out" : ""
+                }">
+
                   ${
                     outOfStock
                       ? "Out of Stock"
                       : "In Stock"
                   }
+
                 </div>
 
               </div>
@@ -802,9 +1100,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      OPEN PRODUCT
-  -------------------------------- */
+  ================================= */
 
   function openProduct(productId) {
 
@@ -814,8 +1112,11 @@
     if (!product) return;
 
     selectedProduct = product;
+
     selectedSize = null;
+
     quantity = 1;
+
 
     document.getElementById("modalName").textContent =
       product.name || "Product";
@@ -829,20 +1130,18 @@
     document.getElementById("quantityValue").textContent =
       quantity;
 
-    const image =
+
+    document.getElementById("modalImage").src =
       product.image_url ||
       "https://via.placeholder.com/600x500?text=Product";
 
-    document.getElementById("modalImage").src = image;
-
-
-    /* SIZES */
 
     const sizeField =
       document.getElementById("sizeField");
 
     const sizesBox =
       document.getElementById("sizes");
+
 
     let sizes = [];
 
@@ -864,16 +1163,18 @@
 
       sizeField.style.display = "block";
 
-      sizesBox.innerHTML = sizes.map(size => `
+      sizesBox.innerHTML =
+        sizes.map(size => `
 
-        <button
-          class="size-btn"
-          onclick="selectSize('${escapeHtml(size)}', this)"
-        >
-          ${escapeHtml(size)}
-        </button>
+          <button
+            type="button"
+            class="size-btn"
+            onclick="selectSize('${escapeHtml(size)}', this)"
+          >
+            ${escapeHtml(size)}
+          </button>
 
-      `).join("");
+        `).join("");
 
     } else {
 
@@ -886,6 +1187,7 @@
 
     const buyButton =
       document.getElementById("buyButton");
+
 
     if (Number(product.stock || 0) <= 0) {
 
@@ -907,9 +1209,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      CLOSE PRODUCT
-  -------------------------------- */
+  ================================= */
 
   function closeProduct() {
 
@@ -923,9 +1225,9 @@
   }
 
 
-  /* --------------------------------
-     SELECT SIZE
-  -------------------------------- */
+  /* ================================
+     SIZE
+  ================================= */
 
   function selectSize(size, button) {
 
@@ -942,9 +1244,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      QUANTITY
-  -------------------------------- */
+  ================================= */
 
   function changeQuantity(change) {
 
@@ -955,13 +1257,16 @@
 
     quantity += change;
 
+
     if (quantity < 1) {
       quantity = 1;
     }
 
+
     if (quantity > stock) {
       quantity = stock;
     }
+
 
     document.getElementById("quantityValue").textContent =
       quantity;
@@ -969,13 +1274,14 @@
   }
 
 
-  /* --------------------------------
-     BUY
-  -------------------------------- */
+  /* ================================
+     OPEN ORDER FORM
+  ================================= */
 
-  function buyProduct() {
+  function openOrderForm() {
 
     if (!selectedProduct) return;
+
 
     if (Number(selectedProduct.stock || 0) <= 0) {
 
@@ -999,47 +1305,305 @@
     }
 
 
-    /*
-      NEXT STEP:
-      Customer order form will be connected here.
-    */
+    const total =
+      Number(selectedProduct.price || 0) *
+      quantity;
 
-    alert(
-      "Product selected successfully!\n\n" +
-      "Product: " + selectedProduct.name + "\n" +
-      "Quantity: " + quantity +
-      (
-        selectedSize
-          ? "\nSize: " + selectedSize
-          : ""
-      ) +
-      "\n\nNext step: Customer details & order."
-    );
+
+    document.getElementById("summaryProduct").textContent =
+      selectedProduct.name;
+
+    document.getElementById("summaryPrice").textContent =
+      money(selectedProduct.price);
+
+    document.getElementById("summaryQuantity").textContent =
+      quantity;
+
+
+    const sizeRow =
+      document.getElementById("summarySizeRow");
+
+
+    if (selectedSize) {
+
+      sizeRow.style.display = "flex";
+
+      document.getElementById("summarySize").textContent =
+        selectedSize;
+
+    } else {
+
+      sizeRow.style.display = "none";
+
+    }
+
+
+    document.getElementById("summaryTotal").textContent =
+      money(total);
+
+
+    document.getElementById("productModal")
+      .classList.remove("show");
+
+
+    document.getElementById("orderFormContent")
+      .style.display = "block";
+
+    document.getElementById("orderSuccess")
+      .style.display = "none";
+
+
+    document.getElementById("orderModal")
+      .classList.add("show");
 
   }
 
 
-  /* --------------------------------
+  /* ================================
+     CLOSE ORDER
+  ================================= */
+
+  function closeOrderForm() {
+
+    document
+      .getElementById("orderModal")
+      .classList.remove("show");
+
+  }
+
+
+  /* ================================
+     PLACE ORDER
+  ================================= */
+
+  async function placeOrder(event) {
+
+    event.preventDefault();
+
+
+    if (!shop || !selectedProduct) {
+
+      alert("Something went wrong. Please try again.");
+
+      return;
+
+    }
+
+
+    const name =
+      document.getElementById("customerName")
+        .value.trim();
+
+    const phone =
+      document.getElementById("customerPhone")
+        .value.trim();
+
+    const address =
+      document.getElementById("customerAddress")
+        .value.trim();
+
+    const landmark =
+      document.getElementById("customerLandmark")
+        .value.trim();
+
+    const pincode =
+      document.getElementById("customerPincode")
+        .value.trim();
+
+    const notes =
+      document.getElementById("customerNotes")
+        .value.trim();
+
+
+    /* BASIC VALIDATION */
+
+    if (!name || !phone || !address || !pincode) {
+
+      alert("Please fill all required fields.");
+
+      return;
+
+    }
+
+
+    if (!/^[0-9]{10}$/.test(phone)) {
+
+      alert("Please enter a valid 10-digit mobile number.");
+
+      return;
+
+    }
+
+
+    if (!/^[0-9]{6}$/.test(pincode)) {
+
+      alert("Please enter a valid 6-digit pincode.");
+
+      return;
+
+    }
+
+
+    const total =
+      Number(selectedProduct.price || 0) *
+      quantity;
+
+
+    const button =
+      document.getElementById("placeOrderButton");
+
+    button.disabled = true;
+    button.textContent = "Placing Order...";
+
+
+    try {
+
+      /*
+        STEP 1:
+        Create order
+      */
+
+      const { data: order, error: orderError } =
+        await supabaseClient
+          .from("orders")
+          .insert({
+            shop_id: shop.id,
+            customer_name: name,
+            customer_phone: phone,
+            customer_address: address,
+            landmark: landmark || null,
+            pincode: pincode,
+            total_amount: total,
+            status: "new",
+            notes: notes || null
+          })
+          .select()
+          .single();
+
+
+      if (orderError) {
+
+        throw orderError;
+
+      }
+
+
+      /*
+        STEP 2:
+        Create order item
+      */
+
+      const { error: itemError } =
+        await supabaseClient
+          .from("order_items")
+          .insert({
+            order_id: order.id,
+            product_id: selectedProduct.id,
+            product_name: selectedProduct.name,
+            price: selectedProduct.price,
+            quantity: quantity,
+            size: selectedSize || null,
+            variant: null
+          });
+
+
+      if (itemError) {
+
+        /*
+          Try to remove incomplete order
+          if item creation fails.
+        */
+
+        await supabaseClient
+          .from("orders")
+          .delete()
+          .eq("id", order.id);
+
+        throw itemError;
+
+      }
+
+
+      /*
+        SUCCESS
+      */
+
+      document.getElementById("orderFormContent")
+        .style.display = "none";
+
+      document.getElementById("orderSuccess")
+        .style.display = "block";
+
+
+      document.getElementById("successOrderId")
+        .textContent =
+        String(order.id).slice(0, 8).toUpperCase();
+
+
+      document.getElementById("orderForm")
+        .reset();
+
+
+    } catch (error) {
+
+      console.error("ORDER ERROR:", error);
+
+      alert(
+        "Order place nahi ho paya.\n\n" +
+        "Please try again."
+      );
+
+
+    } finally {
+
+      button.disabled = false;
+      button.textContent = "Place Order";
+
+    }
+
+  }
+
+
+  /* ================================
+     FINISH ORDER
+  ================================= */
+
+  function finishOrder() {
+
+    document
+      .getElementById("orderModal")
+      .classList.remove("show");
+
+    selectedProduct = null;
+    selectedSize = null;
+    quantity = 1;
+
+  }
+
+
+  /* ================================
      ERROR
-  -------------------------------- */
+  ================================= */
 
   function showError(message) {
 
-    document.getElementById("loadingBox").style.display =
-      "none";
+    document.getElementById("loadingBox")
+      .style.display = "none";
+
 
     const box =
       document.getElementById("errorBox");
 
     box.textContent = message;
+
     box.style.display = "block";
 
   }
 
 
-  /* --------------------------------
+  /* ================================
      START
-  -------------------------------- */
+  ================================= */
 
   loadShop();
 
