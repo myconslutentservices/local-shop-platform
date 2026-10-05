@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,53 +11,112 @@
 <script src="../js/supabase.js"></script>
 
 <style>
-*{
+/* ==========================================
+   RESET
+   ========================================== */
+
+*,
+*::before,
+*::after{
   box-sizing:border-box;
   margin:0;
   padding:0;
 }
 
+html{
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden;
+}
+
 body{
+  width:100%;
+  min-height:100vh;
+  min-height:100dvh;
+
   font-family:Arial,Helvetica,sans-serif;
   background:#f5f7fb;
   color:#111827;
+
+  overflow-x:hidden;
+  overflow-y:auto;
 }
 
 button,
 input,
 select{
   font:inherit;
+  max-width:100%;
 }
 
+button{
+  touch-action:manipulation;
+}
+
+
+/* ==========================================
+   TOPBAR
+   ========================================== */
+
 .topbar{
-  height:64px;
+  width:100%;
+  min-height:64px;
+
   background:#111827;
   color:#fff;
+
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 20px;
+
+  gap:12px;
+
+  padding:10px 20px;
+
   position:sticky;
   top:0;
   z-index:100;
 }
 
 .brand{
+  min-width:0;
+
   font-size:18px;
   font-weight:800;
+  line-height:1.3;
+
+  overflow-wrap:anywhere;
 }
 
 .top-actions{
   display:flex;
+  align-items:center;
+  justify-content:flex-end;
+
   gap:10px;
+
+  flex-shrink:0;
 }
 
 .btn{
+  min-height:44px;
+
   border:0;
   border-radius:10px;
+
   padding:10px 15px;
+
   cursor:pointer;
   font-weight:700;
+
+  white-space:nowrap;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+.btn:focus-visible{
+  outline:2px solid #60a5fa;
+  outline-offset:2px;
 }
 
 .btn-light{
@@ -69,145 +129,356 @@ select{
   color:#fff;
 }
 
+
+/* ==========================================
+   MAIN CONTAINER
+   ========================================== */
+
 .container{
+  width:100%;
   max-width:1200px;
-  margin:auto;
+
+  margin:0 auto;
+
   padding:25px 16px 45px;
+
+  min-width:0;
 }
 
+
+/* ==========================================
+   PAGE HEADER
+   ========================================== */
+
 .page-head{
+  width:100%;
+
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
+
   gap:15px;
+
   margin-bottom:22px;
+
+  min-width:0;
+}
+
+.page-head > div{
+  min-width:0;
 }
 
 .page-head h1{
   font-size:28px;
+  line-height:1.2;
+
   margin-bottom:6px;
+
+  overflow-wrap:anywhere;
 }
 
 .muted{
   color:#6b7280;
   font-size:14px;
+  line-height:1.5;
+
+  overflow-wrap:anywhere;
 }
 
+
+/* ==========================================
+   ERROR
+   ========================================== */
+
+.error{
+  display:none;
+
+  width:100%;
+
+  background:#fee2e2;
+  color:#991b1b;
+
+  padding:14px;
+
+  border-radius:10px;
+
+  margin-bottom:18px;
+
+  line-height:1.5;
+
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+
+/* ==========================================
+   FILTERS
+   ========================================== */
+
 .filters{
+  width:100%;
+
   background:#fff;
+
   border:1px solid #e5e7eb;
   border-radius:14px;
+
   padding:15px;
+
   display:flex;
+  align-items:center;
+
   gap:10px;
   flex-wrap:wrap;
+
   margin-bottom:20px;
+
+  min-width:0;
 }
 
 .filters select,
 .filters input{
+  min-height:46px;
+
   border:1px solid #d9dee7;
   border-radius:10px;
+
   padding:11px 13px;
+
   outline:none;
+
   background:#fff;
+
+  color:#111827;
+
+  min-width:0;
+}
+
+.filters select{
+  min-width:150px;
 }
 
 .filters input{
+  flex:1 1 230px;
   min-width:230px;
 }
 
+.filters select:focus,
+.filters input:focus{
+  border-color:#111827;
+  outline:2px solid rgba(17,24,39,.08);
+  outline-offset:1px;
+}
+
+
+/* ==========================================
+   STATS
+   ========================================== */
+
 .stats{
+  width:100%;
+
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+
+  grid-template-columns:repeat(4,minmax(0,1fr));
+
   gap:14px;
+
   margin-bottom:20px;
+
+  min-width:0;
 }
 
 .stat{
+  min-width:0;
+
   background:#fff;
+
   border:1px solid #e5e7eb;
   border-radius:15px;
+
   padding:18px;
+
   box-shadow:0 4px 15px rgba(0,0,0,.03);
 }
 
 .stat-label{
   color:#6b7280;
+
   font-size:13px;
+  line-height:1.4;
+
   margin-bottom:8px;
+
+  overflow-wrap:anywhere;
 }
 
 .stat-value{
+  max-width:100%;
+
   font-size:25px;
+  line-height:1.2;
   font-weight:800;
+
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 
 .stat-sub{
   color:#6b7280;
+
   font-size:12px;
+  line-height:1.4;
+
   margin-top:7px;
+
+  overflow-wrap:anywhere;
 }
 
+
+/* ==========================================
+   MAIN GRID
+   ========================================== */
+
 .grid{
+  width:100%;
+
   display:grid;
-  grid-template-columns:1.1fr .9fr;
+
+  grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+
   gap:16px;
+
+  min-width:0;
 }
 
 .panel{
+  width:100%;
+  min-width:0;
+
   background:#fff;
+
   border:1px solid #e5e7eb;
   border-radius:15px;
+
   padding:18px;
+
   box-shadow:0 4px 15px rgba(0,0,0,.03);
 }
 
 .panel h2{
   font-size:17px;
+  line-height:1.35;
+
   margin-bottom:17px;
+
+  overflow-wrap:anywhere;
+}
+
+
+/* ==========================================
+   PRODUCTS
+   ========================================== */
+
+#products{
+  width:100%;
+  min-width:0;
 }
 
 .product-row{
+  width:100%;
+  min-width:0;
+
   margin-bottom:16px;
 }
 
+.product-row:last-child{
+  margin-bottom:0;
+}
+
 .product-top{
+  width:100%;
+
   display:flex;
   justify-content:space-between;
+  align-items:flex-start;
+
   gap:10px;
+
   margin-bottom:7px;
+
+  min-width:0;
 }
 
 .product-name{
+  min-width:0;
+
   font-size:14px;
   font-weight:700;
+  line-height:1.4;
+
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 
 .product-count{
+  flex:0 0 auto;
+
   font-size:13px;
+  line-height:1.4;
+
   color:#6b7280;
+
+  white-space:nowrap;
 }
 
 .bar{
+  width:100%;
+
   height:9px;
+
   background:#edf0f4;
+
   border-radius:999px;
+
   overflow:hidden;
 }
 
 .bar-fill{
   height:100%;
+
   background:#111827;
+
   border-radius:999px;
 }
 
+
+/* ==========================================
+   SUMMARY
+   ========================================== */
+
+#summary{
+  width:100%;
+  min-width:0;
+}
+
 .summary-row{
+  width:100%;
+
   display:flex;
   justify-content:space-between;
+  align-items:flex-start;
+
+  gap:12px;
+
   padding:11px 0;
+
   border-bottom:1px solid #edf0f4;
+
   font-size:14px;
+  line-height:1.4;
+
+  min-width:0;
 }
 
 .summary-row:last-child{
@@ -215,48 +486,95 @@ select{
 }
 
 .summary-label{
+  min-width:0;
+
   color:#6b7280;
+
+  overflow-wrap:anywhere;
 }
 
 .summary-value{
+  flex:0 0 auto;
+
   font-weight:800;
 }
+
+
+/* ==========================================
+   RECENT ORDERS
+   ========================================== */
 
 .table-panel{
   margin-top:16px;
 }
 
 .table-wrap{
-  overflow-x:auto;
+  width:100%;
+  min-width:0;
+
+  overflow:visible;
 }
 
 table{
   width:100%;
+
   border-collapse:collapse;
-  min-width:700px;
+
+  table-layout:auto;
 }
 
 th,
 td{
   padding:13px 10px;
+
   text-align:left;
+
   border-bottom:1px solid #edf0f4;
+
   font-size:13px;
+
+  line-height:1.4;
+
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 
 th{
   color:#6b7280;
+
   font-size:11px;
+
   text-transform:uppercase;
+
+  white-space:nowrap;
+}
+
+tbody tr:last-child td{
+  border-bottom:0;
 }
 
 .status{
-  display:inline-block;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  min-height:28px;
+
   padding:5px 9px;
+
   border-radius:999px;
+
   background:#f3f4f6;
+
   font-size:11px;
+  line-height:1.2;
+
   font-weight:800;
+
+  max-width:100%;
+
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 
 .status.paid{
@@ -276,48 +594,132 @@ th{
 
 .empty{
   text-align:center;
-  padding:30px;
-  color:#6b7280;
-}
 
-.error{
-  display:none;
-  background:#fee2e2;
-  color:#991b1b;
-  padding:14px;
-  border-radius:10px;
-  margin-bottom:18px;
+  padding:30px;
+
+  color:#6b7280;
+
+  line-height:1.5;
+
+  overflow-wrap:anywhere;
 }
 
 .loading{
   text-align:center;
+
   padding:25px;
+
   color:#6b7280;
+
+  line-height:1.5;
+
+  overflow-wrap:anywhere;
 }
 
-@media(max-width:900px){
+
+/* ==========================================
+   LARGE TABLET / SMALL DESKTOP
+   ========================================== */
+
+@media(max-width:1100px){
+
+  .container{
+    padding-left:18px;
+    padding-right:18px;
+  }
 
   .stats{
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:repeat(2,minmax(0,1fr));
   }
 
   .grid{
     grid-template-columns:1fr;
   }
+
 }
 
-@media(max-width:600px){
+
+/* ==========================================
+   TABLET
+   600px - 900px
+   ========================================== */
+
+@media(min-width:600px) and (max-width:900px){
 
   .topbar{
-    padding:0 12px;
+    padding-left:18px;
+    padding-right:18px;
+  }
+
+  .container{
+    padding:22px 18px 40px;
+  }
+
+  .page-head h1{
+    font-size:26px;
+  }
+
+  .filters{
+    align-items:stretch;
+  }
+
+  .filters select{
+    flex:1 1 180px;
+  }
+
+  .filters input{
+    flex:2 1 260px;
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+  }
+
+  .stat{
+    padding:17px;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .panel{
+    padding:18px;
+  }
+
+}
+
+
+/* ==========================================
+   MOBILE
+   320px - 599px
+   ========================================== */
+
+@media(max-width:599px){
+
+  .topbar{
+    min-height:64px;
+
+    padding:9px 12px;
+
+    align-items:center;
   }
 
   .brand{
     font-size:15px;
+    line-height:1.25;
+  }
+
+  .top-actions{
+    gap:6px;
   }
 
   .top-actions .btn{
+    min-height:44px;
+
     padding:8px 10px;
+
     font-size:12px;
   }
 
@@ -327,33 +729,400 @@ th{
 
   .page-head{
     display:block;
-  }
 
-  .page-head .btn{
-    margin-top:12px;
+    margin-bottom:18px;
   }
 
   .page-head h1{
     font-size:23px;
+    line-height:1.25;
+  }
+
+  .page-head .btn{
+    width:100%;
+
+    margin-top:12px;
+
+    min-height:46px;
+  }
+
+  .filters{
+    display:grid;
+
+    grid-template-columns:1fr;
+
+    gap:10px;
+
+    padding:12px;
+
+    margin-bottom:16px;
+  }
+
+  .filters select,
+  .filters input{
+    width:100%;
+    min-width:0;
+
+    min-height:48px;
+  }
+
+  .filters input{
+    flex:none;
   }
 
   .stats{
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+
     gap:10px;
+
+    margin-bottom:16px;
   }
 
   .stat{
     padding:14px;
+
+    border-radius:13px;
+  }
+
+  .stat-label{
+    font-size:12px;
+
+    margin-bottom:7px;
   }
 
   .stat-value{
     font-size:20px;
   }
 
-  .filters>*{
-    width:100%;
-    min-width:0!important;
+  .stat-sub{
+    font-size:11px;
+
+    margin-top:6px;
   }
+
+  .grid{
+    grid-template-columns:1fr;
+
+    gap:12px;
+  }
+
+  .panel{
+    padding:15px;
+
+    border-radius:13px;
+  }
+
+  .panel h2{
+    font-size:16px;
+
+    margin-bottom:15px;
+  }
+
+  .product-top{
+    gap:8px;
+  }
+
+  .product-name{
+    font-size:13px;
+  }
+
+  .product-count{
+    font-size:12px;
+  }
+
+  .summary-row{
+    font-size:13px;
+
+    padding:10px 0;
+  }
+
+  .table-panel{
+    margin-top:12px;
+  }
+
+  /*
+     Mobile recent orders become cards.
+     No horizontal scrolling.
+  */
+
+  .table-wrap{
+    overflow:visible;
+  }
+
+  table,
+  thead,
+  tbody,
+  tr,
+  td{
+    display:block;
+    width:100%;
+  }
+
+  thead{
+    display:none;
+  }
+
+  tbody{
+    display:block;
+  }
+
+  tbody tr{
+    background:#f8fafc;
+
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+
+    padding:10px 12px;
+
+    margin-bottom:10px;
+  }
+
+  tbody tr:last-child{
+    margin-bottom:0;
+  }
+
+  tbody tr td{
+    display:flex;
+
+    justify-content:space-between;
+    align-items:flex-start;
+
+    gap:12px;
+
+    padding:9px 0;
+
+    border-bottom:1px solid #e5e7eb;
+
+    font-size:13px;
+
+    text-align:right;
+  }
+
+  tbody tr td:last-child{
+    border-bottom:0;
+  }
+
+  tbody tr td::before{
+    content:attr(data-label);
+
+    flex:0 0 92px;
+
+    color:#6b7280;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    text-align:left;
+
+    line-height:1.4;
+  }
+
+  tbody tr td.empty{
+    display:block;
+
+    text-align:center;
+
+    padding:25px 10px;
+
+    border-bottom:0;
+  }
+
+  tbody tr td.empty::before{
+    display:none;
+  }
+
+  tbody tr td strong{
+    max-width:calc(100% - 104px);
+
+    overflow-wrap:anywhere;
+    word-break:break-word;
+  }
+
+  tbody tr td .status{
+    max-width:calc(100% - 104px);
+
+    text-align:center;
+  }
+
+}
+
+
+/* ==========================================
+   SMALL MOBILE
+   320px - 379px
+   ========================================== */
+
+@media(max-width:379px){
+
+  .topbar{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .brand{
+    font-size:13px;
+  }
+
+  .top-actions{
+    gap:4px;
+  }
+
+  .top-actions .btn{
+    padding:8px 8px;
+
+    font-size:11px;
+  }
+
+  .container{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .page-head h1{
+    font-size:21px;
+  }
+
+  .muted{
+    font-size:13px;
+  }
+
+  .stats{
+    gap:8px;
+  }
+
+  .stat{
+    padding:12px 10px;
+  }
+
+  .stat-label{
+    font-size:11px;
+  }
+
+  .stat-value{
+    font-size:18px;
+  }
+
+  .stat-sub{
+    font-size:10px;
+  }
+
+  .panel{
+    padding:13px;
+  }
+
+  .product-top{
+    display:block;
+  }
+
+  .product-count{
+    display:block;
+
+    margin-top:3px;
+  }
+
+  tbody tr{
+    padding:9px 10px;
+  }
+
+  tbody tr td{
+    gap:8px;
+  }
+
+  tbody tr td::before{
+    flex-basis:82px;
+  }
+
+  tbody tr td strong,
+  tbody tr td .status{
+    max-width:calc(100% - 94px);
+  }
+
+}
+
+
+/* ==========================================
+   VERY SMALL WIDTH
+   320px SAFETY
+   ========================================== */
+
+@media(max-width:330px){
+
+  .topbar{
+    align-items:flex-start;
+  }
+
+  .brand{
+    max-width:125px;
+  }
+
+  .top-actions{
+    flex-shrink:1;
+  }
+
+  .top-actions .btn{
+    min-width:0;
+  }
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .stat{
+    width:100%;
+  }
+
+}
+
+
+/* ==========================================
+   SHORT HEIGHT MOBILE
+   ========================================== */
+
+@media(max-width:599px) and (max-height:650px){
+
+  body{
+    align-items:flex-start;
+  }
+
+  .container{
+    padding-top:14px;
+    padding-bottom:28px;
+  }
+
+  .page-head{
+    margin-bottom:14px;
+  }
+
+  .filters{
+    margin-bottom:13px;
+  }
+
+  .stat{
+    padding-top:12px;
+    padding-bottom:12px;
+  }
+
+}
+
+
+/* ==========================================
+   REDUCED MOTION
+   ========================================== */
+
+@media(prefers-reduced-motion:reduce){
+
+  *,
+  *::before,
+  *::after{
+    scroll-behavior:auto !important;
+    transition-duration:.01ms !important;
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+  }
+
 }
 </style>
 </head>
@@ -574,7 +1343,6 @@ th{
 
   <section class="grid">
 
-
     <div class="panel">
 
       <h2>
@@ -607,7 +1375,6 @@ th{
       </div>
 
     </div>
-
 
   </section>
 
@@ -688,7 +1455,7 @@ let orderItems = [];
 
 /* =========================
    MONEY
-========================= */
+   ========================= */
 
 function money(value){
 
@@ -704,7 +1471,7 @@ function money(value){
 
 /* =========================
    DATE
-========================= */
+   ========================= */
 
 function formatDate(value){
 
@@ -725,7 +1492,7 @@ function formatDate(value){
 
 /* =========================
    HTML ESCAPE
-========================= */
+   ========================= */
 
 function escapeHtml(value){
 
@@ -741,7 +1508,7 @@ function escapeHtml(value){
 
 /* =========================
    PERIOD
-========================= */
+   ========================= */
 
 function getStartDate(period){
 
@@ -797,7 +1564,7 @@ function getStartDate(period){
 
 /* =========================
    VERIFY OWNER
-========================= */
+   ========================= */
 
 async function verifyOwner(){
 
@@ -805,7 +1572,7 @@ async function verifyOwner(){
     data:{session},
     error:sessionError
   } =
-  await supabaseClient.auth.getSession();
+    await supabaseClient.auth.getSession();
 
 
   if(sessionError || !session){
@@ -821,16 +1588,16 @@ async function verifyOwner(){
     data:owner,
     error
   } =
-  await supabaseClient
-    .from("owners")
-    .select(
-      "id,role,shop_id,full_name"
-    )
-    .eq(
-      "id",
-      session.user.id
-    )
-    .single();
+    await supabaseClient
+      .from("owners")
+      .select(
+        "id,role,shop_id,full_name"
+      )
+      .eq(
+        "id",
+        session.user.id
+      )
+      .single();
 
 
   if(
@@ -856,16 +1623,16 @@ async function verifyOwner(){
     data:shop,
     error:shopError
   } =
-  await supabaseClient
-    .from("shops")
-    .select(
-      "id,name,slug"
-    )
-    .eq(
-      "id",
-      owner.shop_id
-    )
-    .single();
+    await supabaseClient
+      .from("shops")
+      .select(
+        "id,name,slug"
+      )
+      .eq(
+        "id",
+        owner.shop_id
+      )
+      .single();
 
 
   if(shopError || !shop){
@@ -895,7 +1662,7 @@ async function verifyOwner(){
 
 /* =========================
    LOAD REPORTS
-========================= */
+   ========================= */
 
 async function loadReports(){
 
@@ -963,7 +1730,7 @@ async function loadReports(){
     data,
     error
   } =
-  await query;
+    await query;
 
 
   if(error){
@@ -996,20 +1763,20 @@ async function loadReports(){
       data:items,
       error:itemError
     } =
-    await supabaseClient
-      .from("order_items")
-      .select(`
-        order_id,
-        product_name,
-        price,
-        quantity,
-        size,
-        variant
-      `)
-      .in(
-        "order_id",
-        orderIds
-      );
+      await supabaseClient
+        .from("order_items")
+        .select(`
+          order_id,
+          product_name,
+          price,
+          quantity,
+          size,
+          variant
+        `)
+        .in(
+          "order_id",
+          orderIds
+        );
 
 
     if(itemError){
@@ -1042,7 +1809,7 @@ async function loadReports(){
 
 /* =========================
    STATS
-========================= */
+   ========================= */
 
 function renderStats(){
 
@@ -1074,6 +1841,7 @@ function renderStats(){
             o =>
               o.id === item.order_id
           );
+
 
         return (
           order &&
@@ -1175,7 +1943,7 @@ function renderStats(){
 
 /* =========================
    TOP PRODUCTS
-========================= */
+   ========================= */
 
 function renderProducts(){
 
@@ -1338,7 +2106,7 @@ function renderProducts(){
 
 /* =========================
    SUMMARY
-========================= */
+   ========================= */
 
 function renderSummary(){
 
@@ -1457,7 +2225,7 @@ function renderSummary(){
 
 /* =========================
    RECENT ORDERS
-========================= */
+   ========================= */
 
 function renderRecentOrders(){
 
@@ -1513,7 +2281,7 @@ function renderRecentOrders(){
 
           <tr>
 
-            <td>
+            <td data-label="Order">
               <strong>
                 ${escapeHtml(
                   order.id
@@ -1524,7 +2292,7 @@ function renderRecentOrders(){
             </td>
 
 
-            <td>
+            <td data-label="Customer">
               ${escapeHtml(
                 order.customer_name ||
                 "-"
@@ -1532,14 +2300,14 @@ function renderRecentOrders(){
             </td>
 
 
-            <td>
+            <td data-label="Amount">
               ${money(
                 order.total_amount
               )}
             </td>
 
 
-            <td>
+            <td data-label="Status">
 
               <span
                 class="status ${statusClass}"
@@ -1553,7 +2321,7 @@ function renderRecentOrders(){
             </td>
 
 
-            <td>
+            <td data-label="Payment">
 
               <span
                 class="status ${paymentClass}"
@@ -1567,7 +2335,7 @@ function renderRecentOrders(){
             </td>
 
 
-            <td>
+            <td data-label="Date">
               ${formatDate(
                 order.created_at
               )}
@@ -1585,7 +2353,7 @@ function renderRecentOrders(){
 
 /* =========================
    ERROR
-========================= */
+   ========================= */
 
 function showError(message){
 
@@ -1625,7 +2393,7 @@ function hideError(){
 
 /* =========================
    BACK
-========================= */
+   ========================= */
 
 function goBack(){
 
@@ -1637,7 +2405,7 @@ function goBack(){
 
 /* =========================
    LOGOUT
-========================= */
+   ========================= */
 
 async function logout(){
 
@@ -1654,7 +2422,7 @@ async function logout(){
 
 /* =========================
    START
-========================= */
+   ========================= */
 
 (async function(){
 
@@ -1674,3 +2442,4 @@ async function logout(){
 
 </body>
 </html>
+```
