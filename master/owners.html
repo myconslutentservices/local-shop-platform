@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,10 +6,10 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Owner Login | Local Shop Platform</title>
+  <title>Owners | Local Shop Platform</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase.js"></script>
@@ -23,178 +22,575 @@
       padding: 0;
     }
 
-    html,
-    body {
-      width: 100%;
-      min-height: 100%;
+    :root {
+      --bg: #0b1120;
+      --card: #111827;
+      --card2: #0f172a;
+      --border: #263244;
+      --text: #ffffff;
+      --muted: #94a3b8;
+      --blue: #2563eb;
+      --blue2: #1d4ed8;
+      --green: #16a34a;
+      --red: #dc2626;
+      --yellow: #d97706;
     }
 
     body {
       min-height: 100vh;
-      min-height: 100dvh;
+      background: var(--bg);
+      color: var(--text);
       font-family: Arial, sans-serif;
-      background: #0b1120;
-      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+      width: 100%;
+      min-height: 70px;
 
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 14px 24px;
+
+      background: #0f172a;
+      border-bottom: 1px solid var(--border);
+
+      gap: 15px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+
+      flex-shrink: 0;
+
+      border-radius: 11px;
+
+      background: var(--blue);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-btn {
+      border: 1px solid #334155;
+      background: #111827;
+      color: #cbd5e1;
+
+      height: 40px;
+
+      padding: 0 14px;
+
+      border-radius: 9px;
+
+      cursor: pointer;
+
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .header-btn:hover {
+      background: #1e293b;
+    }
+
+    .logout-btn {
+      color: #fca5a5;
+      border-color: #7f1d1d;
+    }
+
+    .logout-btn:hover {
+      background: rgba(220, 38, 38, 0.12);
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main {
+      width: 100%;
+      max-width: 1400px;
+
+      margin: 0 auto;
+
+      padding: 28px 24px 40px;
+    }
+
+    .page-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      gap: 20px;
+
+      margin-bottom: 22px;
+    }
+
+    .page-title h1 {
+      font-size: 28px;
+      line-height: 1.2;
+      margin-bottom: 7px;
+    }
+
+    .page-title p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .owner-count {
+      background: rgba(37, 99, 235, 0.12);
+      border: 1px solid rgba(37, 99, 235, 0.35);
+      color: #93c5fd;
+
+      padding: 8px 12px;
+
+      border-radius: 9px;
+
+      font-size: 13px;
+      font-weight: 600;
+
+      white-space: nowrap;
+    }
+
+    /* =========================
+       TOOLBAR
+    ========================= */
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+
+      gap: 12px;
+
+      margin-bottom: 18px;
+    }
+
+    .search-box {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      height: 46px;
+
+      background: var(--card);
+      border: 1px solid var(--border);
+
+      border-radius: 10px;
+
+      color: white;
+
+      padding: 0 15px;
+
+      outline: none;
+
+      font-size: 14px;
+    }
+
+    .search-box input:focus {
+      border-color: #3b82f6;
+    }
+
+    .refresh-btn {
+      height: 46px;
+
+      border: 1px solid #334155;
+
+      background: var(--card);
+
+      color: #cbd5e1;
+
+      border-radius: 10px;
+
+      padding: 0 17px;
+
+      cursor: pointer;
+
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .refresh-btn:hover {
+      background: #1e293b;
+    }
+
+    /* =========================
+       TABLE CARD
+    ========================= */
+
+    .table-card {
+      width: 100%;
+
+      background: var(--card);
+
+      border: 1px solid var(--border);
+
+      border-radius: 15px;
+
+      overflow: hidden;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 980px;
+
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+
+      background: #0f172a;
+
+      color: #94a3b8;
+
+      font-size: 12px;
+
+      font-weight: 700;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.03em;
+
+      padding: 15px 16px;
+
+      border-bottom: 1px solid var(--border);
+
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 16px;
+
+      border-bottom: 1px solid #1f2937;
+
+      vertical-align: middle;
+
+      font-size: 13px;
+
+      color: #e2e8f0;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .owner-name {
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .owner-id {
+      color: #64748b;
+      font-size: 10px;
+
+      max-width: 170px;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .email {
+      color: #93c5fd;
+
+      word-break: break-word;
+    }
+
+    .phone {
+      color: #cbd5e1;
+    }
+
+    .shop-name {
+      font-weight: 600;
+      color: #f8fafc;
+      margin-bottom: 4px;
+    }
+
+    .shop-slug {
+      color: #64748b;
+      font-size: 11px;
+    }
+
+    .role-badge {
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      padding: 5px 9px;
+
+      border-radius: 999px;
+
+      background: rgba(37, 99, 235, 0.12);
+
+      border: 1px solid rgba(37, 99, 235, 0.35);
+
+      color: #93c5fd;
+
+      font-size: 11px;
+
+      font-weight: 700;
+
+      text-transform: uppercase;
+    }
+
+    .action-btn {
+      height: 36px;
+
+      border-radius: 8px;
+
+      border: 1px solid #7f1d1d;
+
+      background: rgba(220, 38, 38, 0.08);
+
+      color: #fca5a5;
+
+      padding: 0 11px;
+
+      cursor: pointer;
+
+      font-size: 12px;
+
+      font-weight: 700;
+
+      white-space: nowrap;
+    }
+
+    .action-btn:hover {
+      background: rgba(220, 38, 38, 0.16);
+    }
+
+    .empty {
+      padding: 50px 20px;
+
+      text-align: center;
+
+      color: var(--muted);
+
+      font-size: 14px;
+    }
+
+    .loading {
+      padding: 50px 20px;
+
+      text-align: center;
+
+      color: var(--muted);
+
+      font-size: 14px;
+    }
+
+    /* =========================
+       MODAL
+    ========================= */
+
+    .modal-overlay {
+      position: fixed;
+
+      inset: 0;
+
+      background: rgba(0, 0, 0, 0.72);
+
+      display: none;
+
       align-items: center;
       justify-content: center;
 
       padding: 20px;
 
-      overflow-x: hidden;
+      z-index: 1000;
     }
 
-    /* ================================
-       LOGIN WRAPPER
-       ================================ */
-
-    .login-wrapper {
-      width: 100%;
-      max-width: 420px;
-    }
-
-    /* ================================
-       BRAND
-       ================================ */
-
-    .brand {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-
-    .brand-icon {
-      width: 60px;
-      height: 60px;
-
-      margin: 0 auto 15px;
-
-      border-radius: 16px;
-
-      background: #2563eb;
-
+    .modal-overlay.show {
       display: flex;
-      align-items: center;
-      justify-content: center;
-
-      font-size: 28px;
-      font-weight: bold;
-
-      user-select: none;
     }
 
-    .brand h1 {
-      font-size: 25px;
-      line-height: 1.2;
-      margin-bottom: 7px;
-    }
-
-    .brand p {
-      color: #94a3b8;
-      font-size: 14px;
-      line-height: 1.4;
-    }
-
-    /* ================================
-       CARD
-       ================================ */
-
-    .card {
+    .modal {
       width: 100%;
+      max-width: 460px;
 
       background: #111827;
 
       border: 1px solid #263244;
 
-      border-radius: 18px;
-
-      padding: 28px;
+      border-radius: 17px;
 
       box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.35);
+        0 25px 70px rgba(0,0,0,0.55);
+
+      overflow: hidden;
     }
 
-    .card h2 {
-      font-size: 21px;
-      line-height: 1.3;
-      margin-bottom: 7px;
+    .modal-head {
+      padding: 20px;
+
+      border-bottom: 1px solid var(--border);
+
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      gap: 15px;
     }
 
-    .subtitle {
-      color: #94a3b8;
-      font-size: 14px;
+    .modal-head h2 {
+      font-size: 19px;
+      margin-bottom: 5px;
+    }
+
+    .modal-head p {
+      color: var(--muted);
+      font-size: 12px;
       line-height: 1.4;
-      margin-bottom: 25px;
     }
 
-    /* ================================
-       FORM
-       ================================ */
+    .close-btn {
+      width: 34px;
+      height: 34px;
 
-    .field {
-      margin-bottom: 18px;
-    }
-
-    label {
-      display: block;
-
-      margin-bottom: 8px;
-
-      font-size: 14px;
-
-      color: #cbd5e1;
-    }
-
-    input {
-      width: 100%;
-      height: 48px;
-
-      border-radius: 10px;
+      border-radius: 8px;
 
       border: 1px solid #334155;
 
       background: #0f172a;
 
-      color: #ffffff;
+      color: #cbd5e1;
 
-      padding: 0 14px;
+      cursor: pointer;
+
+      font-size: 18px;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .selected-owner {
+      background: #0f172a;
+
+      border: 1px solid #263244;
+
+      border-radius: 10px;
+
+      padding: 12px 13px;
+
+      margin-bottom: 18px;
+    }
+
+    .selected-owner strong {
+      display: block;
+
+      font-size: 14px;
+
+      margin-bottom: 4px;
+    }
+
+    .selected-owner span {
+      color: #93c5fd;
+
+      font-size: 12px;
+
+      word-break: break-word;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+
+      margin-bottom: 7px;
+
+      color: #cbd5e1;
+
+      font-size: 13px;
+
+      font-weight: 600;
+    }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap input {
+      width: 100%;
+
+      height: 46px;
+
+      border: 1px solid #334155;
+
+      background: #0f172a;
+
+      color: white;
+
+      border-radius: 9px;
 
       outline: none;
 
-      font-size: 15px;
+      padding: 0 65px 0 13px;
 
-      -webkit-appearance: none;
-      appearance: none;
+      font-size: 14px;
     }
 
-    input::placeholder {
-      color: #64748b;
-    }
-
-    input:focus {
+    .password-wrap input:focus {
       border-color: #3b82f6;
-
-      box-shadow:
-        0 0 0 2px rgba(59, 130, 246, 0.10);
     }
 
-    /* ================================
-       PASSWORD
-       ================================ */
-
-    .password-box {
-      position: relative;
-      width: 100%;
-    }
-
-    .password-box input {
-      padding-right: 70px;
-    }
-
-    .show-password {
+    .show-btn {
       position: absolute;
 
-      right: 12px;
+      right: 8px;
       top: 50%;
 
       transform: translateY(-50%);
@@ -207,394 +603,215 @@
 
       cursor: pointer;
 
-      font-size: 13px;
+      font-size: 12px;
 
       padding: 6px;
-
-      min-height: auto;
-
-      -webkit-tap-highlight-color: transparent;
     }
 
-    .show-password:hover {
-      color: #93c5fd;
+    .password-help {
+      color: #64748b;
+
+      font-size: 11px;
+
+      margin-top: 7px;
+
+      line-height: 1.4;
     }
 
-    /* ================================
-       LOGIN BUTTON
-       ================================ */
+    .modal-message {
+      display: none;
 
-    .login-btn {
-      width: 100%;
-      height: 50px;
+      margin-bottom: 15px;
 
-      border: none;
+      padding: 10px 12px;
 
-      border-radius: 10px;
+      border-radius: 9px;
 
-      background: #2563eb;
+      font-size: 12px;
 
-      color: white;
+      line-height: 1.5;
+    }
 
-      font-size: 16px;
+    .modal-message.error {
+      display: block;
 
-      font-weight: 600;
+      color: #fca5a5;
+
+      background: rgba(220,38,38,0.10);
+
+      border: 1px solid #7f1d1d;
+    }
+
+    .modal-message.success {
+      display: block;
+
+      color: #86efac;
+
+      background: rgba(22,163,74,0.10);
+
+      border: 1px solid #166534;
+    }
+
+    .modal-actions {
+      display: flex;
+
+      justify-content: flex-end;
+
+      gap: 9px;
+
+      padding: 17px 20px;
+
+      border-top: 1px solid var(--border);
+    }
+
+    .modal-btn {
+      height: 42px;
+
+      padding: 0 16px;
+
+      border-radius: 9px;
 
       cursor: pointer;
 
-      margin-top: 5px;
+      font-size: 13px;
 
-      transition:
-        background 0.2s ease,
-        opacity 0.2s ease;
-
-      -webkit-tap-highlight-color: transparent;
+      font-weight: 700;
     }
 
-    .login-btn:hover {
-      background: #1d4ed8;
+    .cancel-btn {
+      background: #0f172a;
+
+      border: 1px solid #334155;
+
+      color: #cbd5e1;
     }
 
-    .login-btn:active {
-      transform: translateY(1px);
+    .reset-btn {
+      background: var(--blue);
+
+      border: 1px solid var(--blue);
+
+      color: white;
     }
 
-    .login-btn:disabled {
+    .reset-btn:hover {
+      background: var(--blue2);
+    }
+
+    .reset-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
 
-    /* ================================
-       MESSAGE
-       ================================ */
-
-    .message {
-      display: none;
-
-      margin-top: 18px;
-
-      padding: 12px 14px;
-
-      border-radius: 10px;
-
-      font-size: 14px;
-
-      line-height: 1.5;
-
-      word-break: break-word;
-    }
-
-    .message.success {
-      display: block;
-
-      background: rgba(22, 163, 74, 0.12);
-
-      border: 1px solid #166534;
-
-      color: #86efac;
-    }
-
-    .message.error {
-      display: block;
-
-      background: rgba(220, 38, 38, 0.12);
-
-      border: 1px solid #991b1b;
-
-      color: #fca5a5;
-    }
-
-    /* ================================
-       LOADING
-       ================================ */
-
-    .loading {
-      display: none;
-
-      margin-top: 12px;
-
-      text-align: center;
-
-      color: #94a3b8;
-
-      font-size: 13px;
-
-      line-height: 1.4;
-    }
-
-    /* ================================
-       FOOTER
-       ================================ */
-
-    .footer {
-      text-align: center;
-
-      margin-top: 20px;
-
-      color: #64748b;
-
-      font-size: 12px;
-
-      line-height: 1.4;
-    }
-
-    /* ================================
-       TABLET
-       ================================ */
+    /* =========================
+       MOBILE
+    ========================= */
 
     @media (max-width: 700px) {
 
-      body {
-        padding: 16px;
-      }
-
-      .login-wrapper {
-        max-width: 430px;
-      }
-
-      .brand {
-        margin-bottom: 21px;
+      .header {
+        padding: 12px 15px;
       }
 
       .brand-icon {
-        width: 56px;
-        height: 56px;
-
-        border-radius: 15px;
-
-        font-size: 25px;
-
-        margin-bottom: 13px;
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
       }
 
-      .brand h1 {
-        font-size: 23px;
+      .brand-title {
+        font-size: 15px;
       }
 
-      .brand p {
-        font-size: 13px;
+      .brand-subtitle {
+        font-size: 10px;
       }
 
-      .card {
-        padding: 25px 22px;
-        border-radius: 16px;
+      .header-btn {
+        height: 37px;
+        padding: 0 10px;
+        font-size: 11px;
       }
 
-      .card h2 {
-        font-size: 20px;
+      .main {
+        padding: 22px 14px 30px;
       }
 
-      .subtitle {
-        margin-bottom: 22px;
+      .page-head {
+        flex-direction: column;
+        gap: 12px;
       }
 
-    }
-
-    /* ================================
-       MOBILE
-       ================================ */
-
-    @media (max-width: 500px) {
-
-      body {
-        padding: 14px;
+      .page-title h1 {
+        font-size: 24px;
       }
 
-      .login-wrapper {
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .refresh-btn {
         width: 100%;
       }
 
-      .brand {
-        margin-bottom: 18px;
+      .table-card {
+        border-radius: 12px;
       }
 
-      .brand-icon {
-        width: 54px;
-        height: 54px;
+      .modal-overlay {
+        padding: 12px;
+      }
 
+      .modal {
         border-radius: 14px;
-
-        font-size: 23px;
-
-        margin-bottom: 12px;
-      }
-
-      .brand h1 {
-        font-size: 21px;
-      }
-
-      .brand p {
-        font-size: 12px;
-      }
-
-      .card {
-        padding: 22px 18px;
-
-        border-radius: 14px;
-      }
-
-      .card h2 {
-        font-size: 19px;
-      }
-
-      .subtitle {
-        font-size: 13px;
-        margin-bottom: 21px;
-      }
-
-      .field {
-        margin-bottom: 16px;
-      }
-
-      label {
-        font-size: 13px;
-        margin-bottom: 7px;
-      }
-
-      input {
-        height: 46px;
-        font-size: 15px;
-        padding: 0 13px;
-      }
-
-      .password-box input {
-        padding-right: 65px;
-      }
-
-      .login-btn {
-        height: 48px;
-        font-size: 15px;
-      }
-
-      .message {
-        margin-top: 16px;
-        padding: 11px 12px;
-        font-size: 13px;
-      }
-
-      .loading {
-        font-size: 12px;
-      }
-
-      .footer {
-        margin-top: 17px;
-        font-size: 11px;
       }
 
     }
 
-    /* ================================
-       SMALL MOBILE
-       ================================ */
+    @media (max-width: 430px) {
 
-    @media (max-width: 380px) {
-
-      body {
-        padding: 10px;
-      }
-
-      .brand-icon {
-        width: 50px;
-        height: 50px;
-
-        font-size: 21px;
-
-        border-radius: 13px;
-      }
-
-      .brand h1 {
-        font-size: 19px;
-      }
-
-      .brand p {
-        font-size: 11px;
-      }
-
-      .card {
-        padding: 20px 15px;
-        border-radius: 13px;
-      }
-
-      .card h2 {
-        font-size: 18px;
-      }
-
-      .subtitle {
-        font-size: 12px;
-        margin-bottom: 19px;
-      }
-
-      input {
-        height: 44px;
-        font-size: 14px;
-      }
-
-      .login-btn {
-        height: 46px;
-        font-size: 14px;
-      }
-
-      .message {
-        font-size: 12px;
-      }
-
-    }
-
-    /* ================================
-       VERY SMALL HEIGHT DEVICES
-       ================================ */
-
-    @media (max-height: 600px) {
-
-      body {
+      .header {
         align-items: flex-start;
-        padding-top: 20px;
-        padding-bottom: 20px;
-      }
-
-      .login-wrapper {
-        margin: auto 0;
       }
 
       .brand {
-        margin-bottom: 15px;
+        gap: 8px;
       }
 
-      .brand-icon {
-        margin-bottom: 9px;
+      .header-actions {
+        gap: 5px;
       }
 
-      .card {
-        padding-top: 20px;
-        padding-bottom: 20px;
+      .header-btn {
+        padding: 0 8px;
       }
 
-      .field {
-        margin-bottom: 12px;
+      .logout-btn {
+        font-size: 0;
       }
 
-      .subtitle {
-        margin-bottom: 17px;
+      .logout-btn::after {
+        content: "Logout";
+        font-size: 11px;
       }
 
-      .footer {
-        margin-top: 13px;
+      .main {
+        padding-left: 10px;
+        padding-right: 10px;
       }
 
-    }
-
-    /* ================================
-       TOUCH DEVICES
-       ================================ */
-
-    @media (hover: none) and (pointer: coarse) {
-
-      .login-btn:hover {
-        background: #2563eb;
+      .modal-head,
+      .modal-body {
+        padding: 16px;
       }
 
-      .show-password:hover {
-        color: #60a5fa;
+      .modal-actions {
+        padding: 14px 16px;
+      }
+
+      .modal-actions .modal-btn {
+        flex: 1;
       }
 
     }
@@ -603,16 +820,14 @@
 
 </head>
 
-
 <body>
 
 
-  <div class="login-wrapper">
+  <!-- =========================
+       HEADER
+  ========================= -->
 
-
-    <!-- ================================
-         BRAND
-         ================================ -->
+  <header class="header">
 
     <div class="brand">
 
@@ -620,183 +835,1120 @@
         LS
       </div>
 
-      <h1>
-        Local Shop Platform
-      </h1>
+      <div class="brand-text">
 
-      <p>
-        Owner Management Panel
-      </p>
+        <div class="brand-title">
+          Local Shop Platform
+        </div>
+
+        <div class="brand-subtitle">
+          Master Panel · Owners
+        </div>
+
+      </div>
 
     </div>
 
 
-    <!-- ================================
-         LOGIN CARD
-         ================================ -->
+    <div class="header-actions">
 
-    <div class="card">
+      <button
+        class="header-btn"
+        onclick="goDashboard()"
+      >
+        Dashboard
+      </button>
 
-      <h2>
-        Owner Login
-      </h2>
+      <button
+        class="header-btn logout-btn"
+        onclick="logout()"
+      >
+        Logout
+      </button>
 
-      <p class="subtitle">
-        Login to manage your shop
-      </p>
+    </div>
+
+  </header>
 
 
-      <form id="loginForm">
+  <!-- =========================
+       MAIN
+  ========================= -->
+
+  <main class="main">
 
 
-        <!-- EMAIL -->
+    <div class="page-head">
 
-        <div class="field">
+      <div class="page-title">
 
-          <label for="email">
-            Email Address
-          </label>
+        <h1>
+          All Owners
+        </h1>
 
-          <input
-            type="email"
-            id="email"
-            placeholder="owner@example.com"
-            autocomplete="email"
-            required
-          >
+        <p>
+          Manage shop owners and their account access.
+        </p>
+
+      </div>
+
+
+      <div
+        class="owner-count"
+        id="ownerCount"
+      >
+        0 Owners
+      </div>
+
+    </div>
+
+
+    <!-- TOOLBAR -->
+
+    <div class="toolbar">
+
+      <div class="search-box">
+
+        <input
+          type="search"
+          id="searchInput"
+          placeholder="Search owner, email, phone or shop..."
+          autocomplete="off"
+        >
+
+      </div>
+
+
+      <button
+        class="refresh-btn"
+        id="refreshBtn"
+      >
+        Refresh
+      </button>
+
+    </div>
+
+
+    <!-- TABLE -->
+
+    <div class="table-card">
+
+      <div
+        class="loading"
+        id="loading"
+      >
+        Loading owners...
+      </div>
+
+
+      <div
+        class="empty"
+        id="emptyState"
+        style="display:none;"
+      >
+        No owners found.
+      </div>
+
+
+      <div
+        class="table-wrap"
+        id="tableWrap"
+        style="display:none;"
+      >
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Owner
+              </th>
+
+              <th>
+                Email
+              </th>
+
+              <th>
+                Phone
+              </th>
+
+              <th>
+                Shop
+              </th>
+
+              <th>
+                Role
+              </th>
+
+              <th>
+                Action
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="ownersBody"></tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- =========================
+       RESET PASSWORD MODAL
+  ========================= -->
+
+  <div
+    class="modal-overlay"
+    id="resetModal"
+  >
+
+    <div class="modal">
+
+
+      <div class="modal-head">
+
+        <div>
+
+          <h2>
+            Reset Owner Password
+          </h2>
+
+          <p>
+            Set a new password for this owner account.
+          </p>
 
         </div>
 
 
-        <!-- PASSWORD -->
+        <button
+          class="close-btn"
+          id="closeModalBtn"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="modal-body">
+
+
+        <div
+          class="selected-owner"
+          id="selectedOwner"
+        >
+          <strong>
+            Owner
+          </strong>
+
+          <span>
+            -
+          </span>
+        </div>
+
+
+        <div
+          class="modal-message"
+          id="modalMessage"
+        ></div>
+
 
         <div class="field">
 
-          <label for="password">
-            Password
+          <label for="newPassword">
+            New Password
           </label>
 
-          <div class="password-box">
+
+          <div class="password-wrap">
 
             <input
               type="password"
-              id="password"
-              placeholder="Enter password"
-              autocomplete="current-password"
-              required
+              id="newPassword"
+              placeholder="Enter new password"
+              autocomplete="new-password"
             >
+
 
             <button
               type="button"
-              class="show-password"
-              id="showPassword"
+              class="show-btn"
+              id="showNewPassword"
             >
               Show
             </button>
 
           </div>
 
+
+          <div class="password-help">
+            Minimum 6 characters. The old password cannot be recovered or displayed.
+          </div>
+
         </div>
 
 
-        <!-- LOGIN -->
+      </div>
+
+
+      <div class="modal-actions">
 
         <button
-          type="submit"
-          class="login-btn"
-          id="loginBtn"
+          type="button"
+          class="modal-btn cancel-btn"
+          id="cancelResetBtn"
         >
-          Login
+          Cancel
         </button>
 
 
-        <!-- LOADING -->
-
-        <div
-          class="loading"
-          id="loading"
+        <button
+          type="button"
+          class="modal-btn reset-btn"
+          id="confirmResetBtn"
         >
-          Checking account...
-        </div>
+          Reset Password
+        </button>
 
+      </div>
 
-        <!-- MESSAGE -->
-
-        <div
-          class="message"
-          id="message"
-        ></div>
-
-
-      </form>
 
     </div>
-
-
-    <!-- FOOTER -->
-
-    <div class="footer">
-      © 2026 Local Shop Platform
-    </div>
-
 
   </div>
 
 
   <script>
 
-
-    const loginForm =
-      document.getElementById("loginForm");
-
-
-    const emailInput =
-      document.getElementById("email");
-
-
-    const passwordInput =
-      document.getElementById("password");
-
-
-    const loginBtn =
-      document.getElementById("loginBtn");
-
+    const ownersBody =
+      document.getElementById("ownersBody");
 
     const loading =
       document.getElementById("loading");
 
+    const emptyState =
+      document.getElementById("emptyState");
 
-    const message =
-      document.getElementById("message");
+    const tableWrap =
+      document.getElementById("tableWrap");
+
+    const searchInput =
+      document.getElementById("searchInput");
+
+    const refreshBtn =
+      document.getElementById("refreshBtn");
+
+    const ownerCount =
+      document.getElementById("ownerCount");
+
+    const resetModal =
+      document.getElementById("resetModal");
+
+    const closeModalBtn =
+      document.getElementById("closeModalBtn");
+
+    const cancelResetBtn =
+      document.getElementById("cancelResetBtn");
+
+    const confirmResetBtn =
+      document.getElementById("confirmResetBtn");
+
+    const selectedOwner =
+      document.getElementById("selectedOwner");
+
+    const newPassword =
+      document.getElementById("newPassword");
+
+    const showNewPassword =
+      document.getElementById("showNewPassword");
+
+    const modalMessage =
+      document.getElementById("modalMessage");
 
 
-    const showPassword =
-      document.getElementById("showPassword");
+    let allOwners = [];
+
+    let selectedOwnerId = null;
 
 
-    // --------------------------------
-    // SHOW / HIDE PASSWORD
-    // --------------------------------
+    // =========================
+    // ESCAPE HTML
+    // =========================
 
-    showPassword.addEventListener(
+    function escapeHtml(value) {
+
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+
+    // =========================
+    // VERIFY MASTER
+    // =========================
+
+    async function verifyMaster() {
+
+      const {
+        data: sessionData,
+        error: sessionError
+      } =
+        await supabaseClient.auth.getSession();
+
+
+      if (sessionError) {
+        throw sessionError;
+      }
+
+
+      const session =
+        sessionData?.session;
+
+
+      if (!session) {
+
+        window.location.href =
+          "./login.html";
+
+        return false;
+
+      }
+
+
+      const {
+        data: master,
+        error
+      } =
+        await supabaseClient
+          .from("owners")
+          .select("id, full_name, role, shop_id")
+          .eq("id", session.user.id)
+          .single();
+
+
+      if (
+        error ||
+        !master ||
+        master.role !== "master"
+      ) {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+          "./login.html";
+
+        return false;
+
+      }
+
+
+      return true;
+
+    }
+
+
+    // =========================
+    // LOAD OWNERS
+    // =========================
+
+    async function loadOwners() {
+
+      loading.style.display =
+        "block";
+
+      tableWrap.style.display =
+        "none";
+
+      emptyState.style.display =
+        "none";
+
+
+      try {
+
+        const verified =
+          await verifyMaster();
+
+
+        if (!verified) {
+          return;
+        }
+
+
+        const {
+          data: owners,
+          error: ownersError
+        } =
+          await supabaseClient
+            .from("owners")
+            .select(`
+              id,
+              shop_id,
+              full_name,
+              phone,
+              role
+            `)
+            .eq("role", "owner")
+            .order("full_name", {
+              ascending: true
+            });
+
+
+        if (ownersError) {
+          throw ownersError;
+        }
+
+
+        const shopIds =
+          [...new Set(
+            (owners || [])
+              .map(owner => owner.shop_id)
+              .filter(Boolean)
+          )];
+
+
+        let shops = [];
+
+
+        if (shopIds.length) {
+
+          const {
+            data,
+            error: shopsError
+          } =
+            await supabaseClient
+              .from("shops")
+              .select(
+                "id, name, slug, status"
+              )
+              .in(
+                "id",
+                shopIds
+              );
+
+
+          if (shopsError) {
+            throw shopsError;
+          }
+
+
+          shops = data || [];
+
+        }
+
+
+        const shopMap =
+          new Map(
+            shops.map(shop => [
+              shop.id,
+              shop
+            ])
+          );
+
+
+        /*
+          Email comes from Supabase Auth.
+          It cannot be read from auth.users
+          directly by the frontend.
+        */
+
+        let emailMap = {};
+
+
+        if (owners?.length) {
+
+          const ownerIds =
+            owners.map(
+              owner => owner.id
+            );
+
+
+          const {
+            data: emailData,
+            error: emailError
+          } =
+            await callManageOwnerFunction({
+              action: "list_emails",
+              owner_ids: ownerIds
+            });
+
+
+          if (emailError) {
+            throw emailError;
+          }
+
+
+          emailMap =
+            emailData?.emails || {};
+
+        }
+
+
+        allOwners =
+          (owners || []).map(owner => ({
+
+            ...owner,
+
+            email:
+              emailMap[owner.id] || "",
+
+            shop:
+              shopMap.get(owner.shop_id) || null
+
+          }));
+
+
+        renderOwners();
+
+      } catch (error) {
+
+        console.error(
+          "LOAD OWNERS ERROR:",
+          error
+        );
+
+
+        loading.textContent =
+          error?.message ||
+          "Failed to load owners.";
+
+      }
+
+    }
+
+
+    // =========================
+    // EDGE FUNCTION CALL
+    // =========================
+
+    async function callManageOwnerFunction(
+      payload
+    ) {
+
+      const {
+        data: sessionData,
+        error: sessionError
+      } =
+        await supabaseClient.auth.getSession();
+
+
+      if (
+        sessionError ||
+        !sessionData?.session
+      ) {
+
+        window.location.href =
+          "./login.html";
+
+        throw new Error(
+          "Master session expired."
+        );
+
+      }
+
+
+      const token =
+        sessionData.session.access_token;
+
+
+      const response =
+        await fetch(
+          `${SUPABASE_URL}/functions/v1/manage-owner-account`,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              "Authorization":
+                `Bearer ${token}`
+            },
+
+            body:
+              JSON.stringify(payload)
+          }
+        );
+
+
+      let result = {};
+
+      try {
+        result =
+          await response.json();
+      } catch {
+        result = {};
+      }
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          result?.error ||
+          "Owner account request failed."
+        );
+
+      }
+
+
+      return {
+        data: result,
+        error: null
+      };
+
+    }
+
+
+    // =========================
+    // RENDER
+    // =========================
+
+    function renderOwners() {
+
+      const query =
+        searchInput.value
+          .trim()
+          .toLowerCase();
+
+
+      const filtered =
+        allOwners.filter(owner => {
+
+          const shopName =
+            owner.shop?.name || "";
+
+          const shopSlug =
+            owner.shop?.slug || "";
+
+          const searchable = [
+
+            owner.full_name,
+
+            owner.email,
+
+            owner.phone,
+
+            shopName,
+
+            shopSlug,
+
+            owner.id
+
+          ]
+            .join(" ")
+            .toLowerCase();
+
+
+          return searchable.includes(
+            query
+          );
+
+        });
+
+
+      ownerCount.textContent =
+        `${filtered.length} Owner${filtered.length === 1 ? "" : "s"}`;
+
+
+      loading.style.display =
+        "none";
+
+
+      if (!filtered.length) {
+
+        tableWrap.style.display =
+          "none";
+
+        emptyState.style.display =
+          "block";
+
+        return;
+
+      }
+
+
+      emptyState.style.display =
+        "none";
+
+      tableWrap.style.display =
+        "block";
+
+
+      ownersBody.innerHTML =
+        filtered.map(owner => {
+
+          const shop =
+            owner.shop;
+
+
+          const email =
+            owner.email ||
+            "Email unavailable";
+
+
+          const phone =
+            owner.phone ||
+            "—";
+
+
+          const shopName =
+            shop?.name ||
+            "No shop assigned";
+
+
+          const shopSlug =
+            shop?.slug
+              ? "/" + shop.slug
+              : "";
+
+
+          return `
+
+            <tr>
+
+              <td>
+
+                <div class="owner-name">
+                  ${escapeHtml(
+                    owner.full_name ||
+                    "Unnamed Owner"
+                  )}
+                </div>
+
+                <div class="owner-id">
+                  ${escapeHtml(
+                    owner.id
+                  )}
+                </div>
+
+              </td>
+
+
+              <td>
+
+                <div class="email">
+                  ${escapeHtml(email)}
+                </div>
+
+              </td>
+
+
+              <td>
+
+                <div class="phone">
+                  ${escapeHtml(phone)}
+                </div>
+
+              </td>
+
+
+              <td>
+
+                <div class="shop-name">
+                  ${escapeHtml(shopName)}
+                </div>
+
+                <div class="shop-slug">
+                  ${escapeHtml(shopSlug)}
+                </div>
+
+              </td>
+
+
+              <td>
+
+                <span class="role-badge">
+                  Owner
+                </span>
+
+              </td>
+
+
+              <td>
+
+                <button
+                  class="action-btn"
+                  type="button"
+                  onclick="openResetModal('${escapeHtml(owner.id)}')"
+                >
+                  Reset Password
+                </button>
+
+              </td>
+
+            </tr>
+
+          `;
+
+        }).join("");
+
+    }
+
+
+    // =========================
+    // RESET MODAL
+    // =========================
+
+    function openResetModal(ownerId) {
+
+      const owner =
+        allOwners.find(
+          item => item.id === ownerId
+        );
+
+
+      if (!owner) {
+        return;
+      }
+
+
+      selectedOwnerId =
+        owner.id;
+
+
+      selectedOwner.innerHTML = `
+
+        <strong>
+          ${escapeHtml(
+            owner.full_name ||
+            "Owner"
+          )}
+        </strong>
+
+        <span>
+          ${escapeHtml(
+            owner.email ||
+            "Email unavailable"
+          )}
+        </span>
+
+      `;
+
+
+      newPassword.value =
+        "";
+
+
+      newPassword.type =
+        "password";
+
+
+      showNewPassword.textContent =
+        "Show";
+
+
+      clearModalMessage();
+
+
+      resetModal.classList.add(
+        "show"
+      );
+
+
+      setTimeout(() => {
+
+        newPassword.focus();
+
+      }, 100);
+
+    }
+
+
+    function closeResetModal() {
+
+      resetModal.classList.remove(
+        "show"
+      );
+
+      selectedOwnerId =
+        null;
+
+      newPassword.value =
+        "";
+
+      clearModalMessage();
+
+    }
+
+
+    function clearModalMessage() {
+
+      modalMessage.textContent =
+        "";
+
+      modalMessage.className =
+        "modal-message";
+
+    }
+
+
+    function showModalMessage(
+      text,
+      type
+    ) {
+
+      modalMessage.textContent =
+        text;
+
+      modalMessage.className =
+        `modal-message ${type}`;
+
+    }
+
+
+    // =========================
+    // RESET PASSWORD
+    // =========================
+
+    async function resetOwnerPassword() {
+
+      clearModalMessage();
+
+
+      if (!selectedOwnerId) {
+
+        showModalMessage(
+          "Owner account was not selected.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const password =
+        newPassword.value;
+
+
+      if (!password) {
+
+        showModalMessage(
+          "Please enter a new password.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if (password.length < 6) {
+
+        showModalMessage(
+          "Password must contain at least 6 characters.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      confirmResetBtn.disabled =
+        true;
+
+      confirmResetBtn.textContent =
+        "Resetting...";
+
+
+      try {
+
+        await callManageOwnerFunction({
+
+          action:
+            "reset_password",
+
+          owner_id:
+            selectedOwnerId,
+
+          new_password:
+            password
+
+        });
+
+
+        showModalMessage(
+          "Password reset successfully. The owner can now login using the new password.",
+          "success"
+        );
+
+
+        newPassword.value =
+          "";
+
+
+        setTimeout(() => {
+
+          closeResetModal();
+
+        }, 1500);
+
+
+      } catch (error) {
+
+        console.error(
+          "RESET PASSWORD ERROR:",
+          error
+        );
+
+
+        showModalMessage(
+          error?.message ||
+          "Password reset failed.",
+          "error"
+        );
+
+      } finally {
+
+        confirmResetBtn.disabled =
+          false;
+
+        confirmResetBtn.textContent =
+          "Reset Password";
+
+      }
+
+    }
+
+
+    // =========================
+    // SHOW PASSWORD
+    // =========================
+
+    showNewPassword.addEventListener(
       "click",
       () => {
 
         if (
-          passwordInput.type === "password"
+          newPassword.type ===
+          "password"
         ) {
 
-          passwordInput.type = "text";
+          newPassword.type =
+            "text";
 
-          showPassword.textContent =
+          showNewPassword.textContent =
             "Hide";
 
         } else {
 
-          passwordInput.type =
+          newPassword.type =
             "password";
 
-          showPassword.textContent =
+          showNewPassword.textContent =
             "Show";
 
         }
@@ -805,336 +1957,54 @@
     );
 
 
-    // --------------------------------
-    // MESSAGE
-    // --------------------------------
+    // =========================
+    // SEARCH
+    // =========================
 
-    function showMessage(
-      text,
-      type
-    ) {
+    searchInput.addEventListener(
+      "input",
+      renderOwners
+    );
 
-      message.textContent = text;
 
-      message.className =
-        "message " + type;
+    // =========================
+    // BUTTONS
+    // =========================
 
-    }
+    refreshBtn.addEventListener(
+      "click",
+      loadOwners
+    );
 
 
-    function clearMessage() {
+    closeModalBtn.addEventListener(
+      "click",
+      closeResetModal
+    );
 
-      message.textContent = "";
 
-      message.className =
-        "message";
+    cancelResetBtn.addEventListener(
+      "click",
+      closeResetModal
+    );
 
-    }
 
+    confirmResetBtn.addEventListener(
+      "click",
+      resetOwnerPassword
+    );
 
-    // --------------------------------
-    // LOGIN
-    // --------------------------------
 
-    loginForm.addEventListener(
-      "submit",
-      async (event) => {
+    resetModal.addEventListener(
+      "click",
+      event => {
 
-        event.preventDefault();
+        if (
+          event.target ===
+          resetModal
+        ) {
 
-        clearMessage();
-
-
-        const email =
-          emailInput.value
-            .trim()
-            .toLowerCase();
-
-
-        const password =
-          passwordInput.value;
-
-
-        if (!email || !password) {
-
-          showMessage(
-            "Email and password are required.",
-            "error"
-          );
-
-          return;
-
-        }
-
-
-        loginBtn.disabled = true;
-
-        loginBtn.textContent =
-          "Logging in...";
-
-        loading.style.display =
-          "block";
-
-
-        try {
-
-
-          // --------------------------------
-          // SUPABASE AUTH LOGIN
-          // --------------------------------
-
-          const {
-            data,
-            error
-          } =
-            await supabaseClient.auth
-              .signInWithPassword({
-                email,
-                password
-              });
-
-
-          if (error) {
-
-            throw new Error(
-              error.message
-            );
-
-          }
-
-
-          if (!data?.user) {
-
-            throw new Error(
-              "Login failed. User not found."
-            );
-
-          }
-
-
-          const userId =
-            data.user.id;
-
-
-          console.log(
-            "AUTH USER:",
-            userId
-          );
-
-
-          // --------------------------------
-          // GET OWNER PROFILE
-          // --------------------------------
-
-          const {
-            data: owner,
-            error: ownerError
-          } =
-            await supabaseClient
-              .from("owners")
-              .select(
-                "id, shop_id, full_name, phone, role"
-              )
-              .eq("id", userId)
-              .single();
-
-
-          if (ownerError) {
-
-            throw new Error(
-              "Owner profile not found."
-            );
-
-          }
-
-
-          console.log(
-            "OWNER PROFILE:",
-            owner
-          );
-
-
-          // --------------------------------
-          // ROLE CHECK
-          // --------------------------------
-
-          if (
-            owner.role !== "owner"
-          ) {
-
-            await supabaseClient.auth
-              .signOut();
-
-            throw new Error(
-              "This account is not an owner account."
-            );
-
-          }
-
-
-          // --------------------------------
-          // SHOP CHECK
-          // --------------------------------
-
-          if (!owner.shop_id) {
-
-            await supabaseClient.auth
-              .signOut();
-
-            throw new Error(
-              "No shop is assigned to this owner."
-            );
-
-          }
-
-
-          // --------------------------------
-          // GET SHOP
-          // --------------------------------
-
-          const {
-            data: shop,
-            error: shopError
-          } =
-            await supabaseClient
-              .from("shops")
-              .select(
-                "id, name, slug, status"
-              )
-              .eq(
-                "id",
-                owner.shop_id
-              )
-              .single();
-
-
-          if (shopError) {
-
-            throw new Error(
-              "Shop information could not be loaded."
-            );
-
-          }
-
-
-          if (!shop) {
-
-            throw new Error(
-              "Assigned shop not found."
-            );
-
-          }
-
-
-          console.log(
-            "OWNER SHOP:",
-            shop
-          );
-
-
-          // --------------------------------
-          // SHOP STATUS
-          // --------------------------------
-
-          if (
-            shop.status ===
-            "suspended"
-          ) {
-
-            await supabaseClient.auth
-              .signOut();
-
-            throw new Error(
-              "This shop is currently suspended. Please contact support."
-            );
-
-          }
-
-
-          // --------------------------------
-          // SAVE OWNER INFO
-          // --------------------------------
-
-          sessionStorage.setItem(
-            "owner_id",
-            owner.id
-          );
-
-
-          sessionStorage.setItem(
-            "owner_name",
-            owner.full_name || ""
-          );
-
-
-          sessionStorage.setItem(
-            "owner_shop_id",
-            owner.shop_id
-          );
-
-
-          sessionStorage.setItem(
-            "owner_shop_name",
-            shop.name || ""
-          );
-
-
-          sessionStorage.setItem(
-            "owner_shop_slug",
-            shop.slug || ""
-          );
-
-
-          // --------------------------------
-          // SUCCESS
-          // --------------------------------
-
-          showMessage(
-            "Login successful. Opening dashboard...",
-            "success"
-          );
-
-
-          // --------------------------------
-          // NEXT PAGE
-          // --------------------------------
-
-          setTimeout(
-            () => {
-
-              window.location.href =
-                "dashboard.html";
-
-            },
-            700
-          );
-
-
-        } catch (error) {
-
-          console.error(
-            "OWNER LOGIN ERROR:",
-            error
-          );
-
-
-          showMessage(
-            error?.message ||
-            "Login failed. Please try again.",
-            "error"
-          );
-
-
-          loginBtn.disabled =
-            false;
-
-
-          loginBtn.textContent =
-            "Login";
-
-
-          loading.style.display =
-            "none";
+          closeResetModal();
 
         }
 
@@ -1142,76 +2012,51 @@
     );
 
 
-    // --------------------------------
-    // CHECK EXISTING SESSION
-    // --------------------------------
+    // =========================
+    // DASHBOARD
+    // =========================
 
-    async function checkExistingSession() {
+    function goDashboard() {
+
+      window.location.href =
+        "./dashboard.html";
+
+    }
+
+
+    // =========================
+    // LOGOUT
+    // =========================
+
+    async function logout() {
 
       try {
 
-        const {
-          data
-        } =
-          await supabaseClient.auth
-            .getSession();
-
-
-        if (
-          !data?.session?.user
-        ) {
-
-          return;
-
-        }
-
-
-        const userId =
-          data.session.user.id;
-
-
-        const {
-          data: owner
-        } =
-          await supabaseClient
-            .from("owners")
-            .select(
-              "id, shop_id, full_name, role"
-            )
-            .eq(
-              "id",
-              userId
-            )
-            .maybeSingle();
-
-
-        if (
-          owner &&
-          owner.role === "owner" &&
-          owner.shop_id
-        ) {
-
-          window.location.href =
-            "dashboard.html";
-
-        }
+        await supabaseClient.auth.signOut();
 
       } catch (error) {
 
-        console.log(
-          "SESSION CHECK:",
+        console.error(
+          "LOGOUT ERROR:",
           error
         );
 
       }
 
+
+      window.location.href =
+        "./login.html";
+
     }
 
 
-    checkExistingSession();
+    // =========================
+    // START
+    // =========================
+
+    loadOwners();
 
   </script>
 
 </body>
 </html>
-```
