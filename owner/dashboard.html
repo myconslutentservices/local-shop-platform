@@ -96,7 +96,7 @@
 
     .grid{
       display:grid;
-      grid-template-columns:repeat(4,1fr);
+      grid-template-columns:repeat(5,1fr);
       gap:14px
     }
 
@@ -747,6 +747,12 @@
 
     /* RESPONSIVE */
 
+    @media(max-width:1100px){
+      .grid{
+        grid-template-columns:repeat(3,1fr)
+      }
+    }
+
     @media(max-width:950px){
       .grid{
         grid-template-columns:repeat(2,1fr)
@@ -885,6 +891,15 @@
       <div class="stat-label">Products</div>
       <div class="stat" id="totalProducts">0</div>
       <div class="muted">Manage products →</div>
+    </div>
+
+    <div
+      class="card stat-card"
+      onclick="window.location.href='revenue.html'"
+    >
+      <div class="stat-label">Revenue & Reports</div>
+      <div class="stat">₹ →</div>
+      <div class="muted">View detailed reports →</div>
     </div>
 
   </section>
@@ -1829,6 +1844,7 @@ async function loadCategories(){
   renderCategories();
 
   renderProducts();
+
 
 }
 
