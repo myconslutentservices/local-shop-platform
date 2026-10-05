@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Settings | Master Panel</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f7fb;
+  color:#111827;
+}
+.header{
+  background:#111827;
+  color:white;
+  padding:18px 24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.header h1{margin:0;font-size:22px}
+.header small{color:#cbd5e1}
+.container{
+  max-width:1000px;
+  margin:25px auto;
+  padding:0 18px;
+}
+.card{
+  background:white;
+  border-radius:14px;
+  padding:22px;
+  box-shadow:0 5px 20px rgba(0,0,0,.06);
+  margin-bottom:18px;
+}
+h2{
+  margin-top:0;
+}
+.field{
+  margin-bottom:16px;
+}
+label{
+  display:block;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:7px;
+}
+input,select{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #d1d5db;
+  border-radius:9px;
+  font-size:14px;
+}
+button{
+  border:0;
+  border-radius:8px;
+  padding:10px 15px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.primary{
+  background:#111827;
+  color:white;
+}
+.secondary{
+  background:#e5e7eb;
+  color:#111827;
+}
+.success{
+  background:#dcfce7;
+  color:#166534;
+  padding:12px;
+  border-radius:9px;
+  margin-bottom:15px;
+  display:none;
+}
+.error{
+  background:#fee2e2;
+  color:#991b1b;
+  padding:12px;
+  border-radius:9px;
+  margin-bottom:15px;
+  display:none;
+}
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+.setting{
+  border:1px solid #e5e7eb;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:12px;
+}
+.setting-title{
+  font-weight:bold;
+  margin-bottom:4px;
+}
+.setting-desc{
+  font-size:13px;
+  color:#64748b;
+  margin-bottom:10px;
+}
+@media(max-width:700px){
+  .row{grid-template-columns:1fr}
+  .header{padding:15px}
+  .container{padding:0 12px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div>
+    <h1>Settings</h1>
+    <small>Manage master platform settings</small>
+  </div>
+
+  <button class="secondary" onclick="location.href='dashboard.html'">
+    ← Dashboard
+  </button>
+</div>
+
+<div class="container">
+
+  <div id="successBox" class="success"></div>
+  <div id="errorBox" class="error"></div>
+
+  <div class="card">
+    <h2>Platform Settings</h2>
+
+    <div class="setting">
+      <div class="setting-title">Platform Name</div>
+      <div class="setting-desc">
+        Main name shown across the platform.
+      </div>
+
+      <input id="platform_name" placeholder="Local Shop Platform">
+    </div>
+
+    <div class="setting">
+      <div class="setting-title">Support Email</div>
+      <div class="setting-desc">
+        Email used for platform support.
+      </div>
+
+      <input
+        id="support_email"
+        type="email"
+        placeholder="support@example.com"
+      >
+    </div>
+
+    <div class="setting">
+      <div class="setting-title">Support Phone</div>
+      <div class="setting-desc">
+        Main support contact number.
+      </div>
+
+      <input
+        id="support_phone"
+        type="tel"
+        placeholder="+91 XXXXX XXXXX"
+      >
+    </div>
+
+    <div class="setting">
+      <div class="setting-title">Maintenance Mode</div>
+      <div class="setting-desc">
+        Turn this ON only when the platform is under maintenance.
+      </div>
+
+      <select id="maintenance_mode">
+        <option value="false">OFF</option>
+        <option value="true">ON</option>
+      </select>
+    </div>
+
+    <button class="primary" onclick="saveSettings()">
+      Save Settings
+    </button>
+
+  </div>
+
+  <div class="card">
+    <h2>Current Platform</h2>
+
+    <div class="row">
+      <div>
+        <b>Project</b>
+        <p>Local Shop Platform</p>
+      </div>
+
+      <div>
+        <b>Database</b>
+        <p>Supabase</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+const defaultSettings={
+  platform_name:"Local Shop Platform",
+  support_email:"",
+  support_phone:"",
+  maintenance_mode:"false"
+};
+
+function showError(msg){
+  const box=document.getElementById("errorBox");
+  box.textContent=msg;
+  box.style.display="block";
+  document.getElementById("successBox").style.display="none";
+}
+
+function showSuccess(msg){
+  const box=document.getElementById("successBox");
+  box.textContent=msg;
+  box.style.display="block";
+  document.getElementById("errorBox").style.display="none";
+}
+
+async function checkMaster(){
+
+  const {data:{session}}=
+    await supabaseClient.auth.getSession();
+
+  if(!session){
+    location.href="login.html";
+    return false;
+  }
+
+  const {data,error}=
+    await supabaseClient
+      .from("owners")
+      .select("role")
+      .eq("id",session.user.id)
+      .maybeSingle();
+
+  if(error || !data || data.role!=="master"){
+    await supabaseClient.auth.signOut();
+    location.href="login.html";
+    return false;
+  }
+
+  return true;
+}
+
+async function loadSettings(){
+
+  const {data,error}=
+    await supabaseClient
+      .from("platform_settings")
+      .select("setting_key,setting_value");
+
+  if(error){
+    showError(error.message);
+    return;
+  }
+
+  const settings={...defaultSettings};
+
+  (data||[]).forEach(row=>{
+    settings[row.setting_key]=row.setting_value ?? "";
+  });
+
+  document.getElementById("platform_name").value=
+    settings.platform_name;
+
+  document.getElementById("support_email").value=
+    settings.support_email;
+
+  document.getElementById("support_phone").value=
+    settings.support_phone;
+
+  document.getElementById("maintenance_mode").value=
+    settings.maintenance_mode==="true"
+      ? "true"
+      : "false";
+}
+
+async function saveOne(key,value){
+
+  const {data:existing}=await supabaseClient
+    .from("platform_settings")
+    .select("id")
+    .eq("setting_key",key)
+    .maybeSingle();
+
+  if(existing){
+
+    const {error}=await supabaseClient
+      .from("platform_settings")
+      .update({
+        setting_value:value,
+        updated_at:new Date().toISOString()
+      })
+      .eq("setting_key",key);
+
+    if(error)throw error;
+
+  }else{
+
+    const {error}=await supabaseClient
+      .from("platform_settings")
+      .insert({
+        setting_key:key,
+        setting_value:value
+      });
+
+    if(error)throw error;
+  }
+}
+
+async function saveSettings(){
+
+  try{
+
+    await saveOne(
+      "platform_name",
+      document.getElementById("platform_name").value.trim()
+    );
+
+    await saveOne(
+      "support_email",
+      document.getElementById("support_email").value.trim()
+    );
+
+    await saveOne(
+      "support_phone",
+      document.getElementById("support_phone").value.trim()
+    );
+
+    await saveOne(
+      "maintenance_mode",
+      document.getElementById("maintenance_mode").value
+    );
+
+    showSuccess("Settings saved successfully.");
+
+  }catch(error){
+    showError(error.message);
+  }
+}
+
+(async()=>{
+  if(await checkMaster()){
+    await loadSettings();
+  }
+})();
+
+</script>
+
+</body>
+</html>
