@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support Center | Master Panel</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f7fb;
+  color:#111827;
+}
+.header{
+  background:#111827;
+  color:white;
+  padding:18px 24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+.header h1{margin:0;font-size:22px}
+.header small{color:#cbd5e1}
+.container{
+  max-width:1400px;
+  margin:25px auto;
+  padding:0 18px;
+}
+.topbar{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+input,select,textarea{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #d1d5db;
+  border-radius:9px;
+  font-size:14px;
+  outline:none;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:#111827;
+}
+.search{max-width:350px}
+.card{
+  background:white;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+.table-wrap{overflow:auto}
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:850px;
+}
+th,td{
+  padding:13px 10px;
+  border-bottom:1px solid #edf0f4;
+  text-align:left;
+  font-size:14px;
+}
+th{
+  background:#f8fafc;
+  color:#475569;
+}
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+}
+.new{background:#dbeafe;color:#1d4ed8}
+.open{background:#dcfce7;color:#166534}
+.pending{background:#fef3c7;color:#92400e}
+.resolved{background:#e2e8f0;color:#334155}
+.closed{background:#fee2e2;color:#991b1b}
+button{
+  border:0;
+  border-radius:8px;
+  padding:9px 13px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.primary{background:#111827;color:white}
+.secondary{background:#e5e7eb;color:#111827}
+.danger{background:#fee2e2;color:#991b1b}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+.empty{
+  padding:40px 15px;
+  text-align:center;
+  color:#64748b;
+}
+.error{
+  background:#fee2e2;
+  color:#991b1b;
+  padding:12px;
+  border-radius:9px;
+  margin-bottom:15px;
+  display:none;
+}
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:50;
+}
+.modal-box{
+  background:white;
+  width:100%;
+  max-width:650px;
+  max-height:90vh;
+  overflow:auto;
+  border-radius:16px;
+  padding:22px;
+}
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+.modal-head h2{margin:0}
+.field{margin-bottom:14px}
+.field label{
+  display:block;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:6px;
+}
+.detail{
+  background:#f8fafc;
+  padding:12px;
+  border-radius:9px;
+  margin-bottom:10px;
+  line-height:1.6;
+}
+@media(max-width:700px){
+  .header{padding:15px}
+  .container{padding:0 12px}
+  .search{max-width:none}
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div>
+    <h1>Support Center</h1>
+    <small>Manage owner support tickets</small>
+  </div>
+  <button class="secondary" onclick="location.href='dashboard.html'">
+    ← Dashboard
+  </button>
+</div>
+
+<div class="container">
+
+  <div id="errorBox" class="error"></div>
+
+  <div class="topbar">
+    <input
+      id="search"
+      class="search"
+      placeholder="Search ticket, subject, message..."
+      oninput="renderTickets()"
+    >
+
+    <select id="statusFilter" onchange="renderTickets()">
+      <option value="">All Status</option>
+      <option value="new">New</option>
+      <option value="open">Open</option>
+      <option value="pending">Pending</option>
+      <option value="resolved">Resolved</option>
+      <option value="closed">Closed</option>
+    </select>
+
+    <button class="primary" onclick="loadTickets()">↻ Refresh</button>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ticket</th>
+            <th>Owner</th>
+            <th>Shop</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="ticketBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal" id="ticketModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Support Ticket</h2>
+      <button class="secondary" onclick="closeModal()">✕</button>
+    </div>
+
+    <div id="ticketDetails"></div>
+
+    <div class="field">
+      <label>Status</label>
+      <select id="ticketStatus">
+        <option value="new">New</option>
+        <option value="open">Open</option>
+        <option value="pending">Pending</option>
+        <option value="resolved">Resolved</option>
+        <option value="closed">Closed</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button class="primary" onclick="saveStatus()">Save Status</button>
+      <button class="secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let tickets = [];
+let currentTicket = null;
+
+function esc(v){
+  return String(v ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function showError(msg){
+  const box=document.getElementById("errorBox");
+  box.textContent=msg;
+  box.style.display="block";
+}
+
+function hideError(){
+  document.getElementById("errorBox").style.display="none";
+}
+
+async function checkMaster(){
+  const {data:{session}}=await supabaseClient.auth.getSession();
+
+  if(!session){
+    location.href="login.html";
+    return false;
+  }
+
+  const {data,error}=await supabaseClient
+    .from("owners")
+    .select("role")
+    .eq("id",session.user.id)
+    .maybeSingle();
+
+  if(error || !data || data.role!=="master"){
+    await supabaseClient.auth.signOut();
+    location.href="login.html";
+    return false;
+  }
+
+  return true;
+}
+
+async function loadTickets(){
+  hideError();
+
+  const {data,error}=await supabaseClient
+    .from("support_tickets")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    showError(error.message);
+    tickets=[];
+    renderTickets();
+    return;
+  }
+
+  tickets=data||[];
+  renderTickets();
+}
+
+function getStatus(t){
+  return t.status || "new";
+}
+
+function getSubject(t){
+  return t.subject || t.title || t.issue || "Support Request";
+}
+
+function getOwner(t){
+  return t.owner_name || t.owner_email || t.owner_id || "—";
+}
+
+function getShop(t){
+  return t.shop_name || t.shop_id || "—";
+}
+
+function renderTickets(){
+  const body=document.getElementById("ticketBody");
+  const q=document.getElementById("search").value.toLowerCase();
+  const status=document.getElementById("statusFilter").value;
+
+  const filtered=tickets.filter(t=>{
+    const text=JSON.stringify(t).toLowerCase();
+    const okSearch=!q || text.includes(q);
+    const okStatus=!status || getStatus(t)===status;
+    return okSearch && okStatus;
+  });
+
+  if(!filtered.length){
+    body.innerHTML=`
+      <tr>
+        <td colspan="7">
+          <div class="empty">No support tickets found.</div>
+        </td>
+      </tr>`;
+    return;
+  }
+
+  body.innerHTML=filtered.map(t=>{
+    const s=getStatus(t);
+
+    return `
+      <tr>
+        <td>${esc(String(t.id||"").slice(0,8))}</td>
+        <td>${esc(getOwner(t))}</td>
+        <td>${esc(getShop(t))}</td>
+        <td>${esc(getSubject(t))}</td>
+        <td>
+          <span class="badge ${esc(s)}">${esc(s)}</span>
+        </td>
+        <td>${t.created_at ? new Date(t.created_at).toLocaleString() : "—"}</td>
+        <td>
+          <button class="primary" onclick="openTicket('${esc(t.id)}')">
+            View
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function openTicket(id){
+  currentTicket=tickets.find(x=>String(x.id)===String(id));
+  if(!currentTicket)return;
+
+  document.getElementById("ticketStatus").value=getStatus(currentTicket);
+
+  document.getElementById("ticketDetails").innerHTML=`
+    <div class="detail">
+      <b>Ticket ID:</b> ${esc(currentTicket.id)}
+    </div>
+
+    <div class="detail">
+      <b>Subject:</b> ${esc(getSubject(currentTicket))}
+    </div>
+
+    <div class="detail">
+      <b>Owner:</b> ${esc(getOwner(currentTicket))}
+    </div>
+
+    <div class="detail">
+      <b>Shop:</b> ${esc(getShop(currentTicket))}
+    </div>
+
+    <div class="detail">
+      <b>Message:</b><br>
+      ${esc(currentTicket.message || currentTicket.description || currentTicket.details || "No message")}
+    </div>
+  `;
+
+  document.getElementById("ticketModal").style.display="flex";
+}
+
+function closeModal(){
+  document.getElementById("ticketModal").style.display="none";
+  currentTicket=null;
+}
+
+async function saveStatus(){
+  if(!currentTicket)return;
+
+  const newStatus=document.getElementById("ticketStatus").value;
+
+  const {error}=await supabaseClient
+    .from("support_tickets")
+    .update({status:newStatus})
+    .eq("id",currentTicket.id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  closeModal();
+  await loadTickets();
+}
+
+(async()=>{
+  if(await checkMaster()){
+    await loadTickets();
+  }
+})();
+</script>
+
+</body>
+</html>
