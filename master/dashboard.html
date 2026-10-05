@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <title>Master Dashboard | Local Shop Platform</title>
 
@@ -17,32 +17,56 @@
       font-family: Arial, sans-serif;
     }
 
-    body {
-      background: #f5f7fb;
-      color: #1f2937;
+    html {
+      width: 100%;
+      overflow-x: hidden;
     }
 
+    body {
+      width: 100%;
+      min-height: 100vh;
+      background: #f5f7fb;
+      color: #1f2937;
+      overflow-x: hidden;
+    }
+
+    button,
+    .stat-card,
+    .quick-card {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ================= TOPBAR ================= */
+
     .topbar {
+      width: 100%;
       background: #111827;
       color: white;
       padding: 18px 25px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 15px;
+      gap: 20px;
+    }
+
+    .topbar-left {
+      min-width: 0;
     }
 
     .topbar h1 {
       font-size: 22px;
+      line-height: 1.2;
+      word-break: break-word;
     }
 
     .topbar p {
       font-size: 13px;
       color: #9ca3af;
-      margin-top: 4px;
+      margin-top: 5px;
     }
 
     .logout-btn {
+      flex: 0 0 auto;
       background: #ef4444;
       color: white;
       border: none;
@@ -50,18 +74,29 @@
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
+      min-height: 42px;
+      white-space: nowrap;
+      transition: background 0.2s, transform 0.15s;
     }
 
     .logout-btn:hover {
       background: #dc2626;
     }
 
+    .logout-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* ================= CONTAINER ================= */
+
     .container {
       width: 100%;
       max-width: 1400px;
       margin: auto;
-      padding: 25px;
+      padding: 28px 25px 45px;
     }
+
+    /* ================= WELCOME ================= */
 
     .welcome {
       margin-bottom: 25px;
@@ -69,136 +104,362 @@
 
     .welcome h2 {
       font-size: 26px;
-      margin-bottom: 6px;
+      line-height: 1.25;
+      margin-bottom: 7px;
+      word-break: break-word;
     }
 
     .welcome p {
       color: #6b7280;
-    }
-
-    /* STATS */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 18px;
-      margin-bottom: 30px;
-    }
-
-    .stat-card {
-      background: white;
-      border-radius: 14px;
-      padding: 22px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 7px 20px rgba(0,0,0,0.09);
-    }
-
-    .stat-title {
-      color: #6b7280;
       font-size: 14px;
-      margin-bottom: 10px;
+      line-height: 1.5;
     }
 
-    .stat-value {
-      font-size: 30px;
-      font-weight: 700;
-      color: #111827;
-    }
-
-    /* QUICK ACCESS */
-    .section-title {
-      font-size: 20px;
-      margin-bottom: 15px;
-    }
-
-    .quick-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-    }
-
-    .quick-card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      cursor: pointer;
-      transition: 0.2s;
-      border: 1px solid #eef0f4;
-    }
-
-    .quick-card:hover {
-      transform: translateY(-2px);
-      border-color: #d1d5db;
-    }
-
-    .quick-card h3 {
-      font-size: 16px;
-      margin-bottom: 7px;
-    }
-
-    .quick-card p {
-      font-size: 13px;
-      color: #6b7280;
-    }
+    /* ================= ERROR ================= */
 
     .error-box {
       display: none;
+      width: 100%;
       background: #fee2e2;
       color: #991b1b;
       padding: 14px;
       border-radius: 10px;
       margin-bottom: 20px;
       border: 1px solid #fecaca;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
     }
+
+    /* ================= LOADING ================= */
 
     .loading {
       text-align: center;
-      padding: 40px;
+      padding: 50px 20px;
       color: #6b7280;
     }
 
-    /* RESPONSIVE */
-    @media (max-width: 1100px) {
+    /* ================= STATS ================= */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      min-width: 0;
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid transparent;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 20px rgba(0,0,0,0.09);
+      border-color: #e5e7eb;
+    }
+
+    .stat-card:active {
+      transform: scale(0.985);
+    }
+
+    .stat-title {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .stat-value {
+      font-size: 30px;
+      line-height: 1.15;
+      font-weight: 700;
+      color: #111827;
+      overflow-wrap: anywhere;
+    }
+
+    .revenue-arrow {
+      color: #111827;
+    }
+
+    .revenue-subtitle {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-top: 8px;
+    }
+
+    /* ================= SECTION ================= */
+
+    .section-title {
+      font-size: 20px;
+      line-height: 1.3;
+      margin-bottom: 15px;
+    }
+
+    /* ================= QUICK ACCESS ================= */
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .quick-card {
+      min-width: 0;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      border: 1px solid #eef0f4;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .quick-card:hover {
+      transform: translateY(-2px);
+      border-color: #d1d5db;
+      box-shadow: 0 7px 18px rgba(0,0,0,0.07);
+    }
+
+    .quick-card:active {
+      transform: scale(0.985);
+    }
+
+    .quick-card h3 {
+      font-size: 16px;
+      line-height: 1.3;
+      margin-bottom: 7px;
+      overflow-wrap: anywhere;
+    }
+
+    .quick-card p {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    /* ================= TABLET ================= */
+
+    @media (max-width: 1200px) {
+
       .stats {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
-    }
 
-    @media (max-width: 1000px) {
       .quick-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
 
-    @media (max-width: 650px) {
+    /* ================= SMALL TABLET ================= */
+
+    @media (max-width: 900px) {
+
+      .container {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .quick-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .stat-card {
+        padding: 20px;
+      }
+
+      .quick-card {
+        padding: 18px;
+      }
+    }
+
+    /* ================= MOBILE ================= */
+
+    @media (max-width: 600px) {
+
       .topbar {
-        padding: 15px;
+        padding: 14px 15px;
+        gap: 12px;
       }
 
       .topbar h1 {
         font-size: 18px;
       }
 
+      .topbar p {
+        font-size: 12px;
+        margin-top: 3px;
+      }
+
+      .logout-btn {
+        padding: 9px 13px;
+        min-height: 40px;
+        font-size: 13px;
+      }
+
       .container {
-        padding: 15px;
+        padding: 20px 15px 35px;
+      }
+
+      .welcome {
+        margin-bottom: 20px;
       }
 
       .welcome h2 {
         font-size: 22px;
       }
 
+      .welcome p {
+        font-size: 13px;
+      }
+
       .stats {
         grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+
+      .stat-card {
+        min-height: 105px;
+        padding: 18px;
+        border-radius: 12px;
+      }
+
+      .stat-title {
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+
+      .stat-value {
+        font-size: 27px;
+      }
+
+      .revenue-subtitle {
+        font-size: 12px;
+        margin-top: 6px;
+      }
+
+      .section-title {
+        font-size: 19px;
+        margin-bottom: 13px;
       }
 
       .quick-grid {
         grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .quick-card {
+        min-height: 100px;
+        padding: 17px;
+        border-radius: 11px;
+      }
+
+      .quick-card h3 {
+        font-size: 15px;
+      }
+
+      .quick-card p {
+        font-size: 12px;
+      }
+
+      .error-box {
+        font-size: 13px;
+        padding: 12px;
+      }
+    }
+
+    /* ================= VERY SMALL PHONES ================= */
+
+    @media (max-width: 380px) {
+
+      .topbar {
+        padding: 12px;
+      }
+
+      .topbar h1 {
+        font-size: 17px;
+      }
+
+      .topbar p {
+        font-size: 11px;
+      }
+
+      .logout-btn {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+
+      .container {
+        padding: 17px 12px 30px;
+      }
+
+      .welcome h2 {
+        font-size: 20px;
+      }
+
+      .stat-card {
+        padding: 16px;
+      }
+
+      .stat-value {
+        font-size: 25px;
+      }
+
+      .quick-card {
+        padding: 15px;
+      }
+    }
+
+    /* ================= DESKTOP LARGE ================= */
+
+    @media (min-width: 1600px) {
+
+      .container {
+        padding-left: 35px;
+        padding-right: 35px;
+      }
+
+      .stats {
+        gap: 20px;
+      }
+
+      .quick-grid {
+        gap: 18px;
+      }
+    }
+
+    /* ================= REDUCE MOTION ================= */
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .stat-card,
+      .quick-card,
+      .logout-btn {
+        transition: none;
       }
     }
   </style>
@@ -206,28 +467,41 @@
 
 <body>
 
-  <!-- HEADER -->
+  <!-- ================= HEADER ================= -->
+
   <header class="topbar">
 
-    <div>
+    <div class="topbar-left">
       <h1>Master Dashboard</h1>
       <p>Local Shop Platform</p>
     </div>
 
-    <button class="logout-btn" onclick="logout()">
+    <button
+      class="logout-btn"
+      onclick="logout()"
+      type="button"
+    >
       Logout
     </button>
 
   </header>
 
 
+  <!-- ================= MAIN ================= -->
+
   <main class="container">
 
     <!-- ERROR -->
-    <div id="errorBox" class="error-box"></div>
+
+    <div
+      id="errorBox"
+      class="error-box"
+      role="alert"
+    ></div>
 
 
     <!-- WELCOME -->
+
     <div class="welcome">
 
       <h2 id="welcomeText">
@@ -242,24 +516,34 @@
 
 
     <!-- LOADING -->
-    <div id="loadingBox" class="loading">
+
+    <div
+      id="loadingBox"
+      class="loading"
+    >
       Loading dashboard...
     </div>
 
 
     <!-- DASHBOARD CONTENT -->
-    <div id="dashboardContent" style="display:none;">
 
+    <div
+      id="dashboardContent"
+      style="display:none;"
+    >
 
       <!-- ================= STATS ================= -->
 
       <div class="stats">
 
-
         <!-- TOTAL SHOPS -->
+
         <div
           class="stat-card"
           onclick="openPage('shops.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'shops.html')"
         >
 
           <div class="stat-title">
@@ -277,9 +561,13 @@
 
 
         <!-- TOTAL OWNERS -->
+
         <div
           class="stat-card"
           onclick="openPage('owners.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'owners.html')"
         >
 
           <div class="stat-title">
@@ -297,9 +585,13 @@
 
 
         <!-- TOTAL PRODUCTS -->
+
         <div
           class="stat-card"
           onclick="openPage('all-products.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'all-products.html')"
         >
 
           <div class="stat-title">
@@ -317,9 +609,13 @@
 
 
         <!-- TOTAL ORDERS -->
+
         <div
           class="stat-card"
           onclick="openPage('all-orders.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'all-orders.html')"
         >
 
           <div class="stat-title">
@@ -337,31 +633,28 @@
 
 
         <!-- REVENUE & REPORTS -->
+
         <div
           class="stat-card"
           onclick="openPage('revenue.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'revenue.html')"
         >
 
           <div class="stat-title">
             Revenue & Reports
           </div>
 
-          <div class="stat-value">
+          <div class="stat-value revenue-arrow">
             ₹ →
           </div>
 
-          <div
-            style="
-              color:#6b7280;
-              font-size:13px;
-              margin-top:8px;
-            "
-          >
+          <div class="revenue-subtitle">
             View detailed reports →
           </div>
 
         </div>
-
 
       </div>
 
@@ -375,11 +668,14 @@
 
       <div class="quick-grid">
 
-
         <!-- ALL SHOPS -->
+
         <div
           class="quick-card"
           onclick="openPage('shops.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'shops.html')"
         >
 
           <h3>
@@ -394,9 +690,13 @@
 
 
         <!-- ALL OWNERS -->
+
         <div
           class="quick-card"
           onclick="openPage('owners.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'owners.html')"
         >
 
           <h3>
@@ -411,9 +711,13 @@
 
 
         <!-- ALL PRODUCTS -->
+
         <div
           class="quick-card"
           onclick="openPage('all-products.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'all-products.html')"
         >
 
           <h3>
@@ -428,9 +732,13 @@
 
 
         <!-- ALL ORDERS -->
+
         <div
           class="quick-card"
           onclick="openPage('all-orders.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'all-orders.html')"
         >
 
           <h3>
@@ -445,9 +753,13 @@
 
 
         <!-- SUPPORT CENTER -->
+
         <div
           class="quick-card"
           onclick="openPage('support.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'support.html')"
         >
 
           <h3>
@@ -462,9 +774,13 @@
 
 
         <!-- WEBSITE STATUS -->
+
         <div
           class="quick-card"
           onclick="openPage('website-status.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'website-status.html')"
         >
 
           <h3>
@@ -479,9 +795,13 @@
 
 
         <!-- NOTIFICATIONS -->
+
         <div
           class="quick-card"
           onclick="openPage('notifications.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'notifications.html')"
         >
 
           <h3>
@@ -496,9 +816,13 @@
 
 
         <!-- SETTINGS -->
+
         <div
           class="quick-card"
           onclick="openPage('settings.html')"
+          role="button"
+          tabindex="0"
+          onkeydown="cardKey(event, 'settings.html')"
         >
 
           <h3>
@@ -510,7 +834,6 @@
           </p>
 
         </div>
-
 
       </div>
 
@@ -528,9 +851,11 @@
       const box =
         document.getElementById("errorBox");
 
-      box.textContent = message;
+      box.textContent =
+        message;
 
-      box.style.display = "block";
+      box.style.display =
+        "block";
 
     }
 
@@ -539,7 +864,26 @@
 
     function openPage(page) {
 
-      window.location.href = page;
+      window.location.href =
+        page;
+
+    }
+
+
+    /* ================= KEYBOARD CARD SUPPORT ================= */
+
+    function cardKey(event, page) {
+
+      if (
+        event.key === "Enter" ||
+        event.key === " "
+      ) {
+
+        event.preventDefault();
+
+        openPage(page);
+
+      }
 
     }
 
@@ -566,7 +910,8 @@
 
         if (!session) {
 
-          window.location.href = "login.html";
+          window.location.href =
+            "login.html";
 
           return false;
 
@@ -662,7 +1007,6 @@
       if (filters) {
 
         for (const filter of filters) {
-
 
           if (
             filter.type === "eq"
