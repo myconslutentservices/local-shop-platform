@@ -1,21 +1,44 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+
 <title>Notifications | Master Panel</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
 
 <style>
-*{box-sizing:border-box}
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  width:100%;
+  min-height:100%;
+}
+
 body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
   background:#f5f7fb;
   color:#111827;
+  overflow-x:hidden;
 }
+
+/* =========================
+   HEADER
+   ========================= */
+
 .header{
   background:#111827;
   color:white;
@@ -23,80 +46,203 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:15px;
 }
-.header h1{margin:0;font-size:22px}
-.header small{color:#cbd5e1}
+
+.header h1{
+  margin:0;
+  font-size:22px;
+  line-height:1.2;
+}
+
+.header small{
+  color:#cbd5e1;
+  display:block;
+  margin-top:4px;
+  font-size:12px;
+}
+
+/* =========================
+   CONTAINER
+   ========================= */
+
 .container{
+  width:100%;
   max-width:1100px;
   margin:25px auto;
   padding:0 18px;
 }
+
+/* =========================
+   TOOLBAR
+   ========================= */
+
 .toolbar{
   display:flex;
   gap:10px;
   margin-bottom:18px;
   flex-wrap:wrap;
 }
+
+/* =========================
+   CARD
+   ========================= */
+
 .card{
   background:white;
   border-radius:14px;
   padding:20px;
   box-shadow:0 5px 20px rgba(0,0,0,.06);
   margin-bottom:18px;
+  width:100%;
 }
-input,textarea,select{
+
+/* =========================
+   FORM
+   ========================= */
+
+input,
+textarea,
+select{
   width:100%;
   padding:11px 12px;
   border:1px solid #d1d5db;
   border-radius:9px;
   font-size:14px;
+  background:#ffffff;
+  color:#111827;
+  outline:none;
+  -webkit-appearance:none;
+  appearance:none;
 }
+
+input{
+  min-height:44px;
+}
+
+select{
+  min-height:44px;
+  cursor:pointer;
+}
+
 textarea{
   min-height:110px;
   resize:vertical;
+  line-height:1.5;
 }
-.field{margin-bottom:14px}
+
+input:focus,
+textarea:focus,
+select:focus{
+  border-color:#111827;
+  box-shadow:0 0 0 2px rgba(17,24,39,.08);
+}
+
+.field{
+  margin-bottom:14px;
+}
+
 label{
   display:block;
   font-size:13px;
   font-weight:bold;
   margin-bottom:6px;
+  color:#374151;
 }
+
+/* =========================
+   BUTTONS
+   ========================= */
+
 button{
   border:0;
   border-radius:8px;
   padding:10px 14px;
   cursor:pointer;
   font-weight:bold;
+  font-size:14px;
+  transition:background .2s ease,opacity .2s ease;
+  -webkit-tap-highlight-color:transparent;
 }
-.primary{background:#111827;color:white}
-.secondary{background:#e5e7eb;color:#111827}
-.danger{background:#fee2e2;color:#991b1b}
+
+button:active{
+  transform:translateY(1px);
+}
+
+.primary{
+  background:#111827;
+  color:white;
+}
+
+.primary:hover{
+  background:#1f2937;
+}
+
+.secondary{
+  background:#e5e7eb;
+  color:#111827;
+}
+
+.secondary:hover{
+  background:#d1d5db;
+}
+
+.danger{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.danger:hover{
+  background:#fecaca;
+}
+
+/* =========================
+   NOTIFICATION
+   ========================= */
+
 .notification{
   border:1px solid #e5e7eb;
   border-radius:12px;
   padding:16px;
   margin-bottom:12px;
+  background:#ffffff;
+  overflow:hidden;
 }
+
+.notification:last-child{
+  margin-bottom:0;
+}
+
 .notification-head{
   display:flex;
   justify-content:space-between;
-  gap:10px;
+  gap:15px;
   align-items:flex-start;
 }
+
 .notification h3{
   margin:0 0 7px;
+  font-size:17px;
+  line-height:1.3;
+  color:#111827;
+  word-break:break-word;
 }
+
 .message{
   color:#475569;
   line-height:1.6;
   white-space:pre-wrap;
+  word-break:break-word;
+  font-size:14px;
 }
+
 .meta{
   font-size:12px;
   color:#64748b;
   margin-top:10px;
+  line-height:1.4;
 }
+
 .badge{
   background:#dbeafe;
   color:#1d4ed8;
@@ -104,7 +250,14 @@ button{
   border-radius:20px;
   font-size:11px;
   font-weight:bold;
+  white-space:nowrap;
+  flex-shrink:0;
 }
+
+/* =========================
+   MESSAGES
+   ========================= */
+
 .error{
   background:#fee2e2;
   color:#991b1b;
@@ -112,196 +265,701 @@ button{
   border-radius:9px;
   margin-bottom:15px;
   display:none;
+  line-height:1.5;
+  font-size:14px;
+  word-break:break-word;
 }
+
 .empty{
   text-align:center;
-  padding:40px;
+  padding:40px 20px;
   color:#64748b;
+  font-size:14px;
 }
+
+/* =========================
+   LARGE DESKTOP
+   ========================= */
+
+@media (min-width:1400px){
+
+  .container{
+    max-width:1200px;
+  }
+
+  .header{
+    padding-left:32px;
+    padding-right:32px;
+  }
+
+}
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media (max-width:900px){
+
+  .header{
+    padding:16px 18px;
+  }
+
+  .header h1{
+    font-size:20px;
+  }
+
+  .container{
+    margin:20px auto;
+    padding:0 15px;
+  }
+
+  .card{
+    padding:18px;
+  }
+
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width:700px){
+
+  .header{
+    padding:15px;
+    flex-direction:column;
+    align-items:stretch;
+    gap:12px;
+  }
+
+  .header > div{
+    width:100%;
+  }
+
+  .header h1{
+    font-size:20px;
+  }
+
+  .header small{
+    font-size:11px;
+  }
+
+  .header button{
+    width:100%;
+    min-height:44px;
+  }
+
+  .container{
+    margin:16px auto;
+    padding:0 12px;
+  }
+
+  .card{
+    padding:16px;
+    border-radius:12px;
+    margin-bottom:14px;
+  }
+
+  .card h2{
+    font-size:19px !important;
+    line-height:1.3;
+    margin-bottom:18px !important;
+  }
+
+  .toolbar{
+    margin-bottom:14px;
+  }
+
+  .toolbar button{
+    width:100%;
+    min-height:44px;
+  }
+
+  input,
+  textarea,
+  select{
+    font-size:15px;
+  }
+
+  textarea{
+    min-height:120px;
+  }
+
+  button{
+    min-height:44px;
+  }
+
+  .notification{
+    padding:14px;
+    border-radius:11px;
+  }
+
+  .notification-head{
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .notification h3{
+    font-size:16px;
+  }
+
+  .message{
+    font-size:13px;
+    line-height:1.55;
+  }
+
+  .badge{
+    align-self:flex-start;
+  }
+
+  .notification .danger{
+    width:100%;
+    min-height:42px;
+  }
+
+  .empty{
+    padding:35px 15px;
+  }
+
+}
+
+/* =========================
+   SMALL MOBILE
+   ========================= */
+
+@media (max-width:420px){
+
+  .header{
+    padding:13px;
+  }
+
+  .header h1{
+    font-size:18px;
+  }
+
+  .container{
+    padding:0 10px;
+    margin-top:13px;
+  }
+
+  .card{
+    padding:14px;
+    border-radius:11px;
+  }
+
+  .card h2{
+    font-size:18px !important;
+  }
+
+  label{
+    font-size:12px;
+  }
+
+  input,
+  select{
+    min-height:43px;
+    padding:11px;
+    font-size:14px;
+  }
+
+  textarea{
+    min-height:110px;
+    padding:11px;
+    font-size:14px;
+  }
+
+  button{
+    font-size:13px;
+    padding:10px 12px;
+  }
+
+  .notification{
+    padding:13px;
+  }
+
+  .notification h3{
+    font-size:15px;
+  }
+
+  .message{
+    font-size:13px;
+  }
+
+  .meta{
+    font-size:11px;
+  }
+
+}
+
+/* =========================
+   VERY SMALL MOBILE
+   ========================= */
+
+@media (max-width:350px){
+
+  .container{
+    padding:0 8px;
+  }
+
+  .card{
+    padding:12px;
+  }
+
+  .header{
+    padding:12px;
+  }
+
+  .header h1{
+    font-size:17px;
+  }
+
+  .notification{
+    padding:11px;
+  }
+
+}
+
+/* =========================
+   TOUCH DEVICES
+   ========================= */
+
+@media (hover:none) and (pointer:coarse){
+
+  .primary:hover{
+    background:#111827;
+  }
+
+  .secondary:hover{
+    background:#e5e7eb;
+  }
+
+  .danger:hover{
+    background:#fee2e2;
+  }
+
+}
+
 </style>
+
 </head>
 
 <body>
 
+
+<!-- =========================
+     HEADER
+     ========================= -->
+
 <div class="header">
+
   <div>
+
     <h1>Notifications</h1>
-    <small>Manage platform notifications</small>
+
+    <small>
+      Manage platform notifications
+    </small>
+
   </div>
 
-  <button class="secondary" onclick="location.href='dashboard.html'">
+
+  <button
+    class="secondary"
+    onclick="location.href='dashboard.html'"
+  >
     ← Dashboard
   </button>
+
 </div>
+
+
+<!-- =========================
+     MAIN
+     ========================= -->
 
 <div class="container">
 
+
   <div id="errorBox" class="error"></div>
 
+
+  <!-- CREATE NOTIFICATION -->
+
   <div class="card">
-    <h2 style="margin-top:0">Create Notification</h2>
+
+    <h2 style="margin-top:0">
+      Create Notification
+    </h2>
+
 
     <div class="field">
-      <label>Title</label>
-      <input id="title" placeholder="Notification title">
+
+      <label for="title">
+        Title
+      </label>
+
+      <input
+        id="title"
+        placeholder="Notification title"
+        autocomplete="off"
+      >
+
     </div>
 
-    <div class="field">
-      <label>Message</label>
-      <textarea id="message" placeholder="Write notification message..."></textarea>
-    </div>
 
     <div class="field">
-      <label>Type</label>
+
+      <label for="message">
+        Message
+      </label>
+
+      <textarea
+        id="message"
+        placeholder="Write notification message..."
+      ></textarea>
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="type">
+        Type
+      </label>
+
       <select id="type">
-        <option value="general">General</option>
-        <option value="important">Important</option>
-        <option value="update">Update</option>
-        <option value="warning">Warning</option>
+
+        <option value="general">
+          General
+        </option>
+
+        <option value="important">
+          Important
+        </option>
+
+        <option value="update">
+          Update
+        </option>
+
+        <option value="warning">
+          Warning
+        </option>
+
       </select>
+
     </div>
 
-    <button class="primary" onclick="createNotification()">
+
+    <button
+      class="primary"
+      onclick="createNotification()"
+    >
       Publish Notification
     </button>
+
   </div>
+
+
+  <!-- TOOLBAR -->
 
   <div class="toolbar">
-    <button class="primary" onclick="loadNotifications()">↻ Refresh</button>
+
+    <button
+      class="primary"
+      onclick="loadNotifications()"
+    >
+      ↻ Refresh
+    </button>
+
   </div>
 
+
+  <!-- NOTIFICATION LIST -->
+
   <div class="card">
+
     <div id="notificationList"></div>
+
   </div>
+
 
 </div>
 
+
 <script>
+
 let notifications=[];
 
+
+/* =========================
+   ESCAPE HTML
+   ========================= */
+
 function esc(v){
+
   return String(v??"")
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
     .replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;")
     .replace(/'/g,"&#039;");
+
 }
+
+
+/* =========================
+   ERROR
+   ========================= */
 
 function showError(msg){
+
   const box=document.getElementById("errorBox");
+
   box.textContent=msg;
+
   box.style.display="block";
+
 }
+
 
 function clearError(){
+
   document.getElementById("errorBox").style.display="none";
+
 }
 
+
+/* =========================
+   MASTER AUTH
+   ========================= */
+
 async function checkMaster(){
-  const {data:{session}}=await supabaseClient.auth.getSession();
+
+  const {
+    data:{session}
+  }=await supabaseClient.auth.getSession();
+
 
   if(!session){
+
     location.href="login.html";
+
     return false;
+
   }
 
-  const {data,error}=await supabaseClient
+
+  const {
+    data,
+    error
+  }=await supabaseClient
     .from("owners")
     .select("role")
     .eq("id",session.user.id)
     .maybeSingle();
 
+
   if(error || !data || data.role!=="master"){
+
     await supabaseClient.auth.signOut();
+
     location.href="login.html";
+
     return false;
+
   }
 
+
   return true;
+
 }
+
+
+/* =========================
+   LOAD NOTIFICATIONS
+   ========================= */
 
 async function loadNotifications(){
 
   clearError();
 
-  const {data,error}=await supabaseClient
+
+  const {
+    data,
+    error
+  }=await supabaseClient
     .from("notifications")
     .select("*")
-    .order("created_at",{ascending:false});
+    .order(
+      "created_at",
+      {ascending:false}
+    );
+
 
   if(error){
+
     showError(error.message);
+
     return;
+
   }
 
+
   notifications=data||[];
+
   render();
+
 }
+
+
+/* =========================
+   RENDER
+   ========================= */
 
 function render(){
 
-  const box=document.getElementById("notificationList");
+  const box=document.getElementById(
+    "notificationList"
+  );
+
 
   if(!notifications.length){
+
     box.innerHTML=`
+
       <div class="empty">
+
         No notifications yet.
-      </div>`;
+
+      </div>
+
+    `;
+
     return;
+
   }
+
 
   box.innerHTML=notifications.map(n=>{
 
-    const title=n.title||n.subject||"Notification";
-    const message=n.message||n.body||n.description||"";
-    const type=n.type||"general";
+    const title=
+      n.title ||
+      n.subject ||
+      "Notification";
+
+
+    const message=
+      n.message ||
+      n.body ||
+      n.description ||
+      "";
+
+
+    const type=
+      n.type ||
+      "general";
+
 
     return `
+
       <div class="notification">
 
         <div class="notification-head">
-          <div>
-            <h3>${esc(title)}</h3>
-            <div class="message">${esc(message)}</div>
+
+          <div style="min-width:0">
+
+            <h3>
+              ${esc(title)}
+            </h3>
+
+            <div class="message">
+              ${esc(message)}
+            </div>
+
           </div>
 
-          <span class="badge">${esc(type)}</span>
+
+          <span class="badge">
+            ${esc(type)}
+          </span>
+
         </div>
+
 
         <div class="meta">
-          ${n.created_at
-            ? new Date(n.created_at).toLocaleString()
-            : "—"}
+
+          ${
+            n.created_at
+              ? new Date(
+                  n.created_at
+                ).toLocaleString()
+              : "—"
+          }
+
         </div>
 
+
         <div style="margin-top:12px">
+
           <button
             class="danger"
-            onclick="deleteNotification('${esc(n.id)}')">
+            onclick="deleteNotification('${esc(n.id)}')"
+          >
             Delete
           </button>
+
         </div>
 
       </div>
+
     `;
+
   }).join("");
+
 }
+
+
+/* =========================
+   CREATE
+   ========================= */
 
 async function createNotification(){
 
   clearError();
 
-  const title=document.getElementById("title").value.trim();
-  const message=document.getElementById("message").value.trim();
-  const type=document.getElementById("type").value;
+
+  const title=
+    document.getElementById(
+      "title"
+    ).value.trim();
+
+
+  const message=
+    document.getElementById(
+      "message"
+    ).value.trim();
+
+
+  const type=
+    document.getElementById(
+      "type"
+    ).value;
+
 
   if(!title || !message){
-    showError("Title and message are required.");
+
+    showError(
+      "Title and message are required."
+    );
+
     return;
+
   }
 
-  const {error}=await supabaseClient
+
+  const {
+    error
+  }=await supabaseClient
     .from("notifications")
     .insert({
       title,
@@ -309,41 +967,91 @@ async function createNotification(){
       type
     });
 
+
   if(error){
+
     showError(error.message);
+
     return;
+
   }
 
-  document.getElementById("title").value="";
-  document.getElementById("message").value="";
-  document.getElementById("type").value="general";
+
+  document.getElementById(
+    "title"
+  ).value="";
+
+
+  document.getElementById(
+    "message"
+  ).value="";
+
+
+  document.getElementById(
+    "type"
+  ).value="general";
+
 
   await loadNotifications();
+
 }
+
+
+/* =========================
+   DELETE
+   ========================= */
 
 async function deleteNotification(id){
 
-  if(!confirm("Delete this notification?"))return;
+  if(
+    !confirm(
+      "Delete this notification?"
+    )
+  ){
 
-  const {error}=await supabaseClient
+    return;
+
+  }
+
+
+  const {
+    error
+  }=await supabaseClient
     .from("notifications")
     .delete()
     .eq("id",id);
 
+
   if(error){
+
     showError(error.message);
+
     return;
+
   }
+
 
   await loadNotifications();
+
 }
 
+
+/* =========================
+   START
+   ========================= */
+
 (async()=>{
+
   if(await checkMaster()){
+
     await loadNotifications();
+
   }
+
 })();
+
 </script>
 
 </body>
 </html>
+```
