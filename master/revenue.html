@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Revenue & Reports | Master Panel</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f7fb;
+      color: #111827;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button,
+    select,
+    input {
+      font: inherit;
+    }
+
+    .container {
+      width: min(1400px, 94%);
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+
+    .header {
+      background: #111827;
+      color: white;
+      padding: 18px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 3px 12px rgba(0,0,0,.12);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .brand h1 {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    .brand p {
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 9px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-light {
+      background: white;
+      color: #111827;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    /* MAIN */
+
+    main {
+      padding: 28px 0 50px;
+    }
+
+    .page-title {
+      margin-bottom: 22px;
+    }
+
+    .page-title h2 {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    .page-title p {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    /* FILTERS */
+
+    .filters {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      height: 42px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 0 11px;
+      background: white;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: #2563eb;
+    }
+
+    .btn-primary {
+      height: 42px;
+      background: #2563eb;
+      color: white;
+    }
+
+    /* STATS */
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+      border: 1px solid #eef0f4;
+    }
+
+    .stat-label {
+      color: #6b7280;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 9px;
+    }
+
+    .stat-value {
+      font-size: 27px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .stat-small {
+      margin-top: 7px;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    /* SECTIONS */
+
+    .section {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 17px;
+    }
+
+    .section-header h3 {
+      font-size: 18px;
+    }
+
+    .section-header span {
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    /* TWO COLUMN */
+
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    /* TABLE */
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 650px;
+    }
+
+    th {
+      text-align: left;
+      background: #f8fafc;
+      color: #6b7280;
+      font-size: 12px;
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 13px 12px;
+      border-bottom: 1px solid #eef0f4;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: #fafafa;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 30px;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    /* BADGES */
+
+    .badge {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-paid {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-refunded {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .badge-cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge-new {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .badge-confirmed {
+      background: #e0e7ff;
+      color: #4338ca;
+    }
+
+    .badge-preparing {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-out {
+      background: #ede9fe;
+      color: #6d28d9;
+    }
+
+    .badge-delivered {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    /* SHOP SUMMARY */
+
+    .shop-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .shop-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 15px;
+      align-items: center;
+      padding: 13px;
+      background: #f8fafc;
+      border-radius: 10px;
+    }
+
+    .shop-name {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .shop-meta {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .shop-revenue {
+      font-weight: 800;
+      font-size: 15px;
+      text-align: right;
+    }
+
+    /* ERROR / LOADING */
+
+    .message {
+      display: none;
+      padding: 13px 15px;
+      border-radius: 9px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .message.error {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .message.success {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .loading {
+      padding: 35px;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1100px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filter-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filter-action {
+        grid-column: span 2;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .header-actions .btn {
+        flex: 1;
+      }
+
+      main {
+        padding-top: 20px;
+      }
+
+      .page-title h2 {
+        font-size: 23px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-action {
+        grid-column: span 1;
+      }
+
+      .filter-action .btn {
+        width: 100%;
+      }
+
+      .section {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <div class="container header-inner">
+
+      <div class="brand">
+        <h1>Master Panel</h1>
+        <p>Revenue & Reports</p>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-light" onclick="goBack()">
+          ← Dashboard
+        </button>
+
+        <button class="btn btn-danger" onclick="logout()">
+          Logout
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+
+  <main>
+    <div class="container">
+
+      <div class="page-title">
+        <h2>Revenue & Reports</h2>
+        <p>Platform-wide revenue, orders and sales performance.</p>
+      </div>
+
+      <div id="message" class="message"></div>
+
+      <!-- FILTERS -->
+
+      <div class="filters">
+
+        <div class="filter-grid">
+
+          <div class="field">
+            <label>Search Shop</label>
+            <input
+              type="text"
+              id="shopSearch"
+              placeholder="Search shop..."
+            />
+          </div>
+
+          <div class="field">
+            <label>Period</label>
+            <select id="periodFilter">
+              <option value="all">All Time</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="custom">Custom Date</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Payment Status</label>
+            <select id="paymentFilter">
+              <option value="all">All Payments</option>
+              <option value="paid">Paid</option>
+              <option value="pending">Pending</option>
+              <option value="refunded">Refunded</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Order Status</label>
+            <select id="statusFilter">
+              <option value="all">All Orders</option>
+              <option value="new">New</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="preparing">Preparing</option>
+              <option value="out_for_delivery">Out for Delivery</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+
+          <div class="filter-action">
+            <button
+              class="btn btn-primary"
+              onclick="applyFilters()"
+            >
+              Apply Filters
+            </button>
+          </div>
+
+        </div>
+
+        <div
+          id="customDates"
+          style="display:none; margin-top:15px;"
+        >
+          <div
+            style="
+              display:grid;
+              grid-template-columns:1fr 1fr;
+              gap:12px;
+            "
+          >
+            <div class="field">
+              <label>From Date</label>
+              <input type="date" id="fromDate">
+            </div>
+
+            <div class="field">
+              <label>To Date</label>
+              <input type="date" id="toDate">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- STATS -->
+
+      <div class="stats-grid">
+
+        <div class="stat-card">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value" id="totalRevenue">₹0</div>
+          <div class="stat-small">Paid orders excluding cancelled</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Today's Revenue</div>
+          <div class="stat-value" id="todayRevenue">₹0</div>
+          <div class="stat-small">Today's paid orders</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">This Month</div>
+          <div class="stat-value" id="monthRevenue">₹0</div>
+          <div class="stat-small">Current month revenue</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Paid Orders</div>
+          <div class="stat-value" id="paidOrders">0</div>
+          <div class="stat-small">Successful payments</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Pending Payments</div>
+          <div class="stat-value" id="pendingPayments">0</div>
+          <div class="stat-small">Payment still pending</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Refunded</div>
+          <div class="stat-value" id="refundedAmount">₹0</div>
+          <div class="stat-small">Refunded order value</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Cancelled Orders</div>
+          <div class="stat-value" id="cancelledOrders">0</div>
+          <div class="stat-small">Cancelled orders</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Average Order Value</div>
+          <div class="stat-value" id="averageOrder">₹0</div>
+          <div class="stat-small">Average paid order</div>
+        </div>
+
+      </div>
+
+
+      <!-- SHOP REVENUE + TOP PRODUCTS -->
+
+      <div class="two-column">
+
+        <section class="section">
+
+          <div class="section-header">
+            <div>
+              <h3>Shop-wise Revenue</h3>
+            </div>
+
+            <span id="shopCount">0 Shops</span>
+          </div>
+
+          <div id="shopRevenueList" class="shop-list">
+            <div class="loading">
+              Loading...
+            </div>
+          </div>
+
+        </section>
+
+
+        <section class="section">
+
+          <div class="section-header">
+            <div>
+              <h3>Top Selling Products</h3>
+            </div>
+
+            <span>Based on quantity sold</span>
+          </div>
+
+          <div class="table-wrap">
+
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Product</th>
+                  <th>Shop</th>
+                  <th>Qty</th>
+                  <th>Sales</th>
+                </tr>
+              </thead>
+
+              <tbody id="topProductsBody">
+                <tr>
+                  <td colspan="5" class="empty">
+                    Loading...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+
+        </section>
+
+      </div>
+
+
+      <!-- RECENT TRANSACTIONS -->
+
+      <section class="section">
+
+        <div class="section-header">
+
+          <div>
+            <h3>Recent Transactions</h3>
+          </div>
+
+          <span id="transactionCount">
+            0 Transactions
+          </span>
+
+        </div>
+
+        <div class="table-wrap">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Shop</th>
+                <th>Customer</th>
+                <th>Amount</th>
+                <th>Payment</th>
+                <th>Order Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+
+            <tbody id="transactionsBody">
+              <tr>
+                <td colspan="7" class="empty">
+                  Loading...
+                </td>
+              </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+
+      <!-- ORDER STATUS -->
+
+      <section class="section">
+
+        <div class="section-header">
+          <h3>Order Status Summary</h3>
+        </div>
+
+        <div class="table-wrap">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Orders</th>
+                <th>Total Value</th>
+              </tr>
+            </thead>
+
+            <tbody id="statusBody">
+              <tr>
+                <td colspan="3" class="empty">
+                  Loading...
+                </td>
+              </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+
+<script>
+
+  let allOrders = [];
+  let allOrderItems = [];
+  let allShops = [];
+
+  let filteredOrders = [];
+
+
+  /* ================================
+     HELPERS
+  ================================= */
+
+  function money(value) {
+
+    const number = Number(value || 0);
+
+    return "₹" + number.toLocaleString("en-IN", {
+      maximumFractionDigits: 2
+    });
+
+  }
+
+
+  function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+      return "";
+    }
+
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+  }
+
+
+  function showMessage(text, type = "error") {
+
+    const box = document.getElementById("message");
+
+    box.textContent = text;
+
+    box.className = "message " + type;
+
+  }
+
+
+  function hideMessage() {
+
+    const box = document.getElementById("message");
+
+    box.className = "message";
+
+    box.textContent = "";
+
+  }
+
+
+  function getShopName(shopId) {
+
+    const shop = allShops.find(
+      s => s.id === shopId
+    );
+
+    return shop
+      ? (
+          shop.name ||
+          shop.shop_name ||
+          shop.title ||
+          shop.business_name ||
+          "Unnamed Shop"
+        )
+      : "Unknown Shop";
+
+  }
+
+
+  function getStatusBadge(status) {
+
+    const value = String(status || "unknown");
+
+    let cls = "badge-new";
+
+    if (value === "paid") cls = "badge-paid";
+    if (value === "pending") cls = "badge-pending";
+    if (value === "refunded") cls = "badge-refunded";
+    if (value === "cancelled") cls = "badge-cancelled";
+    if (value === "confirmed") cls = "badge-confirmed";
+    if (value === "preparing") cls = "badge-preparing";
+    if (value === "out_for_delivery") cls = "badge-out";
+    if (value === "delivered") cls = "badge-delivered";
+
+    return `
+      <span class="badge ${cls}">
+        ${escapeHtml(value.replaceAll("_", " "))}
+      </span>
+    `;
+
+  }
+
+
+  function startOfToday() {
+
+    const d = new Date();
+
+    d.setHours(0,0,0,0);
+
+    return d;
+
+  }
+
+
+  function startOfWeek() {
+
+    const d = new Date();
+
+    d.setHours(0,0,0,0);
+
+    const day = d.getDay();
+
+    const diff = day === 0 ? 6 : day - 1;
+
+    d.setDate(d.getDate() - diff);
+
+    return d;
+
+  }
+
+
+  function startOfMonth() {
+
+    const d = new Date();
+
+    d.setHours(0,0,0,0);
+
+    d.setDate(1);
+
+    return d;
+
+  }
+
+
+  function isPaid(order) {
+
+    return String(
+      order.payment_status || ""
+    ).toLowerCase() === "paid";
+
+  }
+
+
+  function isCancelled(order) {
+
+    return String(
+      order.status || ""
+    ).toLowerCase() === "cancelled";
+
+  }
+
+
+  function orderAmount(order) {
+
+    return Number(
+      order.total_amount || 0
+    );
+
+  }
+
+
+  function formatDate(dateValue) {
+
+    if (!dateValue) {
+      return "-";
+    }
+
+    const d = new Date(dateValue);
+
+    if (isNaN(d.getTime())) {
+      return "-";
+    }
+
+    return d.toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+  }
+
+
+  /* ================================
+     AUTH
+  ================================= */
+
+  async function verifyMaster() {
+
+    const {
+      data: { session },
+      error
+    } = await supabaseClient.auth.getSession();
+
+    if (error || !session) {
+
+      window.location.href = "login.html";
+
+      return false;
+
+    }
+
+
+    const { data: owner, error: ownerError } =
+      await supabaseClient
+        .from("owners")
+        .select("id, role, full_name")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+
+    if (
+      ownerError ||
+      !owner ||
+      owner.role !== "master"
+    ) {
+
+      await supabaseClient.auth.signOut();
+
+      window.location.href = "login.html";
+
+      return false;
+
+    }
+
+
+    return true;
+
+  }
+
+
+  /* ================================
+     LOAD DATA
+  ================================= */
+
+  async function loadData() {
+
+    hideMessage();
+
+    try {
+
+      const [
+        shopsResult,
+        ordersResult,
+        itemsResult
+      ] = await Promise.all([
+
+        supabaseClient
+          .from("shops")
+          .select("*")
+          .order("created_at", {
+            ascending: false
+          }),
+
+        supabaseClient
+          .from("orders")
+          .select("*")
+          .order("created_at", {
+            ascending: false
+          }),
+
+        supabaseClient
+          .from("order_items")
+          .select("*")
+
+      ]);
+
+
+      if (shopsResult.error) {
+        throw shopsResult.error;
+      }
+
+      if (ordersResult.error) {
+        throw ordersResult.error;
+      }
+
+      if (itemsResult.error) {
+        throw itemsResult.error;
+      }
+
+
+      allShops = shopsResult.data || [];
+
+      allOrders = ordersResult.data || [];
+
+      allOrderItems = itemsResult.data || [];
+
+
+      applyFilters();
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Unable to load revenue data: " +
+        (error.message || "Unknown error")
+      );
+
+    }
+
+  }
+
+
+  /* ================================
+     FILTERS
+  ================================= */
+
+  document
+    .getElementById("periodFilter")
+    .addEventListener("change", function() {
+
+      const custom =
+        document.getElementById("customDates");
+
+      custom.style.display =
+        this.value === "custom"
+          ? "block"
+          : "none";
+
+    });
+
+
+  function applyFilters() {
+
+    const shopSearch =
+      document
+        .getElementById("shopSearch")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    const period =
+      document.getElementById("periodFilter").value;
+
+
+    const payment =
+      document.getElementById("paymentFilter").value;
+
+
+    const status =
+      document.getElementById("statusFilter").value;
+
+
+    let result = [...allOrders];
+
+
+    /* SHOP */
+
+    if (shopSearch) {
+
+      result = result.filter(order => {
+
+        const name =
+          getShopName(order.shop_id)
+            .toLowerCase();
+
+        return name.includes(shopSearch);
+
+      });
+
+    }
+
+
+    /* PAYMENT */
+
+    if (payment !== "all") {
+
+      result = result.filter(order =>
+        String(
+          order.payment_status || ""
+        ).toLowerCase() === payment
+      );
+
+    }
+
+
+    /* STATUS */
+
+    if (status !== "all") {
+
+      result = result.filter(order =>
+        String(
+          order.status || ""
+        ).toLowerCase() === status
+      );
+
+    }
+
+
+    /* PERIOD */
+
+    if (period !== "all") {
+
+      if (period === "today") {
+
+        const start = startOfToday();
+
+        result = result.filter(order => {
+
+          const date =
+            new Date(order.created_at);
+
+          return date >= start;
+
+        });
+
+      }
+
+
+      if (period === "week") {
+
+        const start = startOfWeek();
+
+        result = result.filter(order => {
+
+          const date =
+            new Date(order.created_at);
+
+          return date >= start;
+
+        });
+
+      }
+
+
+      if (period === "month") {
+
+        const start = startOfMonth();
+
+        result = result.filter(order => {
+
+          const date =
+            new Date(order.created_at);
+
+          return date >= start;
+
+        });
+
+      }
+
+
+      if (period === "custom") {
+
+        const from =
+          document.getElementById("fromDate").value;
+
+        const to =
+          document.getElementById("toDate").value;
+
+
+        if (from) {
+
+          const fromDate =
+            new Date(from + "T00:00:00");
+
+          result = result.filter(order =>
+            new Date(order.created_at) >= fromDate
+          );
+
+        }
+
+
+        if (to) {
+
+          const toDate =
+            new Date(to + "T23:59:59");
+
+          result = result.filter(order =>
+            new Date(order.created_at) <= toDate
+          );
+
+        }
+
+      }
+
+    }
+
+
+    filteredOrders = result;
+
+
+    renderStats();
+
+    renderShopRevenue();
+
+    renderTopProducts();
+
+    renderTransactions();
+
+    renderStatusSummary();
+
+  }
+
+
+  /* ================================
+     STATS
+  ================================= */
+
+  function renderStats() {
+
+    const paidOrders =
+      filteredOrders.filter(order =>
+        isPaid(order) &&
+        !isCancelled(order)
+      );
+
+
+    const revenue =
+      paidOrders.reduce(
+        (sum, order) =>
+          sum + orderAmount(order),
+        0
+      );
+
+
+    const pending =
+      filteredOrders.filter(order =>
+        String(
+          order.payment_status || ""
+        ).toLowerCase() === "pending"
+      ).length;
+
+
+    const refundedAmount =
+      filteredOrders
+        .filter(order =>
+          String(
+            order.payment_status || ""
+          ).toLowerCase() === "refunded"
+        )
+        .reduce(
+          (sum, order) =>
+            sum + orderAmount(order),
+          0
+        );
+
+
+    const cancelled =
+      filteredOrders.filter(order =>
+        isCancelled(order)
+      ).length;
+
+
+    const average =
+      paidOrders.length
+        ? revenue / paidOrders.length
+        : 0;
+
+
+    /* TODAY */
+
+    const todayStart = startOfToday();
+
+    const todayRevenue =
+      allOrders
+        .filter(order =>
+          isPaid(order) &&
+          !isCancelled(order) &&
+          new Date(order.created_at) >= todayStart
+        )
+        .reduce(
+          (sum, order) =>
+            sum + orderAmount(order),
+          0
+        );
+
+
+    /* MONTH */
+
+    const monthStart = startOfMonth();
+
+    const monthRevenue =
+      allOrders
+        .filter(order =>
+          isPaid(order) &&
+          !isCancelled(order) &&
+          new Date(order.created_at) >= monthStart
+        )
+        .reduce(
+          (sum, order) =>
+            sum + orderAmount(order),
+          0
+        );
+
+
+    document.getElementById("totalRevenue")
+      .textContent = money(revenue);
+
+
+    document.getElementById("todayRevenue")
+      .textContent = money(todayRevenue);
+
+
+    document.getElementById("monthRevenue")
+      .textContent = money(monthRevenue);
+
+
+    document.getElementById("paidOrders")
+      .textContent = paidOrders.length;
+
+
+    document.getElementById("pendingPayments")
+      .textContent = pending;
+
+
+    document.getElementById("refundedAmount")
+      .textContent = money(refundedAmount);
+
+
+    document.getElementById("cancelledOrders")
+      .textContent = cancelled;
+
+
+    document.getElementById("averageOrder")
+      .textContent = money(average);
+
+  }
+
+
+  /* ================================
+     SHOP REVENUE
+  ================================= */
+
+  function renderShopRevenue() {
+
+    const container =
+      document.getElementById(
+        "shopRevenueList"
+      );
+
+
+    const map = {};
+
+
+    filteredOrders
+      .filter(order =>
+        isPaid(order) &&
+        !isCancelled(order)
+      )
+      .forEach(order => {
+
+        const shopId =
+          order.shop_id;
+
+        if (!map[shopId]) {
+
+          map[shopId] = {
+            revenue: 0,
+            orders: 0
+          };
+
+        }
+
+        map[shopId].revenue +=
+          orderAmount(order);
+
+        map[shopId].orders++;
+
+      });
+
+
+    const rows =
+      Object.entries(map)
+        .sort(
+          (a,b) =>
+            b[1].revenue -
+            a[1].revenue
+        );
+
+
+    document.getElementById("shopCount")
+      .textContent =
+        rows.length +
+        (rows.length === 1
+          ? " Shop"
+          : " Shops");
+
+
+    if (!rows.length) {
+
+      container.innerHTML = `
+        <div class="empty">
+          No revenue data available.
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    container.innerHTML =
+      rows.map(([shopId, data]) => {
+
+        return `
+          <div class="shop-row">
+
+            <div>
+              <div class="shop-name">
+                ${escapeHtml(
+                  getShopName(shopId)
+                )}
+              </div>
+
+              <div class="shop-meta">
+                ${data.orders}
+                paid
+                ${data.orders === 1
+                  ? "order"
+                  : "orders"}
+              </div>
+            </div>
+
+            <div class="shop-revenue">
+              ${money(data.revenue)}
+            </div>
+
+          </div>
+        `;
+
+      }).join("");
+
+  }
+
+
+  /* ================================
+     TOP PRODUCTS
+  ================================= */
+
+  function renderTopProducts() {
+
+    const tbody =
+      document.getElementById(
+        "topProductsBody"
+      );
+
+
+    const validOrderIds =
+      new Set(
+        filteredOrders
+          .filter(order =>
+            !isCancelled(order)
+          )
+          .map(order => order.id)
+      );
+
+
+    const productMap = {};
+
+
+    allOrderItems
+      .filter(item =>
+        validOrderIds.has(item.order_id)
+      )
+      .forEach(item => {
+
+        const key =
+          item.product_id ||
+          item.product_name ||
+          "unknown";
+
+
+        if (!productMap[key]) {
+
+          productMap[key] = {
+            name:
+              item.product_name ||
+              "Unknown Product",
+
+            quantity: 0,
+
+            sales: 0,
+
+            shopId: null
+
+          };
+
+        }
+
+
+        productMap[key].quantity +=
+          Number(item.quantity || 0);
+
+
+        productMap[key].sales +=
+          Number(item.price || 0) *
+          Number(item.quantity || 0);
+
+
+        const order =
+          filteredOrders.find(
+            o => o.id === item.order_id
+          );
+
+
+        if (order) {
+          productMap[key].shopId =
+            order.shop_id;
+        }
+
+      });
+
+
+    const rows =
+      Object.values(productMap)
+        .sort(
+          (a,b) =>
+            b.quantity -
+            a.quantity
+        )
+        .slice(0, 10);
+
+
+    if (!rows.length) {
+
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" class="empty">
+            No product sales available.
+          </td>
+        </tr>
+      `;
+
+      return;
+
+    }
+
+
+    tbody.innerHTML =
+      rows.map((item,index) => {
+
+        return `
+          <tr>
+
+            <td>${index + 1}</td>
+
+            <td>
+              <strong>
+                ${escapeHtml(item.name)}
+              </strong>
+            </td>
+
+            <td>
+              ${escapeHtml(
+                getShopName(item.shopId)
+              )}
+            </td>
+
+            <td>
+              ${item.quantity}
+            </td>
+
+            <td>
+              ${money(item.sales)}
+            </td>
+
+          </tr>
+        `;
+
+      }).join("");
+
+  }
+
+
+  /* ================================
+     TRANSACTIONS
+  ================================= */
+
+  function renderTransactions() {
+
+    const tbody =
+      document.getElementById(
+        "transactionsBody"
+      );
+
+
+    const rows =
+      filteredOrders
+        .slice()
+        .sort(
+          (a,b) =>
+            new Date(b.created_at) -
+            new Date(a.created_at)
+        )
+        .slice(0, 30);
+
+
+    document.getElementById(
+      "transactionCount"
+    ).textContent =
+      filteredOrders.length +
+      (
+        filteredOrders.length === 1
+          ? " Transaction"
+          : " Transactions"
+      );
+
+
+    if (!rows.length) {
+
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="empty">
+            No transactions found.
+          </td>
+        </tr>
+      `;
+
+      return;
+
+    }
+
+
+    tbody.innerHTML =
+      rows.map(order => {
+
+        const payment =
+          String(
+            order.payment_status ||
+            "pending"
+          ).toLowerCase();
+
+
+        const status =
+          String(
+            order.status ||
+            "new"
+          ).toLowerCase();
+
+
+        return `
+          <tr>
+
+            <td>
+              <strong>
+                #${escapeHtml(
+                  String(order.id)
+                    .slice(0,8)
+                    .toUpperCase()
+                )}
+              </strong>
+            </td>
+
+            <td>
+              ${escapeHtml(
+                getShopName(order.shop_id)
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                order.customer_name ||
+                "-"
+              )}
+            </td>
+
+            <td>
+              <strong>
+                ${money(orderAmount(order))}
+              </strong>
+            </td>
+
+            <td>
+              ${getStatusBadge(payment)}
+            </td>
+
+            <td>
+              ${getStatusBadge(status)}
+            </td>
+
+            <td>
+              ${formatDate(order.created_at)}
+            </td>
+
+          </tr>
+        `;
+
+      }).join("");
+
+  }
+
+
+  /* ================================
+     STATUS SUMMARY
+  ================================= */
+
+  function renderStatusSummary() {
+
+    const tbody =
+      document.getElementById(
+        "statusBody"
+      );
+
+
+    const map = {};
+
+
+    filteredOrders.forEach(order => {
+
+      const status =
+        String(
+          order.status ||
+          "unknown"
+        ).toLowerCase();
+
+
+      if (!map[status]) {
+
+        map[status] = {
+          orders: 0,
+          value: 0
+        };
+
+      }
+
+
+      map[status].orders++;
+
+      map[status].value +=
+        orderAmount(order);
+
+    });
+
+
+    const rows =
+      Object.entries(map)
+        .sort(
+          (a,b) =>
+            b[1].orders -
+            a[1].orders
+        );
+
+
+    if (!rows.length) {
+
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="3" class="empty">
+            No order data available.
+          </td>
+        </tr>
+      `;
+
+      return;
+
+    }
+
+
+    tbody.innerHTML =
+      rows.map(([status,data]) => {
+
+        return `
+          <tr>
+
+            <td>
+              ${getStatusBadge(status)}
+            </td>
+
+            <td>
+              <strong>
+                ${data.orders}
+              </strong>
+            </td>
+
+            <td>
+              ${money(data.value)}
+            </td>
+
+          </tr>
+        `;
+
+      }).join("");
+
+  }
+
+
+  /* ================================
+     NAVIGATION
+  ================================= */
+
+  function goBack() {
+
+    window.location.href =
+      "dashboard.html";
+
+  }
+
+
+  async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+      "login.html";
+
+  }
+
+
+  /* ================================
+     START
+  ================================= */
+
+  async function init() {
+
+    const valid =
+      await verifyMaster();
+
+    if (!valid) {
+      return;
+    }
+
+    await loadData();
+
+  }
+
+
+  init();
+
+</script>
+
+</body>
+</html>
