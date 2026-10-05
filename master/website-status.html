@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Website Status | Master Panel</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f7fb;
+  color:#111827;
+}
+.header{
+  background:#111827;
+  color:white;
+  padding:18px 24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.header h1{margin:0;font-size:22px}
+.header small{color:#cbd5e1}
+.container{
+  max-width:1400px;
+  margin:25px auto;
+  padding:0 18px;
+}
+.toolbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+input,select{
+  padding:11px 12px;
+  border:1px solid #d1d5db;
+  border-radius:9px;
+  font-size:14px;
+}
+.search{width:300px}
+.card{
+  background:white;
+  padding:18px;
+  border-radius:14px;
+  box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:18px;
+}
+.stat{
+  background:white;
+  padding:18px;
+  border-radius:14px;
+  box-shadow:0 5px 20px rgba(0,0,0,.05);
+}
+.label{
+  font-size:13px;
+  color:#64748b;
+}
+.number{
+  font-size:28px;
+  font-weight:bold;
+  margin-top:7px;
+}
+.table-wrap{overflow:auto}
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:800px;
+}
+th,td{
+  padding:13px 10px;
+  border-bottom:1px solid #edf0f4;
+  text-align:left;
+  font-size:14px;
+}
+th{
+  background:#f8fafc;
+  color:#475569;
+}
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+}
+.online{
+  background:#dcfce7;
+  color:#166534;
+}
+.offline{
+  background:#fee2e2;
+  color:#991b1b;
+}
+button{
+  border:0;
+  border-radius:8px;
+  padding:9px 13px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.primary{background:#111827;color:white}
+.secondary{background:#e5e7eb;color:#111827}
+.empty{
+  text-align:center;
+  padding:40px;
+  color:#64748b;
+}
+.error{
+  background:#fee2e2;
+  color:#991b1b;
+  padding:12px;
+  border-radius:9px;
+  margin-bottom:15px;
+  display:none;
+}
+@media(max-width:900px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .stats{grid-template-columns:1fr}
+  .search{width:100%}
+  .header{padding:15px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div>
+    <h1>Website Status</h1>
+    <small>Monitor shop website status</small>
+  </div>
+  <button class="secondary" onclick="location.href='dashboard.html'">
+    ← Dashboard
+  </button>
+</div>
+
+<div class="container">
+
+  <div id="errorBox" class="error"></div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="label">Total Shops</div>
+      <div class="number" id="total">0</div>
+    </div>
+
+    <div class="stat">
+      <div class="label">Active Websites</div>
+      <div class="number" id="active">0</div>
+    </div>
+
+    <div class="stat">
+      <div class="label">Inactive Websites</div>
+      <div class="number" id="inactive">0</div>
+    </div>
+
+    <div class="stat">
+      <div class="label">Checked</div>
+      <div class="number" id="checked">0</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <input
+      id="search"
+      class="search"
+      placeholder="Search shop..."
+      oninput="render()"
+    >
+
+    <select id="filter" onchange="render()">
+      <option value="">All</option>
+      <option value="active">Active</option>
+      <option value="inactive">Inactive</option>
+    </select>
+
+    <button class="primary" onclick="loadShops()">↻ Refresh</button>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Shop</th>
+            <th>Slug</th>
+            <th>Website</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="shopBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let shops=[];
+
+function esc(v){
+  return String(v??"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function showError(msg){
+  const box=document.getElementById("errorBox");
+  box.textContent=msg;
+  box.style.display="block";
+}
+
+async function checkMaster(){
+  const {data:{session}}=await supabaseClient.auth.getSession();
+
+  if(!session){
+    location.href="login.html";
+    return false;
+  }
+
+  const {data,error}=await supabaseClient
+    .from("owners")
+    .select("role")
+    .eq("id",session.user.id)
+    .maybeSingle();
+
+  if(error || !data || data.role!=="master"){
+    await supabaseClient.auth.signOut();
+    location.href="login.html";
+    return false;
+  }
+
+  return true;
+}
+
+async function loadShops(){
+
+  const {data,error}=await supabaseClient
+    .from("shops")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    showError(error.message);
+    return;
+  }
+
+  shops=data||[];
+
+  document.getElementById("total").textContent=shops.length;
+  document.getElementById("active").textContent=
+    shops.filter(x=>x.is_active!==false).length;
+  document.getElementById("inactive").textContent=
+    shops.filter(x=>x.is_active===false).length;
+  document.getElementById("checked").textContent=shops.length;
+
+  render();
+}
+
+function render(){
+
+  const q=document.getElementById("search").value.toLowerCase();
+  const filter=document.getElementById("filter").value;
+
+  const list=shops.filter(shop=>{
+
+    const text=JSON.stringify(shop).toLowerCase();
+    const active=shop.is_active!==false;
+
+    return (
+      (!q || text.includes(q)) &&
+      (!filter ||
+        (filter==="active" && active) ||
+        (filter==="inactive" && !active))
+    );
+  });
+
+  const body=document.getElementById("shopBody");
+
+  if(!list.length){
+    body.innerHTML=`
+      <tr>
+        <td colspan="6">
+          <div class="empty">No shops found.</div>
+        </td>
+      </tr>`;
+    return;
+  }
+
+  body.innerHTML=list.map(shop=>{
+
+    const active=shop.is_active!==false;
+    const slug=shop.slug||"";
+
+    const website=slug
+      ? `${location.origin}${location.pathname.replace("/master/website-status.html","")}/${slug}/`
+      : "—";
+
+    return `
+      <tr>
+        <td><b>${esc(shop.name||shop.shop_name||"Unnamed Shop")}</b></td>
+
+        <td>${esc(slug||"—")}</td>
+
+        <td>
+          ${
+            slug
+            ? `<a href="../${esc(slug)}/" target="_blank">Open Website ↗</a>`
+            : "—"
+          }
+        </td>
+
+        <td>
+          <span class="badge ${active?"online":"offline"}">
+            ${active?"Active":"Inactive"}
+          </span>
+        </td>
+
+        <td>
+          ${shop.created_at
+            ? new Date(shop.created_at).toLocaleString()
+            : "—"}
+        </td>
+
+        <td>
+          ${
+            slug
+            ? `<button class="primary"
+                onclick="window.open('../${encodeURIComponent(slug)}/','_blank')">
+                Visit
+              </button>`
+            : "—"
+          }
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+(async()=>{
+  if(await checkMaster()){
+    await loadShops();
+  }
+})();
+</script>
+
+</body>
+</html>
