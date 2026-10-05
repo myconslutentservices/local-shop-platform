@@ -1,8 +1,12 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
 
   <title>Master Login | Local Shop Platform</title>
 
@@ -17,13 +21,21 @@
       font-family: Arial, sans-serif;
     }
 
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+    }
+
     body {
       min-height: 100vh;
+      min-height: 100dvh;
       background: #f3f4f6;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
+      overflow-x: hidden;
     }
 
     .login-box {
@@ -52,6 +64,7 @@
     h1 {
       text-align: center;
       font-size: 25px;
+      line-height: 1.2;
       color: #111827;
       margin-bottom: 8px;
     }
@@ -60,6 +73,7 @@
       text-align: center;
       color: #6b7280;
       font-size: 14px;
+      line-height: 1.4;
       margin-bottom: 28px;
     }
 
@@ -77,20 +91,30 @@
 
     input {
       width: 100%;
+      min-height: 46px;
       padding: 13px 14px;
       border: 1px solid #d1d5db;
       border-radius: 9px;
       outline: none;
       font-size: 15px;
       background: #ffffff;
+      color: #111827;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input::placeholder {
+      color: #9ca3af;
     }
 
     input:focus {
       border-color: #111827;
+      box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.08);
     }
 
     .login-btn {
       width: 100%;
+      min-height: 48px;
       padding: 14px;
       border: none;
       border-radius: 9px;
@@ -100,10 +124,16 @@
       font-weight: 700;
       cursor: pointer;
       margin-top: 5px;
+      transition: background 0.2s ease, opacity 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .login-btn:hover {
       background: #1f2937;
+    }
+
+    .login-btn:active {
+      transform: translateY(1px);
     }
 
     .login-btn:disabled {
@@ -118,6 +148,7 @@
       margin-bottom: 18px;
       font-size: 14px;
       line-height: 1.4;
+      word-break: break-word;
     }
 
     .error {
@@ -137,11 +168,191 @@
       margin-top: 22px;
       color: #9ca3af;
       font-size: 12px;
+      line-height: 1.4;
     }
 
-    @media (max-width: 500px) {
+    /* ================================
+       TABLET
+       ================================ */
+
+    @media (max-width: 700px) {
+      body {
+        padding: 16px;
+      }
+
       .login-box {
+        max-width: 430px;
+        padding: 28px 24px;
+        border-radius: 15px;
+      }
+
+      .logo {
+        width: 56px;
+        height: 56px;
+        font-size: 22px;
+        margin-bottom: 18px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .subtitle {
+        margin-bottom: 24px;
+      }
+    }
+
+    /* ================================
+       MOBILE
+       ================================ */
+
+    @media (max-width: 500px) {
+      body {
+        padding: 14px;
+        align-items: center;
+      }
+
+      .login-box {
+        width: 100%;
         padding: 25px 20px;
+        border-radius: 14px;
+      }
+
+      .logo {
+        width: 54px;
+        height: 54px;
+        border-radius: 13px;
+        font-size: 21px;
+        margin-bottom: 17px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      .subtitle {
+        font-size: 13px;
+        margin-bottom: 23px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      label {
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+
+      input {
+        min-height: 46px;
+        padding: 12px 13px;
+        font-size: 15px;
+      }
+
+      .login-btn {
+        min-height: 47px;
+        padding: 13px;
+        font-size: 15px;
+      }
+
+      .message {
+        padding: 11px;
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+
+      .footer {
+        margin-top: 19px;
+        font-size: 11px;
+      }
+    }
+
+    /* ================================
+       SMALL MOBILE
+       ================================ */
+
+    @media (max-width: 380px) {
+      body {
+        padding: 10px;
+      }
+
+      .login-box {
+        padding: 22px 17px;
+        border-radius: 13px;
+      }
+
+      .logo {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        border-radius: 12px;
+        margin-bottom: 15px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .subtitle {
+        font-size: 12px;
+        margin-bottom: 20px;
+      }
+
+      input {
+        min-height: 44px;
+        font-size: 14px;
+      }
+
+      .login-btn {
+        min-height: 45px;
+        font-size: 14px;
+      }
+    }
+
+    /* ================================
+       VERY SMALL HEIGHT DEVICES
+       ================================ */
+
+    @media (max-height: 600px) {
+      body {
+        align-items: flex-start;
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+
+      .login-box {
+        margin: auto 0;
+      }
+
+      .logo {
+        margin-bottom: 12px;
+      }
+
+      .subtitle {
+        margin-bottom: 18px;
+      }
+
+      .form-group {
+        margin-bottom: 13px;
+      }
+
+      .footer {
+        margin-top: 15px;
+      }
+    }
+
+    /* ================================
+       TOUCH DEVICES
+       ================================ */
+
+    @media (hover: none) and (pointer: coarse) {
+      .login-btn:hover {
+        background: #111827;
+      }
+
+      .login-btn:active {
+        background: #1f2937;
       }
     }
   </style>
@@ -346,15 +557,6 @@
         );
 
 
-        /*
-         * IMPORTANT:
-         * Your actual dashboard file is:
-         *
-         * master/dashboard.html
-         *
-         * So we use:
-         */
-
         setTimeout(() => {
 
           window.location.href = "dashboard.html";
@@ -451,3 +653,4 @@
 
 </body>
 </html>
+```
