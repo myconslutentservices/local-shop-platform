@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Notifications | Master Panel</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f7fb;
+  color:#111827;
+}
+.header{
+  background:#111827;
+  color:white;
+  padding:18px 24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.header h1{margin:0;font-size:22px}
+.header small{color:#cbd5e1}
+.container{
+  max-width:1100px;
+  margin:25px auto;
+  padding:0 18px;
+}
+.toolbar{
+  display:flex;
+  gap:10px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+.card{
+  background:white;
+  border-radius:14px;
+  padding:20px;
+  box-shadow:0 5px 20px rgba(0,0,0,.06);
+  margin-bottom:18px;
+}
+input,textarea,select{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #d1d5db;
+  border-radius:9px;
+  font-size:14px;
+}
+textarea{
+  min-height:110px;
+  resize:vertical;
+}
+.field{margin-bottom:14px}
+label{
+  display:block;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:6px;
+}
+button{
+  border:0;
+  border-radius:8px;
+  padding:10px 14px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.primary{background:#111827;color:white}
+.secondary{background:#e5e7eb;color:#111827}
+.danger{background:#fee2e2;color:#991b1b}
+.notification{
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:12px;
+}
+.notification-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+}
+.notification h3{
+  margin:0 0 7px;
+}
+.message{
+  color:#475569;
+  line-height:1.6;
+  white-space:pre-wrap;
+}
+.meta{
+  font-size:12px;
+  color:#64748b;
+  margin-top:10px;
+}
+.badge{
+  background:#dbeafe;
+  color:#1d4ed8;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:bold;
+}
+.error{
+  background:#fee2e2;
+  color:#991b1b;
+  padding:12px;
+  border-radius:9px;
+  margin-bottom:15px;
+  display:none;
+}
+.empty{
+  text-align:center;
+  padding:40px;
+  color:#64748b;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div>
+    <h1>Notifications</h1>
+    <small>Manage platform notifications</small>
+  </div>
+
+  <button class="secondary" onclick="location.href='dashboard.html'">
+    ← Dashboard
+  </button>
+</div>
+
+<div class="container">
+
+  <div id="errorBox" class="error"></div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Create Notification</h2>
+
+    <div class="field">
+      <label>Title</label>
+      <input id="title" placeholder="Notification title">
+    </div>
+
+    <div class="field">
+      <label>Message</label>
+      <textarea id="message" placeholder="Write notification message..."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Type</label>
+      <select id="type">
+        <option value="general">General</option>
+        <option value="important">Important</option>
+        <option value="update">Update</option>
+        <option value="warning">Warning</option>
+      </select>
+    </div>
+
+    <button class="primary" onclick="createNotification()">
+      Publish Notification
+    </button>
+  </div>
+
+  <div class="toolbar">
+    <button class="primary" onclick="loadNotifications()">↻ Refresh</button>
+  </div>
+
+  <div class="card">
+    <div id="notificationList"></div>
+  </div>
+
+</div>
+
+<script>
+let notifications=[];
+
+function esc(v){
+  return String(v??"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function showError(msg){
+  const box=document.getElementById("errorBox");
+  box.textContent=msg;
+  box.style.display="block";
+}
+
+function clearError(){
+  document.getElementById("errorBox").style.display="none";
+}
+
+async function checkMaster(){
+  const {data:{session}}=await supabaseClient.auth.getSession();
+
+  if(!session){
+    location.href="login.html";
+    return false;
+  }
+
+  const {data,error}=await supabaseClient
+    .from("owners")
+    .select("role")
+    .eq("id",session.user.id)
+    .maybeSingle();
+
+  if(error || !data || data.role!=="master"){
+    await supabaseClient.auth.signOut();
+    location.href="login.html";
+    return false;
+  }
+
+  return true;
+}
+
+async function loadNotifications(){
+
+  clearError();
+
+  const {data,error}=await supabaseClient
+    .from("notifications")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    showError(error.message);
+    return;
+  }
+
+  notifications=data||[];
+  render();
+}
+
+function render(){
+
+  const box=document.getElementById("notificationList");
+
+  if(!notifications.length){
+    box.innerHTML=`
+      <div class="empty">
+        No notifications yet.
+      </div>`;
+    return;
+  }
+
+  box.innerHTML=notifications.map(n=>{
+
+    const title=n.title||n.subject||"Notification";
+    const message=n.message||n.body||n.description||"";
+    const type=n.type||"general";
+
+    return `
+      <div class="notification">
+
+        <div class="notification-head">
+          <div>
+            <h3>${esc(title)}</h3>
+            <div class="message">${esc(message)}</div>
+          </div>
+
+          <span class="badge">${esc(type)}</span>
+        </div>
+
+        <div class="meta">
+          ${n.created_at
+            ? new Date(n.created_at).toLocaleString()
+            : "—"}
+        </div>
+
+        <div style="margin-top:12px">
+          <button
+            class="danger"
+            onclick="deleteNotification('${esc(n.id)}')">
+            Delete
+          </button>
+        </div>
+
+      </div>
+    `;
+  }).join("");
+}
+
+async function createNotification(){
+
+  clearError();
+
+  const title=document.getElementById("title").value.trim();
+  const message=document.getElementById("message").value.trim();
+  const type=document.getElementById("type").value;
+
+  if(!title || !message){
+    showError("Title and message are required.");
+    return;
+  }
+
+  const {error}=await supabaseClient
+    .from("notifications")
+    .insert({
+      title,
+      message,
+      type
+    });
+
+  if(error){
+    showError(error.message);
+    return;
+  }
+
+  document.getElementById("title").value="";
+  document.getElementById("message").value="";
+  document.getElementById("type").value="general";
+
+  await loadNotifications();
+}
+
+async function deleteNotification(id){
+
+  if(!confirm("Delete this notification?"))return;
+
+  const {error}=await supabaseClient
+    .from("notifications")
+    .delete()
+    .eq("id",id);
+
+  if(error){
+    showError(error.message);
+    return;
+  }
+
+  await loadNotifications();
+}
+
+(async()=>{
+  if(await checkMaster()){
+    await loadNotifications();
+  }
+})();
+</script>
+
+</body>
+</html>
