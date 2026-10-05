@@ -1,103 +1,712 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Owner Dashboard | Local Shop Platform</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@Supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:#0b1120;color:#fff;min-height:100vh}button,input,textarea,select{font:inherit}.topbar{min-height:64px;background:#111827;border-bottom:1px solid #263244;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:10px 22px;position:sticky;top:0;z-index:10}.brand{font-weight:700;font-size:18px}.brand small{display:block;color:#94a3b8;font-size:11px;font-weight:400;margin-top:3px}.top-actions{display:flex;align-items:center;gap:10px;min-width:0}.shop-name{color:#cbd5e1;font-size:13px;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.logout,.refresh,.secondary,.view-order{border:1px solid #334155;background:#1e293b;color:#fff;border-radius:9px;padding:9px 13px;cursor:pointer}.logout:hover,.refresh:hover,.secondary:hover,.view-order:hover{background:#334155}.wrap{max-width:1180px;margin:auto;padding:24px}.welcome{margin-bottom:22px}.welcome h1{font-size:27px;margin-bottom:6px}.welcome p{color:#94a3b8;font-size:14px}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}.card,.order-section,.subscription,.category-card,.product-card{background:#111827;border:1px solid #263244;border-radius:15px}.card{padding:18px}.stat-card{cursor:pointer;transition:.18s ease}.stat-card:hover{transform:translateY(-2px);border-color:#475569;background:#151e2e}.stat-label{color:#94a3b8;font-size:13px;margin-bottom:10px}.stat{font-size:27px;font-weight:700}.muted,.sub{color:#64748b;font-size:12px;margin-top:6px}.cancelled-mini{color:#fca5a5;font-size:12px;margin-top:7px}.section{margin-top:22px}.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.section-title h2{font-size:18px}.error{display:none;background:rgba(220,38,38,.12);border:1px solid #991b1b;color:#fca5a5;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px}.loading,.empty{text-align:center;padding:35px 10px;color:#64748b}.orders-grid{display:grid;grid-template-columns:1fr;gap:14px}.order-section{overflow:hidden}.order-section-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #263244}.order-section-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700}.count-badge{min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:#1e293b;color:#cbd5e1;display:flex;align-items:center;justify-content:center;font-size:11px}.order-section-body{padding:0 16px;overflow-x:auto}.order{min-width:820px;display:grid;grid-template-columns:1.3fr 1fr .8fr .9fr 1.45fr;gap:12px;padding:14px 0;border-bottom:1px solid #263244;align-items:center}.order:last-child{border-bottom:0}.customer{font-weight:600}.badge,.payment-badge{display:inline-block;border-radius:999px;padding:5px 9px;font-size:11px}.badge{background:#1e293b;color:#cbd5e1}.badge.new{background:#172554;color:#93c5fd}.badge.confirmed{background:#422006;color:#fdba74}.badge.preparing{background:#3b0764;color:#d8b4fe}.badge.out-for-delivery{background:#082f49;color:#7dd3fc}.badge.delivered{background:#064e3b;color:#6ee7b7}.badge.cancelled{background:#450a0a;color:#fca5a5}.payment-pending{background:#422006;color:#fdba74}.payment-paid{background:#064e3b;color:#6ee7b7}.payment-failed{background:#450a0a;color:#fca5a5}.payment-refunded{background:#312e81;color:#c7d2fe}.order-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.order-actions select,.field input,.field textarea,.field select,.search{border:1px solid #334155;background:#0f172a;color:#fff;border-radius:8px;padding:9px;outline:none}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.68);z-index:50;padding:20px;overflow:auto}.modal.show{display:flex;align-items:center;justify-content:center}.modal-box{width:min(650px,100%);background:#111827;border:1px solid #334155;border-radius:15px;padding:20px}.order-modal-box{width:min(760px,100%)}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.close{border:0;background:transparent;color:#94a3b8;font-size:25px;cursor:pointer}.order-detail-grid,.info,.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.detail-card{border:1px solid #263244;background:#0f172a;border-radius:10px;padding:13px}.detail-card h4{font-size:13px;margin-bottom:8px}.detail-line{font-size:12px;color:#cbd5e1;margin:5px 0;line-height:1.5}.detail-line span,.info-row span:first-child{color:#94a3b8}.items-list{border-top:1px solid #263244;margin-top:10px;padding-top:10px}.item-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #1e293b;font-size:12px}.order-total{display:flex;justify-content:space-between;margin-top:12px;font-weight:700}.info-row{display:flex;justify-content:space-between;gap:15px;border-bottom:1px solid #263244;padding:11px 0;font-size:13px}.info-row:last-child{border-bottom:0}.subscription{padding:18px}.sub-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.active{color:#86efac}.expired{color:#fca5a5}.pending{color:#fdba74}.products-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.primary{border:1px solid #2563eb;background:#2563eb;color:#fff;border-radius:9px;padding:9px 14px;cursor:pointer;font-weight:600}.primary:hover{background:#1d4ed8}.search{flex:1;min-width:190px}.product-grid,.category-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.product-card{overflow:hidden}.product-img{height:170px;background:#0f172a;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:12px}.product-img img{width:100%;height:100%;object-fit:cover}.product-body,.category-card{padding:14px}.product-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.product-name{font-weight:700;font-size:16px}.product-price{font-weight:700;color:#86efac;white-space:nowrap}.product-meta,.category-desc{color:#94a3b8;font-size:12px;margin-top:7px;line-height:1.5}.product-actions,.category-actions{display:flex;gap:8px;margin-top:13px}.danger{border:1px solid #7f1d1d;background:#450a0a;color:#fecaca;border-radius:8px;padding:8px 11px;cursor:pointer;font-size:12px}.out{color:#fca5a5}.in{color:#86efac}.hidden-status{color:#fbbf24}.category-name{font-weight:700;font-size:15px}.category-desc{min-height:30px}.category-actions button{flex:1}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:#94a3b8}.field textarea{min-height:90px;resize:vertical}.checks{display:flex;gap:12px;flex-wrap:wrap}.check{display:flex;align-items:center;gap:6px;font-size:12px;color:#cbd5e1}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:16px}
-@media(min-width:1450px){.wrap{max-width:1320px}.product-grid,.category-grid{grid-template-columns:repeat(4,1fr)}}
-@media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:950px){.grid{grid-template-columns:repeat(2,1fr)}.product-grid,.category-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:700px){.topbar{padding:12px 14px}.brand{font-size:16px}.top-actions{gap:7px}.shop-name{display:none}.wrap{padding:16px}.welcome h1{font-size:23px}.grid{grid-template-columns:1fr 1fr;gap:10px}.card{padding:14px}.stat{font-size:22px}.section-title{align-items:flex-start;flex-wrap:wrap}.info,.order-detail-grid,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.product-grid,.category-grid{grid-template-columns:1fr}.products-toolbar{flex-direction:column;align-items:stretch}.search{min-width:0;width:100%}.modal{padding:10px;align-items:flex-end!important}.modal-box,.order-modal-box{width:100%;max-height:92vh;overflow:auto;border-radius:15px 15px 0 0}.modal-actions{flex-direction:column-reverse}.modal-actions button{width:100%}.order-section-body{padding:0 12px}.order{min-width:720px}.order-actions select,.view-order{padding:9px 8px}.product-img{height:190px}}
-@media(max-width:420px){.grid{grid-template-columns:1fr}.topbar{align-items:flex-start}.top-actions{width:100%;justify-content:space-between}.logout{padding:8px 10px}.welcome h1{font-size:21px}.section-title h2{font-size:17px}.primary,.refresh{padding:8px 10px}.product-actions,.category-actions{flex-direction:column}.product-actions button,.category-actions button{width:100%}}
-@media(max-width:350px){.top-actions{flex-direction:column;align-items:stretch}.logout{width:100%}.brand small{font-size:10px}}
-@media(hover:none){.stat-card:hover{transform:none}.logout:hover,.refresh:hover,.secondary:hover,.view-order:hover,.primary:hover{background:initial}.primary:hover{background:#2563eb}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#0b1120;color:#fff;min-height:100vh}
+button,input,textarea,select{font:inherit}
+.topbar{min-height:64px;background:#111827;border-bottom:1px solid #263244;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:10px 22px;position:sticky;top:0;z-index:10}
+.brand{font-weight:700;font-size:18px}
+.brand small{display:block;color:#94a3b8;font-size:11px;font-weight:400;margin-top:3px}
+.top-actions{display:flex;align-items:center;gap:10px;min-width:0}
+.shop-name{color:#cbd5e1;font-size:13px;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logout,.refresh,.secondary,.view-order{border:1px solid #334155;background:#1e293b;color:#fff;border-radius:9px;padding:9px 13px;cursor:pointer}
+.logout:hover,.refresh:hover,.secondary:hover,.view-order:hover{background:#334155}
+.wrap{max-width:1180px;margin:auto;padding:24px}
+.welcome{margin-bottom:22px}
+.welcome h1{font-size:27px;margin-bottom:6px}
+.welcome p{color:#94a3b8;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.card,.order-section,.subscription,.category-card,.product-card{background:#111827;border:1px solid #263244;border-radius:15px}
+.card{padding:18px}
+.stat-card{cursor:pointer;transition:.18s ease}
+.stat-card:hover{transform:translateY(-2px);border-color:#475569;background:#151e2e}
+.stat-label{color:#94a3b8;font-size:13px;margin-bottom:10px}
+.stat{font-size:27px;font-weight:700}
+.muted,.sub{color:#64748b;font-size:12px;margin-top:6px}
+.cancelled-mini{color:#fca5a5;font-size:12px;margin-top:7px}
+.section{margin-top:22px}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.section-title h2{font-size:18px}
+.error{display:none;background:rgba(220,38,38,.12);border:1px solid #991b1b;color:#fca5a5;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px}
+.loading,.empty{text-align:center;padding:35px 10px;color:#64748b}
+.orders-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.order-section{overflow:hidden}
+.order-section-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #263244}
+.order-section-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700}
+.count-badge{min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:#1e293b;color:#cbd5e1;display:flex;align-items:center;justify-content:center;font-size:11px}
+.order-section-body{padding:0 16px;overflow-x:auto}
+.order{min-width:820px;display:grid;grid-template-columns:1.3fr 1fr .8fr .9fr 1.45fr;gap:12px;padding:14px 0;border-bottom:1px solid #263244;align-items:center}
+.order:last-child{border-bottom:0}
+.customer{font-weight:600}
+.badge,.payment-badge{display:inline-block;border-radius:999px;padding:5px 9px;font-size:11px}
+.badge{background:#1e293b;color:#cbd5e1}
+.badge.new{background:#172554;color:#93c5fd}
+.badge.confirmed{background:#422006;color:#fdba74}
+.badge.preparing{background:#3b0764;color:#d8b4fe}
+.badge.out-for-delivery{background:#082f49;color:#7dd3fc}
+.badge.delivered{background:#064e3b;color:#6ee7b7}
+.badge.cancelled{background:#450a0a;color:#fca5a5}
+.payment-pending{background:#422006;color:#fdba74}
+.payment-paid{background:#064e3b;color:#6ee7b7}
+.payment-failed{background:#450a0a;color:#fca5a5}
+.payment-refunded{background:#312e81;color:#c7d2fe}
+.order-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.order-actions select,.field input,.field textarea,.field select,.search{border:1px solid #334155;background:#0f172a;color:#fff;border-radius:8px;padding:9px;outline:none}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.68);z-index:50;padding:20px;overflow:auto}
+.modal.show{display:flex;align-items:center;justify-content:center}
+.modal-box{width:min(650px,100%);background:#111827;border:1px solid #334155;border-radius:15px;padding:20px}
+.order-modal-box{width:min(760px,100%)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.close{border:0;background:transparent;color:#94a3b8;font-size:25px;cursor:pointer}
+.order-detail-grid,.info,.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.detail-card{border:1px solid #263244;background:#0f172a;border-radius:10px;padding:13px}
+.detail-card h4{font-size:13px;margin-bottom:8px}
+.detail-line{font-size:12px;color:#cbd5e1;margin:5px 0;line-height:1.5}
+.detail-line span,.info-row span:first-child{color:#94a3b8}
+.items-list{border-top:1px solid #263244;margin-top:10px;padding-top:10px}
+.item-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #1e293b;font-size:12px}
+.order-total{display:flex;justify-content:space-between;margin-top:12px;font-weight:700}
+.info-row{display:flex;justify-content:space-between;gap:15px;border-bottom:1px solid #263244;padding:11px 0;font-size:13px}
+.info-row:last-child{border-bottom:0}
+.subscription{padding:18px}
+.sub-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.active{color:#86efac}
+.expired{color:#fca5a5}
+.pending{color:#fdba74}
+.products-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.primary{border:1px solid #2563eb;background:#2563eb;color:#fff;border-radius:9px;padding:9px 14px;cursor:pointer;font-weight:600}
+.primary:hover{background:#1d4ed8}
+.search{flex:1;min-width:190px}
+.product-grid,.category-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.product-card{overflow:hidden}
+.product-img{height:170px;background:#0f172a;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:12px}
+.product-img img{width:100%;height:100%;object-fit:cover}
+.product-body,.category-card{padding:14px}
+.product-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.product-name{font-weight:700;font-size:16px}
+.product-price{font-weight:700;color:#86efac;white-space:nowrap}
+.product-meta,.category-desc{color:#94a3b8;font-size:12px;margin-top:7px;line-height:1.5}
+.product-actions,.category-actions{display:flex;gap:8px;margin-top:13px}
+.danger{border:1px solid #7f1d1d;background:#450a0a;color:#fecaca;border-radius:8px;padding:8px 11px;cursor:pointer;font-size:12px}
+.out{color:#fca5a5}
+.in{color:#86efac}
+.hidden-status{color:#fbbf24}
+.category-name{font-weight:700;font-size:15px}
+.category-desc{min-height:30px}
+.category-actions button{flex:1}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-size:12px;color:#94a3b8}
+.field textarea{min-height:90px;resize:vertical}
+.checks{display:flex;gap:12px;flex-wrap:wrap}
+.check{display:flex;align-items:center;gap:6px;font-size:12px;color:#cbd5e1}
+.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:16px}
+
+@media(min-width:1450px){
+  .wrap{max-width:1320px}
+  .product-grid,.category-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:1100px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:950px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .product-grid,.category-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:700px){
+  .topbar{padding:12px 14px}
+  .brand{font-size:16px}
+  .top-actions{gap:7px}
+  .shop-name{display:none}
+  .wrap{padding:16px}
+  .welcome h1{font-size:23px}
+  .grid{grid-template-columns:1fr 1fr;gap:10px}
+  .card{padding:14px}
+  .stat{font-size:22px}
+  .section-title{align-items:flex-start;flex-wrap:wrap}
+  .info,.order-detail-grid,.form-grid{grid-template-columns:1fr}
+  .field.full{grid-column:auto}
+  .product-grid,.category-grid{grid-template-columns:1fr}
+  .products-toolbar{flex-direction:column;align-items:stretch}
+  .search{min-width:0;width:100%}
+  .modal{padding:10px;align-items:flex-end!important}
+  .modal-box,.order-modal-box{width:100%;max-height:92vh;overflow:auto;border-radius:15px 15px 0 0}
+  .modal-actions{flex-direction:column-reverse}
+  .modal-actions button{width:100%}
+  .order-section-body{padding:0 12px}
+  .order{min-width:720px}
+  .order-actions select,.view-order{padding:9px 8px}
+  .product-img{height:190px}
+}
+@media(max-width:420px){
+  .grid{grid-template-columns:1fr}
+  .topbar{align-items:flex-start}
+  .top-actions{width:100%;justify-content:space-between}
+  .logout{padding:8px 10px}
+  .welcome h1{font-size:21px}
+  .section-title h2{font-size:17px}
+  .primary,.refresh{padding:8px 10px}
+  .product-actions,.category-actions{flex-direction:column}
+  .product-actions button,.category-actions button{width:100%}
+}
+@media(max-width:350px){
+  .top-actions{flex-direction:column;align-items:stretch}
+  .logout{width:100%}
+  .brand small{font-size:10px}
+}
+@media(hover:none){
+  .stat-card:hover{transform:none}
+  .logout:hover,.refresh:hover,.secondary:hover,.view-order:hover,.primary:hover{background:initial}
+  .primary:hover{background:#2563eb}
+}
 </style>
 </head>
+
 <body>
-<header class="topbar"><div class="brand">Local Shop Platform<small>Owner Management Panel</small></div><div class="top-actions"><div class="shop-name" id="topShop">Loading...</div><button class="logout" id="logoutBtn">Logout</button></div></header>
+
+<header class="topbar">
+  <div class="brand">
+    Local Shop Platform
+    <small>Owner Management Panel</small>
+  </div>
+
+  <div class="top-actions">
+    <div class="shop-name" id="topShop">Loading...</div>
+    <button class="logout" id="logoutBtn">Logout</button>
+  </div>
+</header>
+
 <main class="wrap">
+
 <div id="errorBox" class="error"></div>
-<div class="welcome"><h1>Welcome, <span id="ownerName">Owner</span> 👋</h1><p>Manage your shop, products, orders and subscription from one place.</p></div>
+
+<div class="welcome">
+  <h1>Welcome, <span id="ownerName">Owner</span> 👋</h1>
+  <p>Manage your shop, products, orders and subscription from one place.</p>
+</div>
+
 <section class="grid">
-<div class="card stat-card" onclick="scrollToOrders('today')"><div class="stat-label">Today's Orders</div><div class="stat" id="todayOrders">0</div><div class="cancelled-mini">Cancelled Today: <span id="todayCancelled">0</span></div></div>
-<div class="card stat-card" onclick="scrollToOrders('revenue')"><div class="stat-label">Today's Revenue</div><div class="stat" id="todayRevenue">₹0</div><div class="muted">Only paid orders</div></div>
-<div class="card stat-card" onclick="scrollToOrders('all')"><div class="stat-label">Total Orders</div><div class="stat" id="totalOrders">0</div><div class="muted">View all orders →</div></div>
-<div class="card stat-card" onclick="document.getElementById('productsSection').scrollIntoView({behavior:'smooth'})"><div class="stat-label">Products</div><div class="stat" id="totalProducts">0</div><div class="muted">Manage products →</div></div>
-<div class="card stat-card" onclick="window.location.href='revenue.html'"><div class="stat-label">Revenue & Reports</div><div class="stat">₹ →</div><div class="muted">View detailed reports →</div></div>
+
+<div class="card stat-card" onclick="scrollToOrders('today')">
+  <div class="stat-label">Today's Orders</div>
+  <div class="stat" id="todayOrders">0</div>
+  <div class="cancelled-mini">
+    Cancelled Today: <span id="todayCancelled">0</span>
+  </div>
+</div>
+
+<div class="card stat-card" onclick="scrollToOrders('revenue')">
+  <div class="stat-label">Today's Revenue</div>
+  <div class="stat" id="todayRevenue">₹0</div>
+  <div class="muted">Only paid orders</div>
+</div>
+
+<div class="card stat-card" onclick="scrollToOrders('all')">
+  <div class="stat-label">Total Orders</div>
+  <div class="stat" id="totalOrders">0</div>
+  <div class="muted">View all orders →</div>
+</div>
+
+<div class="card stat-card" onclick="document.getElementById('productsSection').scrollIntoView({behavior:'smooth'})">
+  <div class="stat-label">Products</div>
+  <div class="stat" id="totalProducts">0</div>
+  <div class="muted">Manage products →</div>
+</div>
+
+<div class="card stat-card" onclick="window.location.href='revenue.html'">
+  <div class="stat-label">Revenue & Reports</div>
+  <div class="stat">₹ →</div>
+  <div class="muted">View detailed reports →</div>
+</div>
+
 </section>
-<section class="section" id="ordersSection"><div class="section-title"><h2>Orders</h2><button class="refresh" id="refreshBtn">Refresh Orders</button></div><div class="orders-grid" id="ordersContainer">
+
+<section class="section" id="ordersSection">
+
+<div class="section-title">
+  <h2>Orders</h2>
+  <button class="refresh" id="refreshBtn">Refresh Orders</button>
+</div>
+
+<div class="orders-grid" id="ordersContainer">
+
 <script>
-const orderSections=[["new","🆕 New"],["confirmed","✅ Confirmed"],["preparing","👨‍🍳 Preparing"],["out_for_delivery","🚚 Out for Delivery"],["delivered","📦 Delivered"],["cancelled","❌ Cancelled"]];
-document.write(orderSections.map(([s,l])=>`<div class="order-section"><div class="order-section-head"><div class="order-section-title">${l}<span class="count-badge" id="count-${s}">0</span></div></div><div class="order-section-body" id="orders-${s}"><div class="empty">No ${s.replaceAll("_"," ")} orders.</div></div></div>`).join(""));
+const orderSections=[
+  ["new","🆕 New"],
+  ["confirmed","✅ Confirmed"],
+  ["preparing","👨‍🍳 Preparing"],
+  ["out_for_delivery","🚚 Out for Delivery"],
+  ["delivered","📦 Delivered"],
+  ["cancelled","❌ Cancelled"]
+];
+
+document.write(
+  orderSections.map(([s,l])=>`
+    <div class="order-section">
+      <div class="order-section-head">
+        <div class="order-section-title">
+          ${l}
+          <span class="count-badge" id="count-${s}">0</span>
+        </div>
+      </div>
+
+      <div class="order-section-body" id="orders-${s}">
+        <div class="empty">No ${s.replaceAll("_"," ")} orders.</div>
+      </div>
+    </div>
+  `).join("")
+);
 </script>
-</div></section>
-<div class="modal" id="orderModal"><div class="modal-box order-modal-box"><div class="modal-head"><h3>Order Details</h3><button class="close" id="closeOrderModal">&times;</button></div><div id="orderDetailBox"></div></div></div>
-<section class="section"><div class="section-title"><h2>Shop Information</h2></div><div class="info"><div class="card"><div class="info-row"><span>Shop Name</span><strong id="shopInfoName">—</strong></div><div class="info-row"><span>Phone</span><strong id="shopPhone">—</strong></div><div class="info-row"><span>WhatsApp</span><strong id="shopWhatsapp">—</strong></div><div class="info-row"><span>Status</span><strong id="shopStatus">—</strong></div></div><div class="subscription"><div class="sub-top"><h3>Subscription</h3><strong id="subStatus">Not found</strong></div><div class="info-row"><span>Plan</span><strong id="subPlan">—</strong></div><div class="info-row"><span>Amount</span><strong id="subAmount">—</strong></div><div class="info-row"><span>Expires</span><strong id="subExpiry">—</strong></div></div></div></section>
-<section class="section" id="categoriesSection"><div class="section-title"><h2>Categories</h2><button class="primary" id="addCategoryBtn">+ Add Category</button></div><div class="products-toolbar"><input class="search" id="categorySearch" placeholder="Search categories..."><button class="refresh" id="refreshCategoriesBtn">Refresh</button></div><div class="category-grid" id="categoriesBox"><div class="card loading">Loading categories...</div></div></section>
-<section class="section" id="productsSection"><div class="section-title"><h2>Products</h2><button class="primary" id="addProductBtn">+ Add Product</button></div><div class="products-toolbar"><input class="search" id="productSearch" placeholder="Search products..."><button class="refresh" id="refreshProductsBtn">Refresh</button></div><div class="product-grid" id="productsBox"><div class="card loading">Loading products...</div></div></section>
-<div class="modal" id="categoryModal"><div class="modal-box"><div class="modal-head"><h3 id="categoryModalTitle">Add Category</h3><button class="close" id="closeCategoryModal">&times;</button></div><form id="categoryForm"><input type="hidden" id="categoryId"><div class="form-grid"><div class="field full"><label>Category Name *</label><input id="categoryName" required maxlength="100" placeholder="e.g. T-Shirts"></div><div class="field full"><label>Description</label><textarea id="categoryDescription" maxlength="500"></textarea></div><div class="field full"><label class="check"><input type="checkbox" id="categoryActive" checked> Active category</label></div></div><div class="modal-actions"><button type="button" class="secondary" id="cancelCategoryBtn">Cancel</button><button type="submit" class="primary" id="saveCategoryBtn">Save Category</button></div></form></div></div>
-<div class="modal" id="productModal"><div class="modal-box"><div class="modal-head"><h3 id="modalTitle">Add Product</h3><button class="close" id="closeProductModal">&times;</button></div><form id="productForm"><input type="hidden" id="productId"><div class="form-grid"><div class="field"><label>Product Name *</label><input id="productName" required maxlength="150"></div><div class="field"><label>Price (₹) *</label><input id="productPrice" type="number" min="0" step="0.01" required></div><div class="field"><label>Stock</label><input id="productStock" type="number" min="0" step="1" value="0"></div><div class="field"><label>Category</label><select id="productCategory"><option value="">No category</option></select></div><div class="field full"><label>Image URL</label><input id="productImage" type="url" placeholder="https://..."></div><div class="field full"><label>Description</label><textarea id="productDescription" maxlength="1000"></textarea></div><div class="field full"><label>Sizes (optional)</label><div class="checks">${["S","M","L","XL","XXL","XXXL"].map(s=>`<label class="check"><input type="checkbox" value="${s}" class="sizeCheck">${s}</label>`).join("")}</div></div><div class="field full"><div class="checks"><label class="check"><input type="checkbox" id="hasSizes"> Enable sizes</label><label class="check"><input type="checkbox" id="productActive" checked> Visible on shop</label></div></div></div><div class="modal-actions"><button type="button" class="secondary" id="cancelProductBtn">Cancel</button><button type="submit" class="primary" id="saveProductBtn">Save Product</button></div></form></div></div>
-</main>
+
+</div>
+</section>
+
+<div class="modal" id="orderModal">
+  <div class="modal-box order-modal-box">
+    <div class="modal-head">
+      <h3>Order Details</h3>
+      <button class="close" id="closeOrderModal">&times;</button>
+    </div>
+    <div id="orderDetailBox"></div>
+  </div>
+</div>
+
+<section class="section">
+
+<div class="section-title">
+  <h2>Shop Information</h2>
+</div>
+
+<div class="info">
+
+<div class="card">
+
+<div class="info-row">
+  <span>Shop Name</span>
+  <strong id="shopInfoName">—</strong>
+</div>
+
+<div class="info-row">
+  <span>Phone</span>
+  <strong id="shopPhone">—</strong>
+</div>
+
+<div class="info-row">
+  <span>WhatsApp</span>
+  <strong id="shopWhatsapp">—</strong>
+</div>
+
+<div class="info-row">
+  <span>Status</span>
+  <strong id="shopStatus">—</strong>
+</div>
+
+</div>
+
+<div class="subscription">
+
+<div class="sub-top">
+  <h3>Subscription</h3>
+  <strong id="subStatus">Not found</strong>
+</div>
+
+<div class="info-row">
+  <span>Plan</span>
+  <strong id="subPlan">—</strong>
+</div>
+
+<div class="info-row">
+  <span>Amount</span>
+  <strong id="subAmount">—</strong>
+</div>
+
+<div class="info-row">
+  <span>Expires</span>
+  <strong id="subExpiry">—</strong>
+</div>
+
+</div>
+
+</div>
+</section>
+
+<section class="section" id="categoriesSection">
+
+<div class="section-title">
+  <h2>Categories</h2>
+  <button class="primary" id="addCategoryBtn">+ Add Category</button>
+</div>
+
+<div class="products-toolbar">
+  <input class="search" id="categorySearch" placeholder="Search categories...">
+  <button class="refresh" id="refreshCategoriesBtn">Refresh</button>
+</div>
+
+<div class="category-grid" id="categoriesBox">
+  <div class="card loading">Loading categories...</div>
+</div>
+
+</section>
+
+<section class="section" id="productsSection">
+
+<div class="section-title">
+  <h2>Products</h2>
+  <button class="primary" id="addProductBtn">+ Add Product</button>
+</div>
+
+<div class="products-toolbar">
+  <input class="search" id="productSearch" placeholder="Search products...">
+  <button class="refresh" id="refreshProductsBtn">Refresh</button>
+</div>
+
+<div class="product-grid" id="productsBox">
+  <div class="card loading">Loading products...</div>
+</div>
+
+</section>
+
+<div class="modal" id="categoryModal">
+
+<div class="modal-box">
+
+<div class="modal-head">
+  <h3 id="categoryModalTitle">Add Category</h3>
+  <button class="close" id="closeCategoryModal">&times;</button>
+</div>
+
+<form id="categoryForm">
+
+<input type="hidden" id="categoryId">
+
+<div class="form-grid">
+
+<div class="field full">
+  <label>Category Name *</label>
+  <input id="categoryName" required maxlength="100" placeholder="e.g. T-Shirts">
+</div>
+
+<div class="field full">
+  <label>Description</label>
+  <textarea id="categoryDescription" maxlength="500"></textarea>
+</div>
+
+<div class="field full">
+  <label class="check">
+    <input type="checkbox" id="categoryActive" checked>
+    Active category
+  </label>
+</div>
+
+</div>
+
+<div class="modal-actions">
+  <button type="button" class="secondary" id="cancelCategoryBtn">Cancel</button>
+  <button type="submit" class="primary" id="saveCategoryBtn">Save Category</button>
+</div>
+
+</form>
+</div>
+</div>
+
+<div class="modal" id="productModal">
+
+<div class="modal-box">
+
+<div class="modal-head">
+  <h3 id="modalTitle">Add Product</h3>
+  <button class="close" id="closeProductModal">&times;</button>
+</div>
+
+<form id="productForm">
+
+<input type="hidden" id="productId">
+
+<div class="form-grid">
+
+<div class="field">
+  <label>Product Name *</label>
+  <input id="productName" required maxlength="150">
+</div>
+
+<div class="field">
+  <label>Price (₹) *</label>
+  <input id="productPrice" type="number" min="0" step="0.01" required>
+</div>
+
+<div class="field">
+  <label>Stock</label>
+  <input id="productStock" type="number" min="0" step="1" value="0">
+</div>
+
+<div class="field">
+  <label>Category</label>
+  <select id="productCategory">
+    <option value="">No category</option>
+  </select>
+</div>
+
+<div class="field full">
+  <label>Image URL</label>
+  <input id="productImage" type="url" placeholder="https://...">
+</div>
+
+<div class="field full">
+  <label>Description</label>
+  <textarea id="productDescription" maxlength="1000"></textarea>
+</div>
+
+<div class="field full">
+
+<label>Sizes (optional)</label>
+
+<div class="checks">
 <script>
-const ownerId=sessionStorage.getItem("owner_id"),sessionShopId=sessionStorage.getItem("owner_shop_id");
-let owner=null,shop=null,categories=[],products=[],currentOrders=[];
+["S","M","L","XL","XXL","XXXL"].forEach(s=>{
+  document.write(`
+    <label class="check">
+      <input type="checkbox" value="${s}" class="sizeCheck">
+      ${s}
+    </label>
+  `);
+});
+</script>
+</div>
 
-const $=id=>document.getElementById(id),
-showError=m=>{$("errorBox").textContent=m;$("errorBox").style.display="block"},
-clearError=()=>{$("errorBox").style.display="none"},
-money=v=>"₹"+Number(v||0).toLocaleString("en-IN",{maximumFractionDigits:2}),
-dateText=v=>v?new Date(v).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"}):"—",
-escapeHtml=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+</div>
 
-function normalizeOrderStatus(s){s=String(s||"new").toLowerCase();if(s==="accepted")return"confirmed";if(s==="processing"||s==="ready")return"preparing";if(s==="rejected")return"cancelled";return["new","confirmed","preparing","out_for_delivery","delivered","cancelled"].includes(s)?s:"new"}
+<div class="field full">
 
-function statusLabel(s){return({new:"New",confirmed:"Confirmed",preparing:"Preparing",out_for_delivery:"Out for Delivery",delivered:"Delivered",cancelled:"Cancelled"})[normalizeOrderStatus(s)]||"New"}
+<div class="checks">
 
-function statusClass(s){return normalizeOrderStatus(s).replaceAll("_","-")}
+<label class="check">
+  <input type="checkbox" id="hasSizes">
+  Enable sizes
+</label>
 
-function normalizePaymentStatus(s){s=String(s||"pending").toLowerCase();return["pending","paid","failed","refunded"].includes(s)?s:"pending"}
+<label class="check">
+  <input type="checkbox" id="productActive" checked>
+  Visible on shop
+</label>
 
-function paymentLabel(s){return({pending:"Pending",paid:"Paid",failed:"Failed",refunded:"Refunded"})[normalizePaymentStatus(s)]||"Pending"}
+</div>
 
-function paymentClass(s){return"payment-"+normalizePaymentStatus(s)}
+</div>
 
-function countsAsRevenue(o){return normalizePaymentStatus(o.payment_status)==="paid"&&normalizeOrderStatus(o.status)!=="cancelled"}
+</div>
 
-function scrollToOrders(){$("ordersSection").scrollIntoView({behavior:"smooth"})}
+<div class="modal-actions">
+  <button type="button" class="secondary" id="cancelProductBtn">Cancel</button>
+  <button type="submit" class="primary" id="saveProductBtn">Save Product</button>
+</div>
+
+</form>
+</div>
+</div>
+
+</main>
+
+<script>
+
+const ownerId=sessionStorage.getItem("owner_id");
+const sessionShopId=sessionStorage.getItem("owner_shop_id");
+
+let owner=null;
+let shop=null;
+let categories=[];
+let products=[];
+let currentOrders=[];
+
+const $=id=>document.getElementById(id);
+
+const showError=m=>{
+  $("errorBox").textContent=m;
+  $("errorBox").style.display="block";
+};
+
+const clearError=()=>{
+  $("errorBox").style.display="none";
+};
+
+const money=v=>"₹"+Number(v||0).toLocaleString("en-IN",{maximumFractionDigits:2});
+
+const dateText=v=>
+  v
+    ?new Date(v).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})
+    :"—";
+
+const escapeHtml=s=>
+  String(s??"").replace(
+    /[&<>"']/g,
+    m=>({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#039;"
+    }[m])
+  );
+
+function normalizeOrderStatus(s){
+  s=String(s||"new").toLowerCase();
+
+  if(s==="accepted")return"confirmed";
+  if(s==="processing"||s==="ready")return"preparing";
+  if(s==="rejected")return"cancelled";
+
+  return[
+    "new",
+    "confirmed",
+    "preparing",
+    "out_for_delivery",
+    "delivered",
+    "cancelled"
+  ].includes(s)
+    ?s
+    :"new";
+}
+
+function statusLabel(s){
+  return({
+    new:"New",
+    confirmed:"Confirmed",
+    preparing:"Preparing",
+    out_for_delivery:"Out for Delivery",
+    delivered:"Delivered",
+    cancelled:"Cancelled"
+  })[normalizeOrderStatus(s)]||"New";
+}
+
+function statusClass(s){
+  return normalizeOrderStatus(s).replaceAll("_","-");
+}
+
+function normalizePaymentStatus(s){
+  s=String(s||"pending").toLowerCase();
+
+  return[
+    "pending",
+    "paid",
+    "failed",
+    "refunded"
+  ].includes(s)
+    ?s
+    :"pending";
+}
+
+function paymentLabel(s){
+  return({
+    pending:"Pending",
+    paid:"Paid",
+    failed:"Failed",
+    refunded:"Refunded"
+  })[normalizePaymentStatus(s)]||"Pending";
+}
+
+function paymentClass(s){
+  return"payment-"+normalizePaymentStatus(s);
+}
+
+function countsAsRevenue(o){
+  return normalizePaymentStatus(o.payment_status)==="paid" &&
+         normalizeOrderStatus(o.status)!=="cancelled";
+}
+
+function scrollToOrders(){
+  $("ordersSection").scrollIntoView({behavior:"smooth"});
+}
 
 
-/* ==========================================
+/* ==========================================================
    SAFE AUTH STATE LISTENER
-   ========================================== */
+   ========================================================== */
+
+let authRedirectInProgress=false;
 
 supabaseClient.auth.onAuthStateChange((event)=>{
-  if(event==="SIGNED_OUT"){
-    sessionStorage.clear();
-    if(!location.pathname.endsWith("/login.html")&&!location.pathname.endsWith("login.html")){
-      location.href="login.html";
-    }
+  
+  /*
+   * IMPORTANT:
+   *
+   * We ONLY react to an actual SIGNED_OUT event.
+   *
+   * We do NOT redirect on:
+   * - TOKEN_REFRESHED
+   * - SIGNED_IN
+   * - INITIAL_SESSION
+   * - PASSWORD_RECOVERY
+   * - temporary network errors
+   * - database errors
+   * - getSession errors
+   */
+
+  if(event!=="SIGNED_OUT"){
+    return;
   }
+
+  if(authRedirectInProgress){
+    return;
+  }
+
+  authRedirectInProgress=true;
+
+  sessionStorage.clear();
+
+  if(
+    !location.pathname.endsWith("/login.html") &&
+    !location.pathname.endsWith("login.html")
+  ){
+    location.href="login.html";
+  }
+
 });
 
 
-/* ==========================================
-   LOGOUT
-   ========================================== */
+/* ==========================================================
+   EXPLICIT LOGOUT
+   ========================================================== */
 
 async function logout(){
 
-  try{
-    await supabaseClient.auth.signOut();
-  }catch(error){
-    console.error("OWNER LOGOUT ERROR:",error);
+  if(authRedirectInProgress){
+    return;
   }
 
-  sessionStorage.clear();
-  location.href="login.html";
+  authRedirectInProgress=true;
+
+  try{
+
+    const{error}=await supabaseClient.auth.signOut();
+
+    if(error){
+      console.error("OWNER LOGOUT ERROR:",error);
+    }
+
+  }catch(error){
+
+    console.error("OWNER LOGOUT ERROR:",error);
+
+  }finally{
+
+    /*
+     * Explicit logout means local owner metadata
+     * must also be removed.
+     */
+    sessionStorage.clear();
+
+    location.href="login.html";
+
+  }
+
 }
 
 
@@ -118,12 +727,19 @@ $("cancelCategoryBtn").onclick=closeCategoryModal;
 $("categoryForm").onsubmit=saveCategory;
 
 
+/* ==========================================================
+   CATEGORIES
+   ========================================================== */
+
 async function loadCategories(){
 
   if(!shop?.id)return;
 
-  $("categoriesBox").innerHTML='<div class="card loading">Loading categories...</div>';
-  $("productCategory").innerHTML='<option value="">No category</option>';
+  $("categoriesBox").innerHTML=
+    '<div class="card loading">Loading categories...</div>';
+
+  $("productCategory").innerHTML=
+    '<option value="">No category</option>';
 
   const{data,error}=await supabaseClient
     .from("categories")
@@ -132,8 +748,12 @@ async function loadCategories(){
     .order("name",{ascending:true});
 
   if(error){
+
     categories=[];
-    $("categoriesBox").innerHTML='<div class="card empty">Could not load categories.</div>';
+
+    $("categoriesBox").innerHTML=
+      '<div class="card empty">Could not load categories.</div>';
+
     return;
   }
 
@@ -141,7 +761,11 @@ async function loadCategories(){
 
   categories
     .filter(c=>c.is_active!==false)
-    .forEach(c=>$("productCategory").append(new Option(c.name,c.id)));
+    .forEach(c=>
+      $("productCategory").append(
+        new Option(c.name,c.id)
+      )
+    );
 
   renderCategories();
   renderProducts();
@@ -153,28 +777,63 @@ function renderCategories(){
   const q=$("categorySearch").value.trim().toLowerCase();
 
   const list=categories.filter(
-    c=>!q||`${c.name} ${c.description||""}`.toLowerCase().includes(q)
+    c=>
+      !q ||
+      `${c.name} ${c.description||""}`
+        .toLowerCase()
+        .includes(q)
   );
 
   $("categoriesBox").innerHTML=list.length
-    ?list.map(c=>`<article class="category-card">
-      <div class="category-name">${escapeHtml(c.name)}</div>
-      <div class="category-desc">${escapeHtml(c.description||"No description")}</div>
-      <div class="product-meta">${c.is_active!==false?'<span class="in">Active</span>':'<span class="hidden-status">Inactive</span>'}</div>
-      <div class="category-actions">
-        <button class="secondary" onclick="openCategoryModal('${c.id}')">Edit</button>
-        <button class="danger" onclick="deleteCategory('${c.id}')">Delete</button>
-      </div>
-    </article>`).join("")
-    :'<div class="card empty">No categories yet. Click + Add Category to create one.</div>';
+    ?list.map(c=>`
+      <article class="category-card">
+
+        <div class="category-name">
+          ${escapeHtml(c.name)}
+        </div>
+
+        <div class="category-desc">
+          ${escapeHtml(c.description||"No description")}
+        </div>
+
+        <div class="product-meta">
+          ${
+            c.is_active!==false
+              ?'<span class="in">Active</span>'
+              :'<span class="hidden-status">Inactive</span>'
+          }
+        </div>
+
+        <div class="category-actions">
+
+          <button
+            class="secondary"
+            onclick="openCategoryModal('${c.id}')">
+            Edit
+          </button>
+
+          <button
+            class="danger"
+            onclick="deleteCategory('${c.id}')">
+            Delete
+          </button>
+
+        </div>
+
+      </article>
+    `).join("")
+    :
+    '<div class="card empty">No categories yet. Click + Add Category to create one.</div>';
 }
 
 
 function resetCategoryForm(){
 
   $("categoryForm").reset();
+
   $("categoryId").value="";
   $("categoryActive").checked=true;
+
   $("categoryModalTitle").textContent="Add Category";
   $("saveCategoryBtn").textContent="Save Category";
 
@@ -194,6 +853,7 @@ function openCategoryModal(id=null){
 
     $("categoryModalTitle").textContent="Edit Category";
     $("saveCategoryBtn").textContent="Update Category";
+
     $("categoryId").value=c.id;
     $("categoryName").value=c.name||"";
     $("categoryDescription").value=c.description||"";
@@ -202,6 +862,7 @@ function openCategoryModal(id=null){
   }
 
   $("categoryModal").classList.add("show");
+
 }
 
 
@@ -214,14 +875,16 @@ async function saveCategory(e){
 
   e.preventDefault();
 
-  if(!shop?.id)return showError("Shop could not be verified.");
+  if(!shop?.id)
+    return showError("Shop could not be verified.");
 
   const id=$("categoryId").value.trim();
   const name=$("categoryName").value.trim();
   const description=$("categoryDescription").value.trim()||null;
   const is_active=$("categoryActive").checked;
 
-  if(!name)return showError("Category name is required.");
+  if(!name)
+    return showError("Category name is required.");
 
   const b=$("saveCategoryBtn");
 
@@ -231,32 +894,46 @@ async function saveCategory(e){
   try{
 
     const r=id
-      ?await supabaseClient.from("categories").update({
-          shop_id:shop.id,
-          name,
-          description,
-          is_active
-        }).eq("id",id).eq("shop_id",shop.id)
-      :await supabaseClient.from("categories").insert({
-          shop_id:shop.id,
-          name,
-          description,
-          is_active
-        });
+
+      ?await supabaseClient
+          .from("categories")
+          .update({
+            shop_id:shop.id,
+            name,
+            description,
+            is_active
+          })
+          .eq("id",id)
+          .eq("shop_id",shop.id)
+
+      :await supabaseClient
+          .from("categories")
+          .insert({
+            shop_id:shop.id,
+            name,
+            description,
+            is_active
+          });
 
     if(r.error)throw r.error;
 
     closeCategoryModal();
+
     await loadCategories();
 
   }catch(e){
 
-    showError(e.message||"Category could not be saved.");
+    showError(
+      e.message||
+      "Category could not be saved."
+    );
 
   }finally{
 
     b.disabled=false;
-    b.textContent=id?"Update Category":"Save Category";
+    b.textContent=id
+      ?"Update Category"
+      :"Save Category";
 
   }
 
@@ -267,7 +944,8 @@ async function deleteCategory(id){
 
   const c=categories.find(x=>x.id===id);
 
-  if(!c||!confirm(`Delete category "${c.name}"?`))return;
+  if(!c||!confirm(`Delete category "${c.name}"?`))
+    return;
 
   const{error}=await supabaseClient
     .from("categories")
@@ -275,7 +953,8 @@ async function deleteCategory(id){
     .eq("id",id)
     .eq("shop_id",shop.id);
 
-  if(error)return showError(error.message);
+  if(error)
+    return showError(error.message);
 
   await loadCategories();
   await loadProducts();
@@ -283,11 +962,16 @@ async function deleteCategory(id){
 }
 
 
+/* ==========================================================
+   PRODUCTS
+   ========================================================== */
+
 async function loadProducts(){
 
   if(!shop?.id)return;
 
-  $("productsBox").innerHTML='<div class="card loading">Loading products...</div>';
+  $("productsBox").innerHTML=
+    '<div class="card loading">Loading products...</div>';
 
   const{data,error}=await supabaseClient
     .from("products")
@@ -296,12 +980,16 @@ async function loadProducts(){
     .order("created_at",{ascending:false});
 
   if(error){
+
     showError(error.message);
     return;
+
   }
 
   products=data||[];
+
   $("totalProducts").textContent=products.length;
+
   renderProducts();
 
 }
@@ -317,56 +1005,108 @@ function renderProducts(){
   const q=$("productSearch").value.trim().toLowerCase();
 
   const list=products.filter(
-    p=>!q||`${p.name} ${p.description||""} ${categoryName(p.category_id)}`
-      .toLowerCase()
-      .includes(q)
+    p=>
+      !q ||
+      `${p.name} ${p.description||""} ${categoryName(p.category_id)}`
+        .toLowerCase()
+        .includes(q)
   );
 
   $("productsBox").innerHTML=list.length
+
     ?list.map(p=>{
 
       const stock=Number(p.stock||0);
       const sizes=Array.isArray(p.sizes)?p.sizes:[];
 
       const img=p.image_url
-        ?`<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" onerror="this.parentElement.innerHTML='<span>No image</span>'">`
+        ?`<img src="${escapeHtml(p.image_url)}"
+             alt="${escapeHtml(p.name)}"
+             onerror="this.parentElement.innerHTML='<span>No image</span>'">`
         :"<span>No image</span>";
 
-      return `<article class="product-card">
-        <div class="product-img">${img}</div>
-        <div class="product-body">
-          <div class="product-head">
-            <div class="product-name">${escapeHtml(p.name)}</div>
-            <div class="product-price">${money(p.price)}</div>
+      return `
+        <article class="product-card">
+
+          <div class="product-img">
+            ${img}
           </div>
 
-          <div class="product-meta">
-            ${escapeHtml(categoryName(p.category_id))}<br>
-            ${stock<=0
-              ?'<span class="out">Out of Stock</span>'
-              :'<span class="in">Stock: '+stock+'</span>'}
-            ·
-            ${p.is_active
-              ?'<span class="in">Visible</span>'
-              :'<span class="hidden-status">Hidden</span>'}
-            ${p.has_sizes&&sizes.length
-              ?' · Sizes: '+escapeHtml(sizes.join(", "))
-              :""}
+          <div class="product-body">
+
+            <div class="product-head">
+
+              <div class="product-name">
+                ${escapeHtml(p.name)}
+              </div>
+
+              <div class="product-price">
+                ${money(p.price)}
+              </div>
+
+            </div>
+
+            <div class="product-meta">
+
+              ${escapeHtml(categoryName(p.category_id))}
+
+              <br>
+
+              ${
+                stock<=0
+                  ?'<span class="out">Out of Stock</span>'
+                  :'<span class="in">Stock: '+stock+'</span>'
+              }
+
+              ·
+
+              ${
+                p.is_active
+                  ?'<span class="in">Visible</span>'
+                  :'<span class="hidden-status">Hidden</span>'
+              }
+
+              ${
+                p.has_sizes&&sizes.length
+                  ?' · Sizes: '+escapeHtml(sizes.join(", "))
+                  :""
+              }
+
+            </div>
+
+            ${
+              p.description
+                ?`<div class="product-meta">
+                    ${escapeHtml(p.description)}
+                  </div>`
+                :""
+            }
+
+            <div class="product-actions">
+
+              <button
+                class="secondary"
+                onclick="openProductModal('${p.id}')">
+                Edit
+              </button>
+
+              <button
+                class="danger"
+                onclick="deleteProduct('${p.id}')">
+                Delete
+              </button>
+
+            </div>
+
           </div>
 
-          ${p.description
-            ?`<div class="product-meta">${escapeHtml(p.description)}</div>`
-            :""}
-
-          <div class="product-actions">
-            <button class="secondary" onclick="openProductModal('${p.id}')">Edit</button>
-            <button class="danger" onclick="deleteProduct('${p.id}')">Delete</button>
-          </div>
-        </div>
-      </article>`;
+        </article>
+      `;
 
     }).join("")
-    :'<div class="card empty">No products found. Click + Add Product to create one.</div>';
+
+    :
+    '<div class="card empty">No products found. Click + Add Product to create one.</div>';
 
 }
 
@@ -374,6 +1114,7 @@ function renderProducts(){
 function resetProductForm(){
 
   $("productForm").reset();
+
   $("productId").value="";
   $("productStock").value=0;
   $("productActive").checked=true;
@@ -401,6 +1142,7 @@ function openProductModal(id=null){
 
     $("modalTitle").textContent="Edit Product";
     $("saveProductBtn").textContent="Update Product";
+
     $("productId").value=p.id;
     $("productName").value=p.name||"";
     $("productPrice").value=p.price??"";
@@ -415,7 +1157,9 @@ function openProductModal(id=null){
 
     document
       .querySelectorAll(".sizeCheck")
-      .forEach(x=>x.checked=sizes.includes(x.value));
+      .forEach(x=>
+        x.checked=sizes.includes(x.value)
+      );
 
   }
 
@@ -433,27 +1177,40 @@ async function saveProduct(e){
 
   e.preventDefault();
 
-  if(!shop?.id)return showError("Shop could not be verified.");
+  if(!shop?.id)
+    return showError("Shop could not be verified.");
 
   const id=$("productId").value.trim();
   const name=$("productName").value.trim();
   const price=Number($("productPrice").value);
+
   const stock=Math.max(
     0,
     parseInt($("productStock").value||"0",10)
   );
-  const category_id=$("productCategory").value||null;
-  const image_url=$("productImage").value.trim()||null;
-  const description=$("productDescription").value.trim()||null;
-  const has_sizes=$("hasSizes").checked;
+
+  const category_id=
+    $("productCategory").value||null;
+
+  const image_url=
+    $("productImage").value.trim()||null;
+
+  const description=
+    $("productDescription").value.trim()||null;
+
+  const has_sizes=
+    $("hasSizes").checked;
 
   const sizes=has_sizes
-    ?[...document.querySelectorAll(".sizeCheck:checked")].map(x=>x.value)
+    ?[...document.querySelectorAll(".sizeCheck:checked")]
+        .map(x=>x.value)
     :[];
 
-  const is_active=$("productActive").checked;
+  const is_active=
+    $("productActive").checked;
 
-  if(!name)return showError("Product name is required.");
+  if(!name)
+    return showError("Product name is required.");
 
   if(!Number.isFinite(price)||price<0)
     return showError("Please enter a valid price.");
@@ -479,11 +1236,13 @@ async function saveProduct(e){
     };
 
     const r=id
+
       ?await supabaseClient
           .from("products")
           .update(payload)
           .eq("id",id)
           .eq("shop_id",shop.id)
+
       :await supabaseClient
           .from("products")
           .insert(payload);
@@ -491,17 +1250,24 @@ async function saveProduct(e){
     if(r.error)throw r.error;
 
     closeProductModal();
+
     await loadProducts();
     await loadDashboardStatsOnly();
 
   }catch(e){
 
-    showError(e.message||"Product could not be saved.");
+    showError(
+      e.message||
+      "Product could not be saved."
+    );
 
   }finally{
 
     b.disabled=false;
-    b.textContent=id?"Update Product":"Save Product";
+
+    b.textContent=id
+      ?"Update Product"
+      :"Save Product";
 
   }
 
@@ -512,7 +1278,8 @@ async function deleteProduct(id){
 
   const p=products.find(x=>x.id===id);
 
-  if(!p||!confirm(`Delete "${p.name}"?`))return;
+  if(!p||!confirm(`Delete "${p.name}"?`))
+    return;
 
   const{error}=await supabaseClient
     .from("products")
@@ -520,7 +1287,8 @@ async function deleteProduct(id){
     .eq("id",id)
     .eq("shop_id",shop.id);
 
-  if(error)return showError(error.message);
+  if(error)
+    return showError(error.message);
 
   await loadProducts();
   await loadDashboardStatsOnly();
@@ -537,14 +1305,15 @@ async function loadDashboardStatsOnly(){
     .select("id",{count:"exact",head:true})
     .eq("shop_id",shop.id);
 
-  if(!error)$("totalProducts").textContent=count??0;
+  if(!error)
+    $("totalProducts").textContent=count??0;
 
 }
 
 
-/* ==========================================
+/* ==========================================================
    SAFE OWNER AUTH + DASHBOARD LOAD
-   ========================================== */
+   ========================================================== */
 
 async function loadDashboard(){
 
@@ -552,10 +1321,13 @@ async function loadDashboard(){
 
     clearError();
 
-
-    // ======================================
-    // 1. CHECK SUPABASE AUTH SESSION
-    // ======================================
+    /*
+     * IMPORTANT:
+     *
+     * getSession() reads the persisted Supabase Auth session.
+     *
+     * A request/network error is NOT treated as logout.
+     */
 
     const{
       data:{session},
@@ -563,9 +1335,15 @@ async function loadDashboard(){
     }=await supabaseClient.auth.getSession();
 
 
-    // IMPORTANT:
-    // A temporary network/token error is NOT
-    // treated as logout.
+    /*
+     * TEMPORARY AUTH / NETWORK ERROR
+     *
+     * DO NOT:
+     * - clear sessionStorage
+     * - redirect to login
+     * - signOut()
+     */
+
     if(sessionError){
 
       console.error(
@@ -578,34 +1356,53 @@ async function loadDashboard(){
       );
 
       return;
+
     }
 
 
-    // ======================================
-    // 2. ACTUAL MISSING SESSION
-    // ======================================
+    /*
+     * ONLY A GENUINELY MISSING SESSION
+     * IS TREATED AS LOGGED OUT.
+     */
 
     if(!session){
 
       sessionStorage.clear();
-      return location.href="login.html";
+
+      if(
+        !location.pathname.endsWith("/login.html") &&
+        !location.pathname.endsWith("login.html")
+      ){
+        location.href="login.html";
+      }
+
+      return;
 
     }
 
 
     const user=session.user;
 
+
+    /*
+     * This should normally never happen when a valid
+     * Supabase session exists, but keep the guard safe.
+     */
+
     if(!user){
 
-      sessionStorage.clear();
-      return location.href="login.html";
+      showError(
+        "Your authentication session could not be read. Please try again."
+      );
+
+      return;
 
     }
 
 
-    // ======================================
-    // 3. GET OWNER PROFILE
-    // ======================================
+    /* ======================================================
+       OWNER PROFILE
+       ====================================================== */
 
     const{
       data:o,
@@ -616,6 +1413,14 @@ async function loadDashboard(){
       .eq("id",user.id)
       .single();
 
+
+    /*
+     * Database/profile error is NOT an authentication logout.
+     *
+     * Therefore:
+     * - no sessionStorage.clear()
+     * - no login redirect
+     */
 
     if(oErr||!o||o.role!=="owner"||!o.shop_id){
 
@@ -636,9 +1441,9 @@ async function loadDashboard(){
     owner=o;
 
 
-    // ======================================
-    // 4. GET SHOP
-    // ======================================
+    /* ======================================================
+       SHOP
+       ====================================================== */
 
     const{
       data:s,
@@ -669,19 +1474,22 @@ async function loadDashboard(){
     shop=s;
 
 
-    // ======================================
-    // 5. SHOP STATUS
-    // ======================================
+    /* ======================================================
+       SHOP STATUS
+       ====================================================== */
 
-    if(shop.status==="suspended")
+    if(shop.status==="suspended"){
+
       throw Error(
         "This shop is currently suspended. Please contact support."
       );
 
+    }
 
-    // ======================================
-    // 6. DISPLAY OWNER / SHOP
-    // ======================================
+
+    /* ======================================================
+       DISPLAY OWNER / SHOP
+       ====================================================== */
 
     $("ownerName").textContent=
       owner.full_name||"Owner";
@@ -702,9 +1510,9 @@ async function loadDashboard(){
       shop.status||"—";
 
 
-    // ======================================
-    // 7. LOAD DASHBOARD DATA
-    // ======================================
+    /* ======================================================
+       LOAD DASHBOARD DATA
+       ====================================================== */
 
     await loadCategories();
     await loadProducts();
@@ -719,6 +1527,15 @@ async function loadDashboard(){
       e
     );
 
+    /*
+     * IMPORTANT:
+     *
+     * Any database/API/application error here is displayed
+     * to the owner.
+     *
+     * It is NOT converted into a logout.
+     */
+
     showError(
       e.message||
       "Dashboard could not be loaded."
@@ -728,6 +1545,10 @@ async function loadDashboard(){
 
 }
 
+
+/* ==========================================================
+   ORDERS
+   ========================================================== */
 
 async function loadOrdersOnly(){
 
@@ -839,45 +1660,82 @@ function renderSingleOrder(o){
     refunded:"↩️ Refunded"
   };
 
-  return `<div class="order">
-    <div>
-      <div class="customer">${escapeHtml(o.customer_name||"Customer")}</div>
-      <div class="sub">${escapeHtml(o.customer_phone||"")}</div>
-    </div>
+  return `
+    <div class="order">
 
-    <div>
-      ${dateText(o.created_at)}
-      <div class="sub">Order #${String(o.id).slice(0,8)}</div>
-    </div>
-
-    <div>
-      <strong>${money(o.total_amount)}</strong>
-      <div class="sub">${countsAsRevenue(o)?"Revenue counted":"Not counted"}</div>
-    </div>
-
-    <div>
-      <span class="badge ${statusClass(cs)}">${statusLabel(cs)}</span>
-      <div style="margin-top:6px">
-        <span class="payment-badge ${paymentClass(cp)}">${paymentLabel(cp)}</span>
+      <div>
+        <div class="customer">
+          ${escapeHtml(o.customer_name||"Customer")}
+        </div>
+        <div class="sub">
+          ${escapeHtml(o.customer_phone||"")}
+        </div>
       </div>
+
+      <div>
+        ${dateText(o.created_at)}
+        <div class="sub">
+          Order #${String(o.id).slice(0,8)}
+        </div>
+      </div>
+
+      <div>
+        <strong>${money(o.total_amount)}</strong>
+        <div class="sub">
+          ${countsAsRevenue(o)?"Revenue counted":"Not counted"}
+        </div>
+      </div>
+
+      <div>
+
+        <span class="badge ${statusClass(cs)}">
+          ${statusLabel(cs)}
+        </span>
+
+        <div style="margin-top:6px">
+
+          <span class="payment-badge ${paymentClass(cp)}">
+            ${paymentLabel(cp)}
+          </span>
+
+        </div>
+
+      </div>
+
+      <div class="order-actions">
+
+        <button
+          class="view-order"
+          onclick="viewOrder('${o.id}')">
+          View
+        </button>
+
+        <select onchange="changeOrderStatus('${o.id}',this.value)">
+
+          ${statuses.map(
+            s=>
+              `<option value="${s}" ${cs===s?"selected":""}>
+                ${sl[s]}
+              </option>`
+          ).join("")}
+
+        </select>
+
+        <select onchange="changePaymentStatus('${o.id}',this.value)">
+
+          ${["pending","paid","failed","refunded"].map(
+            s=>
+              `<option value="${s}" ${cp===s?"selected":""}>
+                ${pl[s]}
+              </option>`
+          ).join("")}
+
+        </select>
+
+      </div>
+
     </div>
-
-    <div class="order-actions">
-      <button class="view-order" onclick="viewOrder('${o.id}')">View</button>
-
-      <select onchange="changeOrderStatus('${o.id}',this.value)">
-        ${statuses.map(
-          s=>`<option value="${s}" ${cs===s?"selected":""}>${sl[s]}</option>`
-        ).join("")}
-      </select>
-
-      <select onchange="changePaymentStatus('${o.id}',this.value)">
-        ${["pending","paid","failed","refunded"].map(
-          s=>`<option value="${s}" ${cp===s?"selected":""}>${pl[s]}</option>`
-        ).join("")}
-      </select>
-    </div>
-  </div>`;
+  `;
 
 }
 
@@ -970,9 +1828,11 @@ async function viewOrder(id){
     if(error)throw error;
 
     $("orderDetailBox").innerHTML=`
+
       <div class="order-detail-grid">
 
         <div class="detail-card">
+
           <h4>Customer</h4>
 
           <div class="detail-line">
@@ -999,9 +1859,11 @@ async function viewOrder(id){
             <span>Pincode:</span>
             ${escapeHtml(o.pincode||"—")}
           </div>
+
         </div>
 
         <div class="detail-card">
+
           <h4>Order</h4>
 
           <div class="detail-line">
@@ -1037,6 +1899,7 @@ async function viewOrder(id){
             <span>Notes:</span>
             ${escapeHtml(o.notes||"—")}
           </div>
+
         </div>
 
       </div>
@@ -1047,36 +1910,52 @@ async function viewOrder(id){
 
         <div class="items-list">
 
-          ${(items||[]).map(i=>`
-            <div class="item-row">
+          ${
+            (items||[]).map(i=>`
 
-              <div>
+              <div class="item-row">
+
+                <div>
+
+                  <strong>
+                    ${escapeHtml(i.product_name||"Product")}
+                  </strong>
+
+                  <div class="sub">
+
+                    Qty: ${Number(i.quantity||0)}
+
+                    ${
+                      i.size
+                        ?" · Size: "+escapeHtml(i.size)
+                        :""
+                    }
+
+                    ${
+                      i.variant
+                        ?" · "+escapeHtml(i.variant)
+                        :""
+                    }
+
+                  </div>
+
+                </div>
+
                 <strong>
-                  ${escapeHtml(i.product_name||"Product")}
+                  ${money(
+                    Number(i.price||0)*
+                    Number(i.quantity||0)
+                  )}
                 </strong>
 
-                <div class="sub">
-                  Qty: ${Number(i.quantity||0)}
-                  ${i.size
-                    ?" · Size: "+escapeHtml(i.size)
-                    :""}
-                  ${i.variant
-                    ?" · "+escapeHtml(i.variant)
-                    :""}
-                </div>
               </div>
 
-              <strong>
-                ${money(
-                  Number(i.price||0)*
-                  Number(i.quantity||0)
-                )}
-              </strong>
+            `).join("")
 
-            </div>
-          `).join("")
-          ||
-          '<div class="empty">No order items found.</div>'}
+            ||
+
+            '<div class="empty">No order items found.</div>'
+          }
 
         </div>
 
@@ -1108,6 +1987,10 @@ function closeOrderModal(){
 }
 
 
+/* ==========================================================
+   SUBSCRIPTION
+   ========================================================== */
+
 async function loadSubscription(){
 
   if(!shop?.id)return;
@@ -1133,9 +2016,12 @@ async function loadSubscription(){
   $("subStatus").className=
     sub.status==="active"
       ?"active"
-      :(["expired","suspended"].includes(sub.status)
-        ?"expired"
-        :"pending");
+      :
+      (
+        ["expired","suspended"].includes(sub.status)
+          ?"expired"
+          :"pending"
+      );
 
   $("subPlan").textContent=
     sub.plan_name||"28_day";
@@ -1149,7 +2035,14 @@ async function loadSubscription(){
 }
 
 
+/* ==========================================================
+   INITIAL LOAD
+   ========================================================== */
+
 loadDashboard();
+
 </script>
+
 </body>
 </html>
+```
