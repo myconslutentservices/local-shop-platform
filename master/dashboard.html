@@ -1,11 +1,13 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
 
-  <title>Master Dashboard | Local Shop Platform</title>
+  <title>Master Dashboard | Universal Local Business Platform</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase.js"></script>
@@ -474,7 +476,7 @@
 
     <div class="topbar-left">
       <h1>Master Dashboard</h1>
-      <p>Local Shop Platform</p>
+      <p>Universal Local Business Platform</p>
     </div>
 
     <button
@@ -510,7 +512,7 @@
       </h2>
 
       <p>
-        Manage your complete Local Shop Platform from here.
+        Manage your complete Universal Local Business Platform from here.
       </p>
 
     </div>
@@ -561,7 +563,6 @@
         </div>
 
 
-        <!-- ================= MASTER OWNERS PAGE ================= -->
         <!-- TOTAL OWNERS -->
 
         <div
@@ -634,7 +635,7 @@
         </div>
 
 
-        <!-- REVENUE & REPORTS -->
+        <!-- REVENUE -->
 
         <div
           class="stat-card"
@@ -685,13 +686,12 @@
           </h3>
 
           <p>
-            View and manage all registered shops.
+            View and manage all registered businesses.
           </p>
 
         </div>
 
 
-        <!-- ================= MASTER OWNERS PAGE ================= -->
         <!-- ALL OWNERS -->
 
         <div
@@ -707,7 +707,7 @@
           </h3>
 
           <p>
-            View and manage shop owners.
+            View and manage business owners.
           </p>
 
         </div>
@@ -728,7 +728,7 @@
           </h3>
 
           <p>
-            View products across all shops.
+            View products across all businesses.
           </p>
 
         </div>
@@ -791,7 +791,7 @@
           </h3>
 
           <p>
-            Monitor shop website status.
+            Monitor business website status.
           </p>
 
         </div>
@@ -847,7 +847,16 @@
 
   <script>
 
-    /* ================= ERROR ================= */
+    /* =====================================================
+       AUTH REDIRECT CONTROL
+       ===================================================== */
+
+    let authRedirectInProgress = false;
+
+
+    /* =====================================================
+       ERROR
+       ===================================================== */
 
     function showError(message) {
 
@@ -855,7 +864,7 @@
         document.getElementById("errorBox");
 
       box.textContent =
-        message;
+        message || "Something went wrong.";
 
       box.style.display =
         "block";
@@ -863,7 +872,9 @@
     }
 
 
-    /* ================= PAGE OPEN ================= */
+    /* =====================================================
+       PAGE OPEN
+       ===================================================== */
 
     function openPage(page) {
 
@@ -873,7 +884,9 @@
     }
 
 
-    /* ================= KEYBOARD CARD SUPPORT ================= */
+    /* =====================================================
+       KEYBOARD CARD SUPPORT
+       ===================================================== */
 
     function cardKey(event, page) {
 
@@ -891,27 +904,91 @@
     }
 
 
-    /* ================= MASTER VERIFY ================= */
+    /* =====================================================
+       AUTH STATE CHANGE
+       Only an actual SIGNED_OUT event redirects.
+       Temporary network/session-read errors do not.
+       ===================================================== */
+
+    supabaseClient.auth.onAuthStateChange((event) => {
+
+      if (event !== "SIGNED_OUT") {
+        return;
+      }
+
+      if (authRedirectInProgress) {
+        return;
+      }
+
+      authRedirectInProgress = true;
+
+      sessionStorage.clear();
+
+      if (
+        !location.pathname.endsWith("/login.html") &&
+        !location.pathname.endsWith("login.html")
+      ) {
+
+        window.location.href =
+          "login.html";
+
+      }
+
+    });
+
+
+    /* =====================================================
+       MASTER VERIFY
+       ===================================================== */
 
     async function verifyMaster() {
 
       try {
 
         const {
-          data: { session },
+          data,
           error: sessionError
         } =
           await supabaseClient.auth.getSession();
 
 
+        /* -----------------------------------------------
+           Session read error
+           ----------------------------------------------- */
+
         if (sessionError) {
 
-          throw sessionError;
+          console.error(
+            "MASTER SESSION ERROR:",
+            sessionError
+          );
+
+          showError(
+            "Session check failed. Please check your connection and refresh."
+          );
+
+          return false;
 
         }
 
 
+        const session =
+          data?.session;
+
+
+        /* -----------------------------------------------
+           No session
+           ----------------------------------------------- */
+
         if (!session) {
+
+          if (authRedirectInProgress) {
+            return false;
+          }
+
+          authRedirectInProgress = true;
+
+          sessionStorage.clear();
 
           window.location.href =
             "login.html";
@@ -920,6 +997,10 @@
 
         }
 
+
+        /* -----------------------------------------------
+           Get master profile
+           ----------------------------------------------- */
 
         const userId =
           session.user.id;
@@ -932,39 +1013,79 @@
           await supabaseClient
             .from("owners")
             .select(
-              "full_name, role, shop_id"
+              "id, full_name, role, shop_id"
             )
             .eq("id", userId)
             .single();
 
 
+        /* -----------------------------------------------
+           Database/profile error
+           Do NOT logout automatically.
+           ----------------------------------------------- */
+
         if (error) {
 
-          throw error;
+          console.error(
+            "MASTER PROFILE ERROR:",
+            error
+          );
 
-        }
-
-
-        if (
-          !master ||
-          master.role !== "master"
-        ) {
-
-          await supabaseClient.auth.signOut();
-
-          window.location.href =
-            "login.html";
+          showError(
+            "Master profile could not be loaded. Please refresh and try again."
+          );
 
           return false;
 
         }
 
 
-        document.getElementById(
-          "welcomeText"
-        ).textContent =
-          "Welcome, " +
-          (master.full_name || "Master");
+        /* -----------------------------------------------
+           Invalid role
+           ----------------------------------------------- */
+
+        if (
+          !master ||
+          master.role !== "master"
+        ) {
+
+          console.error(
+            "INVALID MASTER ROLE"
+          );
+
+          try {
+
+            await supabaseClient.auth.signOut();
+
+          } catch (signOutError) {
+
+            console.error(
+              "MASTER SIGNOUT ERROR:",
+              signOutError
+            );
+
+          }
+
+          return false;
+
+        }
+
+
+        /* -----------------------------------------------
+           Welcome message
+           ----------------------------------------------- */
+
+        const welcomeText =
+          document.getElementById("welcomeText");
+
+
+        if (welcomeText) {
+
+          welcomeText.textContent =
+            "Welcome, " +
+            (master.full_name || "Master");
+
+        }
 
 
         return true;
@@ -977,12 +1098,10 @@
           error
         );
 
-
         showError(
           error?.message ||
           "Master verification failed."
         );
-
 
         return false;
 
@@ -991,7 +1110,9 @@
     }
 
 
-    /* ================= COUNT ================= */
+    /* =====================================================
+       GET COUNT
+       ===================================================== */
 
     async function getCount(
       table,
@@ -1009,7 +1130,10 @@
 
       if (filters) {
 
-        for (const filter of filters) {
+        for (
+          const filter
+          of filters
+        ) {
 
           if (
             filter.type === "eq"
@@ -1057,7 +1181,8 @@
       const {
         count,
         error
-      } = await query;
+      } =
+        await query;
 
 
       if (error) {
@@ -1072,7 +1197,9 @@
     }
 
 
-    /* ================= LOAD DASHBOARD ================= */
+    /* =====================================================
+       LOAD DASHBOARD
+       ===================================================== */
 
     async function loadDashboard() {
 
@@ -1083,39 +1210,43 @@
           owners,
           products,
           orders
-        ] = await Promise.all([
+        ] =
+          await Promise.all([
+
+            /* SHOPS */
+
+            getCount("shops"),
 
 
-          /* SHOPS */
+            /* OWNERS */
 
-          getCount("shops"),
-
-
-          /* OWNERS */
-
-          getCount(
-            "owners",
-            [
-              {
-                type: "eq",
-                column: "role",
-                value: "owner"
-              }
-            ]
-          ),
+            getCount(
+              "owners",
+              [
+                {
+                  type: "eq",
+                  column: "role",
+                  value: "owner"
+                }
+              ]
+            ),
 
 
-          /* PRODUCTS */
+            /* PRODUCTS */
 
-          getCount("products"),
+            getCount("products"),
 
 
-          /* ORDERS */
+            /* ORDERS */
 
-          getCount("orders")
+            getCount("orders")
 
-        ]);
+          ]);
 
+
+        /* -----------------------------------------------
+           Update values
+           ----------------------------------------------- */
 
         document.getElementById(
           "totalShops"
@@ -1140,6 +1271,10 @@
         ).textContent =
           orders;
 
+
+        /* -----------------------------------------------
+           Show dashboard
+           ----------------------------------------------- */
 
         document.getElementById(
           "loadingBox"
@@ -1177,31 +1312,58 @@
     }
 
 
-    /* ================= LOGOUT ================= */
+    /* =====================================================
+       LOGOUT
+       ===================================================== */
 
     async function logout() {
 
+      if (authRedirectInProgress) {
+        return;
+      }
+
+      authRedirectInProgress = true;
+
+
       try {
 
-        await supabaseClient.auth.signOut();
+        const {
+          error
+        } =
+          await supabaseClient.auth.signOut();
+
+
+        if (error) {
+
+          console.error(
+            "MASTER LOGOUT ERROR:",
+            error
+          );
+
+        }
 
       } catch (error) {
 
         console.error(
-          "LOGOUT ERROR:",
+          "MASTER LOGOUT ERROR:",
           error
         );
 
+      } finally {
+
+        sessionStorage.clear();
+
+        window.location.href =
+          "login.html";
+
       }
-
-
-      window.location.href =
-        "login.html";
 
     }
 
 
-    /* ================= START ================= */
+    /* =====================================================
+       START DASHBOARD
+       ===================================================== */
 
     async function startDashboard() {
 
@@ -1221,6 +1383,10 @@
     }
 
 
+    /* =====================================================
+       START
+       ===================================================== */
+
     window.addEventListener(
       "load",
       startDashboard
@@ -1230,4 +1396,3 @@
 
 </body>
 </html>
-```
