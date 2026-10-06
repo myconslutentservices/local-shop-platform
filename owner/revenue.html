@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,10 +10,6 @@
 <script src="../js/supabase.js"></script>
 
 <style>
-/* ==========================================
-   RESET
-   ========================================== */
-
 *,
 *::before,
 *::after{
@@ -33,11 +28,9 @@ body{
   width:100%;
   min-height:100vh;
   min-height:100dvh;
-
   font-family:Arial,Helvetica,sans-serif;
   background:#f5f7fb;
   color:#111827;
-
   overflow-x:hidden;
   overflow-y:auto;
 }
@@ -53,26 +46,16 @@ button{
   touch-action:manipulation;
 }
 
-
-/* ==========================================
-   TOPBAR
-   ========================================== */
-
 .topbar{
   width:100%;
   min-height:64px;
-
   background:#111827;
   color:#fff;
-
   display:flex;
   align-items:center;
   justify-content:space-between;
-
   gap:12px;
-
   padding:10px 20px;
-
   position:sticky;
   top:0;
   z-index:100;
@@ -80,11 +63,9 @@ button{
 
 .brand{
   min-width:0;
-
   font-size:18px;
   font-weight:800;
   line-height:1.3;
-
   overflow-wrap:anywhere;
 }
 
@@ -92,25 +73,18 @@ button{
   display:flex;
   align-items:center;
   justify-content:flex-end;
-
   gap:10px;
-
   flex-shrink:0;
 }
 
 .btn{
   min-height:44px;
-
   border:0;
   border-radius:10px;
-
   padding:10px 15px;
-
   cursor:pointer;
   font-weight:700;
-
   white-space:nowrap;
-
   -webkit-tap-highlight-color:transparent;
 }
 
@@ -129,38 +103,21 @@ button{
   color:#fff;
 }
 
-
-/* ==========================================
-   MAIN CONTAINER
-   ========================================== */
-
 .container{
   width:100%;
   max-width:1200px;
-
   margin:0 auto;
-
   padding:25px 16px 45px;
-
   min-width:0;
 }
 
-
-/* ==========================================
-   PAGE HEADER
-   ========================================== */
-
 .page-head{
   width:100%;
-
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
-
   gap:15px;
-
   margin-bottom:22px;
-
   min-width:0;
 }
 
@@ -171,9 +128,7 @@ button{
 .page-head h1{
   font-size:28px;
   line-height:1.2;
-
   margin-bottom:6px;
-
   overflow-wrap:anywhere;
 }
 
@@ -181,76 +136,45 @@ button{
   color:#6b7280;
   font-size:14px;
   line-height:1.5;
-
   overflow-wrap:anywhere;
 }
 
-
-/* ==========================================
-   ERROR
-   ========================================== */
-
 .error{
   display:none;
-
   width:100%;
-
   background:#fee2e2;
   color:#991b1b;
-
   padding:14px;
-
   border-radius:10px;
-
   margin-bottom:18px;
-
   line-height:1.5;
-
   overflow-wrap:anywhere;
   word-break:break-word;
 }
 
-
-/* ==========================================
-   FILTERS
-   ========================================== */
-
 .filters{
   width:100%;
-
   background:#fff;
-
   border:1px solid #e5e7eb;
   border-radius:14px;
-
   padding:15px;
-
   display:flex;
   align-items:center;
-
   gap:10px;
   flex-wrap:wrap;
-
   margin-bottom:20px;
-
   min-width:0;
 }
 
 .filters select,
 .filters input{
   min-height:46px;
-
   border:1px solid #d9dee7;
   border-radius:10px;
-
   padding:11px 13px;
-
   outline:none;
-
   background:#fff;
-
   color:#111827;
-
   min-width:0;
 }
 
@@ -270,115 +194,73 @@ button{
   outline-offset:1px;
 }
 
-
-/* ==========================================
-   STATS
-   ========================================== */
-
 .stats{
   width:100%;
-
   display:grid;
-
   grid-template-columns:repeat(4,minmax(0,1fr));
-
   gap:14px;
-
   margin-bottom:20px;
-
   min-width:0;
 }
 
 .stat{
   min-width:0;
-
   background:#fff;
-
   border:1px solid #e5e7eb;
   border-radius:15px;
-
   padding:18px;
-
   box-shadow:0 4px 15px rgba(0,0,0,.03);
 }
 
 .stat-label{
   color:#6b7280;
-
   font-size:13px;
   line-height:1.4;
-
   margin-bottom:8px;
-
   overflow-wrap:anywhere;
 }
 
 .stat-value{
   max-width:100%;
-
   font-size:25px;
   line-height:1.2;
   font-weight:800;
-
   overflow-wrap:anywhere;
   word-break:break-word;
 }
 
 .stat-sub{
   color:#6b7280;
-
   font-size:12px;
   line-height:1.4;
-
   margin-top:7px;
-
   overflow-wrap:anywhere;
 }
 
-
-/* ==========================================
-   MAIN GRID
-   ========================================== */
-
 .grid{
   width:100%;
-
   display:grid;
-
   grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
-
   gap:16px;
-
   min-width:0;
 }
 
 .panel{
   width:100%;
   min-width:0;
-
   background:#fff;
-
   border:1px solid #e5e7eb;
   border-radius:15px;
-
   padding:18px;
-
   box-shadow:0 4px 15px rgba(0,0,0,.03);
 }
 
 .panel h2{
   font-size:17px;
   line-height:1.35;
-
   margin-bottom:17px;
-
   overflow-wrap:anywhere;
 }
-
-
-/* ==========================================
-   PRODUCTS
-   ========================================== */
 
 #products{
   width:100%;
@@ -388,7 +270,6 @@ button{
 .product-row{
   width:100%;
   min-width:0;
-
   margin-bottom:16px;
 }
 
@@ -398,64 +279,44 @@ button{
 
 .product-top{
   width:100%;
-
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
-
   gap:10px;
-
   margin-bottom:7px;
-
   min-width:0;
 }
 
 .product-name{
   min-width:0;
-
   font-size:14px;
   font-weight:700;
   line-height:1.4;
-
   overflow-wrap:anywhere;
   word-break:break-word;
 }
 
 .product-count{
   flex:0 0 auto;
-
   font-size:13px;
   line-height:1.4;
-
   color:#6b7280;
-
   white-space:nowrap;
 }
 
 .bar{
   width:100%;
-
   height:9px;
-
   background:#edf0f4;
-
   border-radius:999px;
-
   overflow:hidden;
 }
 
 .bar-fill{
   height:100%;
-
   background:#111827;
-
   border-radius:999px;
 }
-
-
-/* ==========================================
-   SUMMARY
-   ========================================== */
 
 #summary{
   width:100%;
@@ -464,20 +325,14 @@ button{
 
 .summary-row{
   width:100%;
-
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
-
   gap:12px;
-
   padding:11px 0;
-
   border-bottom:1px solid #edf0f4;
-
   font-size:14px;
   line-height:1.4;
-
   min-width:0;
 }
 
@@ -487,22 +342,14 @@ button{
 
 .summary-label{
   min-width:0;
-
   color:#6b7280;
-
   overflow-wrap:anywhere;
 }
 
 .summary-value{
   flex:0 0 auto;
-
   font-weight:800;
 }
-
-
-/* ==========================================
-   RECENT ORDERS
-   ========================================== */
 
 .table-panel{
   margin-top:16px;
@@ -511,41 +358,30 @@ button{
 .table-wrap{
   width:100%;
   min-width:0;
-
   overflow:visible;
 }
 
 table{
   width:100%;
-
   border-collapse:collapse;
-
   table-layout:auto;
 }
 
 th,
 td{
   padding:13px 10px;
-
   text-align:left;
-
   border-bottom:1px solid #edf0f4;
-
   font-size:13px;
-
   line-height:1.4;
-
   overflow-wrap:anywhere;
   word-break:break-word;
 }
 
 th{
   color:#6b7280;
-
   font-size:11px;
-
   text-transform:uppercase;
-
   white-space:nowrap;
 }
 
@@ -557,22 +393,14 @@ tbody tr:last-child td{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-
   min-height:28px;
-
   padding:5px 9px;
-
   border-radius:999px;
-
   background:#f3f4f6;
-
   font-size:11px;
   line-height:1.2;
-
   font-weight:800;
-
   max-width:100%;
-
   overflow-wrap:anywhere;
   word-break:break-word;
 }
@@ -594,32 +422,19 @@ tbody tr:last-child td{
 
 .empty{
   text-align:center;
-
   padding:30px;
-
   color:#6b7280;
-
   line-height:1.5;
-
   overflow-wrap:anywhere;
 }
 
 .loading{
   text-align:center;
-
   padding:25px;
-
   color:#6b7280;
-
   line-height:1.5;
-
   overflow-wrap:anywhere;
 }
-
-
-/* ==========================================
-   LARGE TABLET / SMALL DESKTOP
-   ========================================== */
 
 @media(max-width:1100px){
 
@@ -637,12 +452,6 @@ tbody tr:last-child td{
   }
 
 }
-
-
-/* ==========================================
-   TABLET
-   600px - 900px
-   ========================================== */
 
 @media(min-width:600px) and (max-width:900px){
 
@@ -690,19 +499,11 @@ tbody tr:last-child td{
 
 }
 
-
-/* ==========================================
-   MOBILE
-   320px - 599px
-   ========================================== */
-
 @media(max-width:599px){
 
   .topbar{
     min-height:64px;
-
     padding:9px 12px;
-
     align-items:center;
   }
 
@@ -717,9 +518,7 @@ tbody tr:last-child td{
 
   .top-actions .btn{
     min-height:44px;
-
     padding:8px 10px;
-
     font-size:12px;
   }
 
@@ -729,7 +528,6 @@ tbody tr:last-child td{
 
   .page-head{
     display:block;
-
     margin-bottom:18px;
   }
 
@@ -740,21 +538,15 @@ tbody tr:last-child td{
 
   .page-head .btn{
     width:100%;
-
     margin-top:12px;
-
     min-height:46px;
   }
 
   .filters{
     display:grid;
-
     grid-template-columns:1fr;
-
     gap:10px;
-
     padding:12px;
-
     margin-bottom:16px;
   }
 
@@ -762,7 +554,6 @@ tbody tr:last-child td{
   .filters input{
     width:100%;
     min-width:0;
-
     min-height:48px;
   }
 
@@ -772,21 +563,17 @@ tbody tr:last-child td{
 
   .stats{
     grid-template-columns:repeat(2,minmax(0,1fr));
-
     gap:10px;
-
     margin-bottom:16px;
   }
 
   .stat{
     padding:14px;
-
     border-radius:13px;
   }
 
   .stat-label{
     font-size:12px;
-
     margin-bottom:7px;
   }
 
@@ -796,25 +583,21 @@ tbody tr:last-child td{
 
   .stat-sub{
     font-size:11px;
-
     margin-top:6px;
   }
 
   .grid{
     grid-template-columns:1fr;
-
     gap:12px;
   }
 
   .panel{
     padding:15px;
-
     border-radius:13px;
   }
 
   .panel h2{
     font-size:16px;
-
     margin-bottom:15px;
   }
 
@@ -832,18 +615,12 @@ tbody tr:last-child td{
 
   .summary-row{
     font-size:13px;
-
     padding:10px 0;
   }
 
   .table-panel{
     margin-top:12px;
   }
-
-  /*
-     Mobile recent orders become cards.
-     No horizontal scrolling.
-  */
 
   .table-wrap{
     overflow:visible;
@@ -868,12 +645,9 @@ tbody tr:last-child td{
 
   tbody tr{
     background:#f8fafc;
-
     border:1px solid #e5e7eb;
     border-radius:12px;
-
     padding:10px 12px;
-
     margin-bottom:10px;
   }
 
@@ -883,18 +657,12 @@ tbody tr:last-child td{
 
   tbody tr td{
     display:flex;
-
     justify-content:space-between;
     align-items:flex-start;
-
     gap:12px;
-
     padding:9px 0;
-
     border-bottom:1px solid #e5e7eb;
-
     font-size:13px;
-
     text-align:right;
   }
 
@@ -904,29 +672,19 @@ tbody tr:last-child td{
 
   tbody tr td::before{
     content:attr(data-label);
-
     flex:0 0 92px;
-
     color:#6b7280;
-
     font-size:11px;
-
     font-weight:700;
-
     text-transform:uppercase;
-
     text-align:left;
-
     line-height:1.4;
   }
 
   tbody tr td.empty{
     display:block;
-
     text-align:center;
-
     padding:25px 10px;
-
     border-bottom:0;
   }
 
@@ -936,24 +694,16 @@ tbody tr:last-child td{
 
   tbody tr td strong{
     max-width:calc(100% - 104px);
-
     overflow-wrap:anywhere;
     word-break:break-word;
   }
 
   tbody tr td .status{
     max-width:calc(100% - 104px);
-
     text-align:center;
   }
 
 }
-
-
-/* ==========================================
-   SMALL MOBILE
-   320px - 379px
-   ========================================== */
 
 @media(max-width:379px){
 
@@ -972,7 +722,6 @@ tbody tr:last-child td{
 
   .top-actions .btn{
     padding:8px 8px;
-
     font-size:11px;
   }
 
@@ -1019,7 +768,6 @@ tbody tr:last-child td{
 
   .product-count{
     display:block;
-
     margin-top:3px;
   }
 
@@ -1041,12 +789,6 @@ tbody tr:last-child td{
   }
 
 }
-
-
-/* ==========================================
-   VERY SMALL WIDTH
-   320px SAFETY
-   ========================================== */
 
 @media(max-width:330px){
 
@@ -1076,11 +818,6 @@ tbody tr:last-child td{
 
 }
 
-
-/* ==========================================
-   SHORT HEIGHT MOBILE
-   ========================================== */
-
 @media(max-width:599px) and (max-height:650px){
 
   body{
@@ -1106,11 +843,6 @@ tbody tr:last-child td{
   }
 
 }
-
-
-/* ==========================================
-   REDUCED MOTION
-   ========================================== */
 
 @media(prefers-reduced-motion:reduce){
 
@@ -1149,7 +881,6 @@ tbody tr:last-child td{
 
 </header>
 
-
 <main class="container">
 
   <div class="page-head">
@@ -1170,9 +901,7 @@ tbody tr:last-child td{
 
   </div>
 
-
   <div id="errorBox" class="error"></div>
-
 
   <div class="filters">
 
@@ -1196,7 +925,6 @@ tbody tr:last-child td{
 
     </select>
 
-
     <input
       type="text"
       id="productSearch"
@@ -1205,9 +933,6 @@ tbody tr:last-child td{
     >
 
   </div>
-
-
-  <!-- MAIN STATS -->
 
   <section class="stats">
 
@@ -1227,7 +952,6 @@ tbody tr:last-child td{
 
     </div>
 
-
     <div class="stat">
 
       <div class="stat-label">
@@ -1244,7 +968,6 @@ tbody tr:last-child td{
 
     </div>
 
-
     <div class="stat">
 
       <div class="stat-label">
@@ -1260,7 +983,6 @@ tbody tr:last-child td{
       </div>
 
     </div>
-
 
     <div class="stat">
 
@@ -1280,9 +1002,6 @@ tbody tr:last-child td{
 
   </section>
 
-
-  <!-- SECOND STATS -->
-
   <section class="stats">
 
     <div class="stat">
@@ -1297,7 +1016,6 @@ tbody tr:last-child td{
 
     </div>
 
-
     <div class="stat">
 
       <div class="stat-label">
@@ -1310,7 +1028,6 @@ tbody tr:last-child td{
 
     </div>
 
-
     <div class="stat">
 
       <div class="stat-label">
@@ -1322,7 +1039,6 @@ tbody tr:last-child td{
       </div>
 
     </div>
-
 
     <div class="stat">
 
@@ -1337,9 +1053,6 @@ tbody tr:last-child td{
     </div>
 
   </section>
-
-
-  <!-- PRODUCTS + SUMMARY -->
 
   <section class="grid">
 
@@ -1359,7 +1072,6 @@ tbody tr:last-child td{
 
     </div>
 
-
     <div class="panel">
 
       <h2>
@@ -1377,9 +1089,6 @@ tbody tr:last-child td{
     </div>
 
   </section>
-
-
-  <!-- RECENT ORDERS -->
 
   <section class="panel table-panel">
 
@@ -1442,7 +1151,6 @@ tbody tr:last-child td{
   </section>
 
 </main>
-
 
 <script>
 
@@ -1514,7 +1222,6 @@ function getStartDate(period){
 
   const now = new Date();
 
-
   if(period === "today"){
 
     return new Date(
@@ -1524,7 +1231,6 @@ function getStartDate(period){
     );
 
   }
-
 
   if(period === "week"){
 
@@ -1545,7 +1251,6 @@ function getStartDate(period){
 
   }
 
-
   if(period === "month"){
 
     return new Date(
@@ -1556,7 +1261,6 @@ function getStartDate(period){
 
   }
 
-
   return null;
 
 }
@@ -1566,18 +1270,70 @@ function getStartDate(period){
    VERIFY OWNER
    ========================= */
 
+let authRedirectInProgress = false;
+
+
+supabaseClient.auth.onAuthStateChange((event) => {
+
+  if(event !== "SIGNED_OUT"){
+    return;
+  }
+
+  if(authRedirectInProgress){
+    return;
+  }
+
+  authRedirectInProgress = true;
+
+  sessionStorage.clear();
+
+  if(
+    !location.pathname.endsWith("/login.html") &&
+    !location.pathname.endsWith("login.html")
+  ){
+
+    window.location.href = "login.html";
+
+  }
+
+});
+
+
 async function verifyOwner(){
 
   const {
-    data:{session},
+    data,
     error:sessionError
   } =
     await supabaseClient.auth.getSession();
 
 
-  if(sessionError || !session){
+  if(sessionError){
 
-    window.location.href = "login.html";
+    console.error(
+      "OWNER REVENUE SESSION ERROR:",
+      sessionError
+    );
+
+    showError(
+      "Session check failed. Please check your connection and refresh."
+    );
+
+    return false;
+
+  }
+
+
+  const session =
+    data?.session;
+
+
+  if(!session){
+
+    sessionStorage.clear();
+
+    window.location.href =
+      "login.html";
 
     return false;
 
@@ -1607,16 +1363,22 @@ async function verifyOwner(){
     !owner.shop_id
   ){
 
-    await supabaseClient.auth.signOut();
+    console.error(
+      "OWNER PROFILE ERROR:",
+      error || "Invalid owner profile"
+    );
 
-    window.location.href = "login.html";
+    showError(
+      "Owner account could not be verified right now. Please try again."
+    );
 
     return false;
 
   }
 
 
-  currentOwner = owner;
+  currentOwner =
+    owner;
 
 
   const {
@@ -1635,7 +1397,15 @@ async function verifyOwner(){
       .single();
 
 
-  if(shopError || !shop){
+  if(
+    shopError ||
+    !shop
+  ){
+
+    console.error(
+      "SHOP ERROR:",
+      shopError
+    );
 
     showError(
       "Shop details load nahi ho paaye."
@@ -1646,13 +1416,23 @@ async function verifyOwner(){
   }
 
 
-  currentShop = shop;
+  currentShop =
+    shop;
 
 
-  document.getElementById(
-    "shopName"
-  ).textContent =
-    shop.name || "Your Shop";
+  const shopName =
+    document.getElementById(
+      "shopName"
+    );
+
+
+  if(shopName){
+
+    shopName.textContent =
+      shop.name ||
+      "Your Shop";
+
+  }
 
 
   return true;
@@ -1745,10 +1525,12 @@ async function loadReports(){
   }
 
 
-  orders = data || [];
+  orders =
+    data || [];
 
 
-  orderItems = [];
+  orderItems =
+    [];
 
 
   const orderIds =
@@ -1791,7 +1573,8 @@ async function loadReports(){
     }
 
 
-    orderItems = items || [];
+    orderItems =
+      items || [];
 
   }
 
@@ -2218,7 +2001,8 @@ function renderSummary(){
   );
 
 
-  box.innerHTML = html;
+  box.innerHTML =
+    html;
 
 }
 
@@ -2409,13 +2193,49 @@ function goBack(){
 
 async function logout(){
 
-  await supabaseClient
-    .auth
-    .signOut();
+  if(authRedirectInProgress){
+    return;
+  }
 
 
-  window.location.href =
-    "login.html";
+  authRedirectInProgress =
+    true;
+
+
+  try{
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .auth
+        .signOut();
+
+
+    if(error){
+
+      console.error(
+        "OWNER LOGOUT ERROR:",
+        error
+      );
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "OWNER LOGOUT ERROR:",
+      error
+    );
+
+  }finally{
+
+    sessionStorage.clear();
+
+    window.location.href =
+      "login.html";
+
+  }
 
 }
 
@@ -2442,4 +2262,3 @@ async function logout(){
 
 </body>
 </html>
-```
