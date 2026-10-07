@@ -7,6 +7,7 @@
   <title>Membership | Owner Panel</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script src="../js/supabase.js"></script>
 
   <style>
@@ -28,7 +29,6 @@
       min-height: 100vh;
     }
 
-    /* HEADER */
     .topbar {
       background: #111827;
       color: white;
@@ -76,7 +76,6 @@
       background: #dc2626;
     }
 
-    /* MAIN */
     .container {
       width: min(1100px, calc(100% - 32px));
       margin: 32px auto 50px;
@@ -108,7 +107,6 @@
       font-size: 15px;
     }
 
-    /* STATUS */
     .status-card {
       background: white;
       border: 1px solid #e5e7eb;
@@ -170,7 +168,6 @@
       word-break: break-word;
     }
 
-    /* PLAN */
     .plan-card {
       background: white;
       border-radius: 20px;
@@ -264,17 +261,18 @@
       color: white;
       font-size: 16px;
       font-weight: 800;
-      cursor: not-allowed;
-      opacity: 0.65;
-    }
-
-    .pay-btn.enabled {
       cursor: pointer;
       opacity: 1;
+      transition: 0.2s ease;
     }
 
-    .pay-btn.enabled:hover {
+    .pay-btn:hover {
       background: #1d4ed8;
+    }
+
+    .pay-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
     }
 
     .payment-note {
@@ -285,7 +283,6 @@
       line-height: 1.5;
     }
 
-    /* MESSAGE */
     .message {
       display: none;
       padding: 14px 16px;
@@ -317,11 +314,10 @@
       color: #1e40af;
     }
 
-    /* LOADING */
     .loading-screen {
       position: fixed;
       inset: 0;
-      background: rgba(255,255,255,0.96);
+      background: rgba(255, 255, 255, 0.96);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -349,7 +345,6 @@
       }
     }
 
-    /* MOBILE */
     @media (max-width: 700px) {
       .topbar {
         padding: 13px 16px;
@@ -443,7 +438,6 @@
 
       <div id="message" class="message"></div>
 
-      <!-- CURRENT MEMBERSHIP -->
       <section class="status-card">
 
         <div class="status-title">
@@ -458,30 +452,23 @@
 
           <div class="detail-box">
             <div class="detail-label">Plan</div>
-            <div class="detail-value" id="currentPlan">
-              —
-            </div>
+            <div class="detail-value" id="currentPlan">—</div>
           </div>
 
           <div class="detail-box">
             <div class="detail-label">Starts</div>
-            <div class="detail-value" id="startsAt">
-              —
-            </div>
+            <div class="detail-value" id="startsAt">—</div>
           </div>
 
           <div class="detail-box">
             <div class="detail-label">Expires</div>
-            <div class="detail-value" id="expiresAt">
-              —
-            </div>
+            <div class="detail-value" id="expiresAt">—</div>
           </div>
 
         </div>
 
       </section>
 
-      <!-- MEMBERSHIP PLAN -->
       <section class="plan-card">
 
         <div class="plan-header">
@@ -533,14 +520,13 @@
             type="button"
             class="pay-btn"
             id="payBtn"
-            disabled
           >
-            Payment Setup Coming Next
+            Pay ₹299 & Activate Membership
           </button>
 
           <div class="payment-note">
-            Secure Razorpay payment and server-side verification will be
-            connected in the next step.
+            Secure payment via Razorpay. Membership activates only after
+            server-side payment verification.
           </div>
 
         </div>
@@ -578,15 +564,21 @@
     const logoutBtn =
       document.getElementById("logoutBtn");
 
+    const payBtn =
+      document.getElementById("payBtn");
+
+
     function showMessage(text, type = "info") {
       messageBox.textContent = text;
       messageBox.className = "message show " + type;
     }
 
+
     function hideMessage() {
       messageBox.className = "message";
       messageBox.textContent = "";
     }
+
 
     function formatDate(dateValue) {
       if (!dateValue) {
@@ -608,12 +600,16 @@
       });
     }
 
+
     function updateMembershipUI(subscription) {
       currentSubscription = subscription || null;
 
       if (!subscription) {
-        membershipStatusElement.textContent = "No active membership";
-        membershipStatusElement.className = "status-value none";
+        membershipStatusElement.textContent =
+          "No active membership";
+
+        membershipStatusElement.className =
+          "status-value none";
 
         currentPlanElement.textContent = "—";
         startsAtElement.textContent = "—";
@@ -634,10 +630,12 @@
         !isExpired
       ) {
         membershipStatusElement.textContent = "Active";
-        membershipStatusElement.className = "status-value active";
+        membershipStatusElement.className =
+          "status-value active";
       } else {
         membershipStatusElement.textContent = "Expired";
-        membershipStatusElement.className = "status-value expired";
+        membershipStatusElement.className =
+          "status-value expired";
       }
 
       currentPlanElement.textContent =
@@ -650,15 +648,11 @@
         formatDate(subscription.expires_at);
     }
 
+
     async function loadMembership() {
       try {
         hideMessage();
 
-        /*
-         * IMPORTANT:
-         * getSession() is used here so a temporary getUser/network
-         * problem does not unnecessarily log the owner out.
-         */
         const {
           data: { session },
           error: sessionError
@@ -676,9 +670,6 @@
 
         currentUser = session.user;
 
-        /*
-         * Verify owner record.
-         */
         const {
           data: owner,
           error: ownerError
@@ -704,9 +695,6 @@
 
         currentOwner = owner;
 
-        /*
-         * Verify shop.
-         */
         const {
           data: shop,
           error: shopError
@@ -735,11 +723,6 @@
         shopNameElement.textContent =
           shop.name || "Your Shop";
 
-        /*
-         * Load latest subscription for this shop.
-         *
-         * No payment activation is performed here.
-         */
         const {
           data: subscriptions,
           error: subscriptionError
@@ -784,11 +767,6 @@
           error
         );
 
-        /*
-         * IMPORTANT:
-         * Temporary database/network errors should show an error,
-         * not automatically clear the authenticated session.
-         */
         showMessage(
           "Membership information load nahi ho saki. Please try again.",
           "error"
@@ -798,40 +776,353 @@
       }
     }
 
-    logoutBtn.addEventListener("click", async () => {
 
-      logoutBtn.disabled = true;
-      logoutBtn.textContent = "Logging out...";
+    async function createRazorpayOrder() {
 
-      try {
-        await supabaseClient.auth.signOut();
-      } catch (error) {
-        console.error(
-          "Logout error:",
-          error
+      const {
+        data: { session },
+        error: sessionError
+      } = await supabaseClient.auth.getSession();
+
+      if (sessionError) {
+        throw sessionError;
+      }
+
+      if (!session || !session.access_token) {
+        throw new Error("Your login session has expired.");
+      }
+
+      const functionUrl =
+        `${SUPABASE_URL}/functions/v1/create-razorpay-order`;
+
+      const response = await fetch(functionUrl, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization":
+            `Bearer ${session.access_token}`,
+          "apikey":
+            SUPABASE_PUBLISHABLE_KEY
+        },
+
+        body: JSON.stringify({})
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error ||
+          "Unable to create payment order."
         );
       }
 
-      sessionStorage.clear();
+      if (
+        !data.success ||
+        !data.order_id ||
+        !data.key_id
+      ) {
+        throw new Error(
+          "Invalid payment order response."
+        );
+      }
 
-      window.location.href = "login.html";
-    });
+      return data;
+    }
 
-    /*
-     * If Supabase explicitly reports SIGNED_OUT,
-     * redirect to login.
-     */
+
+    async function verifyRazorpayPayment(paymentResponse) {
+
+      const {
+        data: { session },
+        error: sessionError
+      } = await supabaseClient.auth.getSession();
+
+      if (sessionError) {
+        throw sessionError;
+      }
+
+      if (!session || !session.access_token) {
+        throw new Error(
+          "Your login session has expired."
+        );
+      }
+
+      const functionUrl =
+        `${SUPABASE_URL}/functions/v1/verify-razorpay-payment`;
+
+      const response = await fetch(functionUrl, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization":
+            `Bearer ${session.access_token}`,
+          "apikey":
+            SUPABASE_PUBLISHABLE_KEY
+        },
+
+        body: JSON.stringify({
+          razorpay_order_id:
+            paymentResponse.razorpay_order_id,
+
+          razorpay_payment_id:
+            paymentResponse.razorpay_payment_id,
+
+          razorpay_signature:
+            paymentResponse.razorpay_signature
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error ||
+          "Payment verification failed."
+        );
+      }
+
+      if (!data.success) {
+        throw new Error(
+          data?.error ||
+          "Membership activation failed."
+        );
+      }
+
+      return data;
+    }
+
+
+    async function startPayment() {
+
+      if (!currentUser || !currentOwner || !currentShop) {
+        showMessage(
+          "Owner/shop information is not ready. Please refresh the page.",
+          "error"
+        );
+        return;
+      }
+
+      if (typeof Razorpay === "undefined") {
+        showMessage(
+          "Razorpay Checkout load nahi ho saka. Please refresh the page.",
+          "error"
+        );
+        return;
+      }
+
+      payBtn.disabled = true;
+      payBtn.textContent = "Creating payment...";
+
+      hideMessage();
+
+      try {
+
+        const order = await createRazorpayOrder();
+
+        const options = {
+
+          key: order.key_id,
+
+          amount: order.amount,
+
+          currency: order.currency || "INR",
+
+          name: "My Consultant Services",
+
+          description:
+            "Owner Membership - 28 Days",
+
+          order_id: order.order_id,
+
+          prefill: {
+            name:
+              currentOwner.full_name ||
+              "",
+            email:
+              currentUser.email ||
+              "",
+            contact:
+              currentOwner.phone ||
+              ""
+          },
+
+          notes: {
+            shop_id:
+              currentShop.id
+          },
+
+          theme: {
+            color: "#2563eb"
+          },
+
+          handler: async function (
+            paymentResponse
+          ) {
+
+            try {
+
+              payBtn.disabled = true;
+              payBtn.textContent =
+                "Verifying payment...";
+
+              showMessage(
+                "Payment received. Secure verification chal rahi hai...",
+                "info"
+              );
+
+              const verification =
+                await verifyRazorpayPayment(
+                  paymentResponse
+                );
+
+              if (verification.success) {
+
+                showMessage(
+                  "Payment verified successfully. Your membership is now active.",
+                  "success"
+                );
+
+                payBtn.textContent =
+                  "Membership Active";
+
+                await loadMembership();
+              }
+
+            } catch (error) {
+
+              console.error(
+                "Payment verification error:",
+                error
+              );
+
+              showMessage(
+                error?.message ||
+                "Payment verification failed. Please contact support if money was deducted.",
+                "error"
+              );
+
+              payBtn.disabled = false;
+
+              payBtn.textContent =
+                "Pay ₹299 & Activate Membership";
+            }
+          },
+
+          modal: {
+
+            ondismiss: function () {
+
+              payBtn.disabled = false;
+
+              payBtn.textContent =
+                "Pay ₹299 & Activate Membership";
+
+              showMessage(
+                "Payment window closed. No membership was activated.",
+                "info"
+              );
+            }
+          }
+        };
+
+        const razorpay =
+          new Razorpay(options);
+
+        razorpay.on(
+          "payment.failed",
+          function (response) {
+
+            console.error(
+              "Razorpay payment failed:",
+              response
+            );
+
+            showMessage(
+              response?.error?.description ||
+              "Payment failed. Please try again.",
+              "error"
+            );
+
+            payBtn.disabled = false;
+
+            payBtn.textContent =
+              "Pay ₹299 & Activate Membership";
+          }
+        );
+
+        razorpay.open();
+
+      } catch (error) {
+
+        console.error(
+          "Payment start error:",
+          error
+        );
+
+        showMessage(
+          error?.message ||
+          "Unable to start payment. Please try again.",
+          "error"
+        );
+
+        payBtn.disabled = false;
+
+        payBtn.textContent =
+          "Pay ₹299 & Activate Membership";
+      }
+    }
+
+
+    payBtn.addEventListener(
+      "click",
+      startPayment
+    );
+
+
+    logoutBtn.addEventListener(
+      "click",
+      async () => {
+
+        logoutBtn.disabled = true;
+        logoutBtn.textContent =
+          "Logging out...";
+
+        try {
+          await supabaseClient.auth.signOut();
+        } catch (error) {
+          console.error(
+            "Logout error:",
+            error
+          );
+        }
+
+        sessionStorage.clear();
+
+        window.location.href =
+          "login.html";
+      }
+    );
+
+
     supabaseClient.auth.onAuthStateChange(
       (event) => {
 
         if (event === "SIGNED_OUT") {
+
           sessionStorage.clear();
-          window.location.href = "login.html";
+
+          window.location.href =
+            "login.html";
         }
       }
     );
 
+
     loadMembership();
+
   </script>
 
 </body>
