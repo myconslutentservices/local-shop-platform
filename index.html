@@ -3,45 +3,762 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111827">
 
-  <title>Local Shop Platform</title>
+  <title>Local Shop Platform | Shop Online</title>
+  <meta name="description" content="Discover local shops, browse products and contact businesses online.">
 
-  <!-- Supabase Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Our Supabase Configuration -->
   <script src="js/supabase.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --dark: #111827;
+      --muted: #6b7280;
+      --bg: #f8fafc;
+      --border: #e5e7eb;
+      --white: #fff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--dark);
+      background: var(--bg);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .topbar {
+      background: var(--dark);
+      color: white;
+      text-align: center;
+      padding: 9px 12px;
+      font-size: 13px;
+    }
+
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav {
+      max-width: 1200px;
+      margin: auto;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+
+    .brand span { color: var(--primary); }
+
+    .navlinks {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .navlinks a:hover { color: var(--primary); }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 24px 20px;
+    }
+
+    .hero {
+      background: linear-gradient(120deg, #172554, #2563eb);
+      color: white;
+      border-radius: 20px;
+      padding: 44px 28px;
+      margin-top: 10px;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 46px);
+      max-width: 700px;
+      line-height: 1.12;
+      margin: 0 0 14px;
+    }
+
+    .hero p {
+      color: #dbeafe;
+      max-width: 600px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .searchbar {
+      display: flex;
+      max-width: 650px;
+      background: white;
+      padding: 6px;
+      border-radius: 12px;
+      gap: 6px;
+    }
+
+    .searchbar input {
+      min-width: 0;
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 12px;
+      color: var(--dark);
+    }
+
+    .btn {
+      display: inline-block;
+      border: 0;
+      border-radius: 9px;
+      padding: 12px 16px;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+    }
+
+    .btn:hover { filter: brightness(.95); }
+    .btn-light { background: white; color: var(--dark); }
+    .btn-outline { background: white; color: var(--primary); border: 1px solid var(--border); }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 30px 0 16px;
+    }
+
+    .section-head h2 { margin: 0; font-size: 23px; }
+
+    .muted { color: var(--muted); font-size: 14px; }
+
+    .categories {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .category-btn {
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 30px;
+      padding: 10px 16px;
+      color: var(--dark);
+    }
+
+    .category-btn.active {
+      color: white;
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      min-width: 0;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px #1118270d;
+    }
+
+    .card img {
+      display: block;
+      width: 100%;
+      height: 175px;
+      object-fit: cover;
+      background: #e5e7eb;
+    }
+
+    .card-body { padding: 14px; }
+    .card h3 { font-size: 16px; margin: 0 0 8px; }
+    .card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    .price {
+      font-size: 19px;
+      font-weight: 800;
+      margin: 12px 0;
+    }
+
+    .card .btn { width: 100%; text-align: center; }
+
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .shop-card {
+      background: white;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .shop-card h3 { margin: 0 0 8px; }
+    .shop-card p { line-height: 1.5; }
+
+    .status {
+      margin: 18px 0;
+      padding: 13px 15px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 35px 15px;
+      background: white;
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 45px;
+      padding: 30px 20px;
+      background: var(--dark);
+      color: white;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-inner p { color: #cbd5e1; font-size: 13px; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #0009;
+      z-index: 30;
+      padding: 18px;
+      overflow-y: auto;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 480px;
+      padding: 24px;
+      border-radius: 16px;
+    }
+
+    .modal-content h2 { margin-top: 0; }
+
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin: 8px 0 14px;
+    }
+
+    .modal-content textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-actions button { flex: 1; }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 600px) {
+      .nav { padding: 13px 15px; }
+      .brand { font-size: 18px; }
+      .navlinks { gap: 10px; font-size: 12px; }
+      .container { padding: 18px 14px; }
+      .hero { padding: 30px 19px; border-radius: 15px; }
+      .searchbar { flex-direction: column; }
+      .searchbar .btn { width: 100%; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .card img { height: 135px; }
+      .card-body { padding: 10px; }
+      .card h3 { font-size: 14px; }
+      .price { font-size: 17px; }
+      .shop-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 
 <body>
+  <div class="topbar">Discover local businesses and shop directly with them</div>
 
-  <h1>Local Shop Platform</h1>
+  <header>
+    <nav class="nav">
+      <a class="brand" href="./">Local<span>Shop</span></a>
+      <div class="navlinks">
+        <a href="#shops">Shops</a>
+        <a href="#products">Products</a>
+        <a href="owner/login.html">Business Login</a>
+      </div>
+    </nav>
+  </header>
 
-  <p id="status">Checking Supabase connection...</p>
+  <main class="container">
+    <section class="hero">
+      <h1>Find what you need, right around you.</h1>
+      <p>Discover local shops, explore their products and contact businesses in just a few clicks.</p>
+
+      <form class="searchbar" id="searchForm">
+        <input id="searchInput" type="search" placeholder="Search shops, products or categories..." aria-label="Search shops and products">
+        <button class="btn" type="submit">Search</button>
+      </form>
+    </section>
+
+    <div class="status" id="connectionStatus" role="status">Connecting to the shop directory...</div>
+
+    <section id="shops">
+      <div class="section-head">
+        <h2>Explore local shops</h2>
+        <span class="muted" id="shopCount"></span>
+      </div>
+      <div class="shop-grid" id="shopGrid">
+        <div class="empty">Loading shops...</div>
+      </div>
+    </section>
+
+    <section id="products">
+      <div class="section-head">
+        <h2>Products and services</h2>
+        <span class="muted" id="productCount"></span>
+      </div>
+      <div class="categories" id="categoryFilters">
+        <button class="category-btn active" data-category="all">All</button>
+      </div>
+      <div class="grid" id="productGrid" style="margin-top:16px">
+        <div class="empty">Loading products...</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <strong>Local Shop Platform</strong>
+        <p>Helping customers discover local businesses.</p>
+      </div>
+      <div>
+        <a href="owner/login.html">Business Owner Login</a>
+        <p>For shop owners and business enquiries.</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal" id="orderModal" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+    <div class="modal-content">
+      <h2 id="orderTitle">Contact this business</h2>
+      <p class="muted" id="selectedProduct"></p>
+
+      <form id="orderForm">
+        <label for="customerName">Your name</label>
+        <input id="customerName" required maxlength="100" placeholder="Enter your name">
+
+        <label for="customerPhone">Phone number</label>
+        <input id="customerPhone" required type="tel" maxlength="20" placeholder="Enter your phone number">
+
+        <label for="customerAddress">Delivery address / location</label>
+        <textarea id="customerAddress" required maxlength="500" placeholder="Enter your address or location"></textarea>
+
+        <label for="customerQuantity">Quantity</label>
+        <input id="customerQuantity" type="number" min="1" max="999" value="1" required>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" id="cancelOrder">Cancel</button>
+          <button type="submit" class="btn">Continue on WhatsApp</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script>
-    async function testSupabase() {
+    const shopGrid = document.getElementById("shopGrid");
+    const productGrid = document.getElementById("productGrid");
+    const connectionStatus = document.getElementById("connectionStatus");
+    const categoryFilters = document.getElementById("categoryFilters");
 
-      const { data, error } = await supabaseClient
-        .from("shops")
-        .select("id, name, slug")
-        .limit(1);
+    let allShops = [];
+    let allProducts = [];
+    let activeCategory = "all";
+    let searchTerm = "";
+    let selectedProduct = null;
 
-      const status = document.getElementById("status");
+    function getSupabaseClient() {
+      if (typeof supabaseClient === "undefined" || !supabaseClient) {
+        throw new Error("Supabase client not found. Check js/supabase.js.");
+      }
+      return supabaseClient;
+    }
 
-      if (error) {
-        console.error(error);
-        status.textContent = "❌ Supabase connection failed";
+    function safe(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function firstValue(obj, keys, fallback = "") {
+      for (const key of keys) {
+        if (obj && obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
+          return obj[key];
+        }
+      }
+      return fallback;
+    }
+
+    function money(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return "Contact for price";
+      return number.toLocaleString("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 2
+      });
+    }
+
+    function imageFor(item) {
+      return firstValue(item, [
+        "image_url", "image", "photo_url", "thumbnail", "logo_url", "logo"
+      ], "https://placehold.co/600x400/f1f5f9/64748b?text=Local+Business");
+    }
+
+    function shopName(shop) {
+      return firstValue(shop, ["name", "shop_name", "business_name", "company_name"], "Local business");
+    }
+
+    function productName(product) {
+      return firstValue(product, ["name", "product_name", "title", "service_name"], "Product");
+    }
+
+    function categoryName(item) {
+      return firstValue(item, ["category", "business_category", "type"], "Other");
+    }
+
+    function shopWhatsApp(shop) {
+      return firstValue(shop, [
+        "whatsapp", "whatsapp_number", "phone", "phone_number", "mobile"
+      ], "");
+    }
+
+    function findShop(product) {
+      const shopId = firstValue(product, ["shop_id", "shopId"], "");
+      return allShops.find(shop => String(shop.id) === String(shopId)) || null;
+    }
+
+    function available(product) {
+      const stock = firstValue(product, ["stock", "quantity", "stock_quantity"], null);
+      const status = String(firstValue(product, ["status", "availability"], "")).toLowerCase();
+
+      if (status.includes("out of stock") || status === "unavailable" || status === "inactive") {
+        return false;
+      }
+      if (stock !== null && Number(stock) <= 0) return false;
+      return true;
+    }
+
+    function filteredShops() {
+      return allShops.filter(shop => {
+        const text = [
+          shopName(shop),
+          categoryName(shop),
+          firstValue(shop, ["address", "location", "description"], "")
+        ].join(" ").toLowerCase();
+
+        return text.includes(searchTerm);
+      });
+    }
+
+    function filteredProducts() {
+      return allProducts.filter(product => {
+        const shop = findShop(product);
+        const category = categoryName(product).toLowerCase();
+        const text = [
+          productName(product),
+          category,
+          firstValue(product, ["description", "details"], ""),
+          shop ? shopName(shop) : ""
+        ].join(" ").toLowerCase();
+
+        const matchesCategory =
+          activeCategory === "all" || category === activeCategory.toLowerCase();
+
+        return matchesCategory && text.includes(searchTerm);
+      });
+    }
+
+    function renderShops() {
+      const shops = filteredShops();
+      document.getElementById("shopCount").textContent = `${shops.length} found`;
+
+      if (!shops.length) {
+        shopGrid.innerHTML = '<div class="empty">No shops found. Shops will appear here after they are added to the database.</div>';
         return;
       }
 
-      status.textContent = "✅ Supabase connected successfully";
+      shopGrid.innerHTML = shops.map(shop => {
+        const id = safe(shop.id);
+        const category = safe(categoryName(shop));
+        const address = safe(firstValue(shop, ["address", "location"], "Contact the business for location"));
+        const description = safe(firstValue(shop, ["description", "about"], "Explore products and contact this business."));
 
-      console.log("Supabase data:", data);
+        return `
+          <article class="shop-card">
+            <h3>${safe(shopName(shop))}</h3>
+            <p class="muted">${category}</p>
+            <p>${description}</p>
+            <p class="muted">📍 ${address}</p>
+            <button class="btn btn-outline" type="button" data-shop="${id}">View business</button>
+          </article>`;
+      }).join("");
+
+      shopGrid.querySelectorAll("[data-shop]").forEach(button => {
+        button.addEventListener("click", () => {
+          const shop = allShops.find(s => String(s.id) === button.dataset.shop);
+          if (!shop) return;
+
+          searchTerm = shopName(shop).toLowerCase();
+          document.getElementById("searchInput").value = shopName(shop);
+          activeCategory = "all";
+          renderCategoryFilters();
+          renderProducts();
+          document.getElementById("products").scrollIntoView({ behavior: "smooth" });
+        });
+      });
     }
 
-    testSupabase();
-  </script>
+    function renderCategoryFilters() {
+      const categories = [...new Set(allProducts.map(categoryName).filter(Boolean))];
 
+      categoryFilters.innerHTML = [
+        `<button class="category-btn ${activeCategory === "all" ? "active" : ""}" data-category="all">All</button>`,
+        ...categories.map(category => `
+          <button class="category-btn ${activeCategory.toLowerCase() === category.toLowerCase() ? "active" : ""}"
+            data-category="${safe(category)}">${safe(category)}</button>`)
+      ].join("");
+
+      categoryFilters.querySelectorAll("[data-category]").forEach(button => {
+        button.addEventListener("click", () => {
+          activeCategory = button.dataset.category;
+          renderCategoryFilters();
+          renderProducts();
+        });
+      });
+    }
+
+    function renderProducts() {
+      const products = filteredProducts();
+      document.getElementById("productCount").textContent = `${products.length} found`;
+
+      if (!products.length) {
+        productGrid.innerHTML = '<div class="empty">No products are available to display yet. Add products in the Owner Panel, then check that public read access is enabled in Supabase.</div>';
+        return;
+      }
+
+      productGrid.innerHTML = products.map((product, index) => {
+        const price = firstValue(product, ["price", "selling_price", "amount"], null);
+        const description = firstValue(product, ["description", "details"], "Contact the business for more information.");
+        const shop = findShop(product);
+        const isAvailable = available(product);
+
+        return `
+          <article class="card">
+            <img src="${safe(imageFor(product))}" alt="${safe(productName(product))}" loading="lazy"
+              onerror="this.onerror=null;this.src='https://placehold.co/600x400/f1f5f9/64748b?text=Product'">
+            <div class="card-body">
+              <h3>${safe(productName(product))}</h3>
+              <div class="muted">${safe(categoryName(product))}</div>
+              <p>${safe(description)}</p>
+              <div class="price">${price === null ? "Contact for price" : money(price)}</div>
+              <p class="muted">${shop ? safe(shopName(shop)) : "Local business"}</p>
+              <button class="btn ${isAvailable ? "" : "btn-outline"}" type="button"
+                data-product-index="${index}" ${isAvailable ? "" : "disabled"}>
+                ${isAvailable ? "Order / Enquire" : "Out of stock"}
+              </button>
+            </div>
+          </article>`;
+      }).join("");
+
+      productGrid.querySelectorAll("[data-product-index]").forEach(button => {
+        button.addEventListener("click", () => {
+          const product = products[Number(button.dataset.productIndex)];
+          openOrderModal(product);
+        });
+      });
+    }
+
+    function openOrderModal(product) {
+      selectedProduct = product;
+      document.getElementById("selectedProduct").textContent =
+        `${productName(product)} — ${firstValue(product, ["price", "selling_price", "amount"], null) === null
+          ? "Price on request"
+          : money(firstValue(product, ["price", "selling_price", "amount"]))}`;
+      document.getElementById("customerQuantity").value = 1;
+      document.getElementById("orderModal").classList.add("open");
+    }
+
+    function closeOrderModal() {
+      document.getElementById("orderModal").classList.remove("open");
+      selectedProduct = null;
+    }
+
+    document.getElementById("cancelOrder").addEventListener("click", closeOrderModal);
+
+    document.getElementById("orderModal").addEventListener("click", event => {
+      if (event.target.id === "orderModal") closeOrderModal();
+    });
+
+    document.getElementById("searchForm").addEventListener("submit", event => {
+      event.preventDefault();
+      searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
+      renderShops();
+      renderProducts();
+      document.getElementById("shops").scrollIntoView({ behavior: "smooth" });
+    });
+
+    document.getElementById("orderForm").addEventListener("submit", event => {
+      event.preventDefault();
+      if (!selectedProduct) return;
+
+      const shop = findShop(selectedProduct);
+      const phone = shop ? shopWhatsApp(shop).replace(/\D/g, "") : "";
+
+      if (!phone) {
+        alert("Is business ke record mein WhatsApp/phone number nahi mila. Owner Panel mein business ka phone ya WhatsApp number add karna hoga.");
+        return;
+      }
+
+      const name = document.getElementById("customerName").value.trim();
+      const customerPhone = document.getElementById("customerPhone").value.trim();
+      const address = document.getElementById("customerAddress").value.trim();
+      const quantity = Number(document.getElementById("customerQuantity").value);
+
+      if (!name || !customerPhone || !address || !Number.isInteger(quantity) || quantity < 1) {
+        alert("Please fill all fields correctly.");
+        return;
+      }
+
+      const productPrice = Number(firstValue(selectedProduct, ["price", "selling_price", "amount"], 0));
+      const message = [
+        "Hello, I want to place an order/enquiry.",
+        "",
+        `Business: ${shopName(shop)}`,
+        `Product/Service: ${productName(selectedProduct)}`,
+        `Quantity: ${quantity}`,
+        `Listed price: ${money(productPrice)}`,
+        "",
+        `Customer name: ${name}`,
+        `Customer phone: ${customerPhone}`,
+        `Address/location: ${address}`,
+        "",
+        "Please confirm availability and final price."
+      ].join("\n");
+
+      window.open(
+        `https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+
+      closeOrderModal();
+    });
+
+    async function loadData() {
+      try {
+        const client = getSupabaseClient();
+
+        const [shopsResult, productsResult] = await Promise.all([
+          client.from("shops").select("*").limit(200),
+          client.from("products").select("*").limit(500)
+        ]);
+
+        if (shopsResult.error) {
+          throw new Error("Shops: " + shopsResult.error.message);
+        }
+
+        allShops = shopsResult.data || [];
+
+        if (productsResult.error) {
+          allProducts = [];
+          connectionStatus.textContent =
+            "Shops connected, but products could not be loaded. Check the products table and its Supabase permissions.";
+          console.error("Products query error:", productsResult.error);
+        } else {
+          allProducts = productsResult.data || [];
+          connectionStatus.textContent =
+            "Connected. Loaded " + allShops.length + " shops and " + allProducts.length + " products.";
+        }
+
+        renderShops();
+        renderCategoryFilters();
+        renderProducts();
+      } catch (error) {
+        console.error("Platform loading error:", error);
+        connectionStatus.textContent =
+          "Could not load the directory: " + error.message +
+          " Check js/supabase.js, table names and Supabase permissions.";
+
+        shopGrid.innerHTML = '<div class="empty">Shops could not be loaded. Check the browser console and Supabase configuration.</div>';
+        productGrid.innerHTML = '<div class="empty">Products could not be loaded. Check the products table and access policies.</div>';
+      }
+    }
+
+    loadData();
+  </script>
 </body>
 </html>
