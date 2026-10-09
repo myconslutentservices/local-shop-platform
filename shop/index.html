@@ -912,7 +912,8 @@ async function init(){
   document.getElementById('enquirySection').style.display = 'block';
   document.getElementById('servicesHeading').textContent = listingType === 'room' ? 'Rooms & stays' : (listingType === 'menu' ? 'Menu & offerings' : 'Services & offerings');
   document.getElementById('enquiryHeading').textContent = categoryDefinition?.default_action === 'quote' ? 'Request a quote' : 'Contact ' + (s.name || 'this business');
-  renderCustomFields('enquiryCustomFields', categoryDefinition?.field_schema || []);
+  const bookingActions = ['booking','appointment','reservation','room_booking'];
+  renderCustomFields('enquiryCustomFields', bookingActions.includes(String(categoryDefinition?.default_action || '').toLowerCase()) ? [] : (categoryDefinition?.field_schema || []));
 
   const [cr,pr,sr] =
     await Promise.all([
@@ -1153,7 +1154,8 @@ function renderServices() {
     const image = images.length && typeof images[0] === 'string' ? '<div class="pic"><img src="' + esc(images[0]) + '" alt="' + esc(service.name) + '" loading="lazy"></div>' : '';
     const duration = service.duration_minutes ? '<div class="desc">Duration: ' + esc(service.duration_minutes) + ' minutes</div>' : '';
     const details = Object.entries(attrs).slice(0,4).map(([k,v]) => '<div class="desc">' + esc(k.replace(/_/g,' ')) + ': ' + esc(v) + '</div>').join('');
-    const actionLabel = categoryDefinition?.default_action === 'quote' ? 'Request quote' : (categoryDefinition?.default_action === 'enquiry' ? 'Enquire' : 'Book / enquire');
+    const action = String(categoryDefinition?.default_action || 'booking').toLowerCase();
+    const actionLabel = action === 'quote' ? 'Request quote' : (action === 'service_request' ? 'Request service' : (action === 'enquiry' ? 'Enquire' : (action === 'contact' ? 'Contact' : (action === 'appointment' ? 'Book appointment' : (action === 'room_booking' ? 'Book room' : 'Book / enquire'))));
     return '<article class="serviceCard">' + image + '<h3>' + esc(service.name) + '</h3>' + (service.description ? '<p>' + esc(service.description) + '</p>' : '') + '<div class="serviceMeta">' + money(service.price) + '</div>' + duration + details + '<div class="serviceActions"><button type="button" class="primary" onclick="openServiceAction(\'' + esc(service.id) + '\')">' + actionLabel + '</button></div></article>';
   }).join('');
 }
