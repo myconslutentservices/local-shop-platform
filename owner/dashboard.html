@@ -121,6 +121,19 @@ button{cursor:pointer}
 @media(max-width:600px){.topbar{align-items:flex-start;flex-wrap:wrap;gap:10px;padding:12px}.brand{font-size:17px}.top-actions{width:100%;justify-content:space-between}.shop-name{max-width:65%;white-space:normal;overflow-wrap:anywhere}.wrap{padding:15px 12px 28px}.welcome{margin-bottom:16px}.welcome h1{font-size:23px;line-height:1.25}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{padding:13px}.stat{font-size:22px}.stat-label{font-size:12px}.section{margin-top:18px}.section-title{align-items:flex-start;flex-wrap:wrap}.section-title h2{font-size:17px}.order-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.order-tab{min-width:0;padding:10px 7px}.order-section-head{padding:12px}.order-section-body{padding:0 12px}.order{min-width:760px}.subscription{padding:14px}.sub-top{align-items:flex-start;flex-wrap:wrap}.subscription-actions{display:grid;grid-template-columns:1fr}.subscription-actions button{width:100%}.order-detail-grid,.info,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal{padding:10px;align-items:flex-end!important}.modal-box,.order-modal-box{width:100%;max-height:92vh;overflow:auto;border-radius:15px 15px 0 0;padding:15px}.modal-actions{flex-direction:column-reverse}.modal-actions button{width:100%}.product-grid,.category-grid{grid-template-columns:1fr}.products-toolbar{align-items:stretch}.search{min-width:0;width:100%}.product-img{height:190px}.product-actions,.category-actions{flex-wrap:wrap}.product-actions button,.category-actions button{flex:1}.subscription-actions .primary,.subscription-actions .secondary{width:100%}}
 @media(max-width:360px){.grid{grid-template-columns:1fr}.top-actions{align-items:stretch;flex-direction:column}.shop-name{max-width:100%}.logout,.refresh,.secondary,.view-order{width:100%}.welcome h1{font-size:21px}.side-link{font-size:12px;padding:8px}}
 @media(hover:none){.stat-card:hover{transform:none}}
+
+.dashboard-columns{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start;margin-top:18px}
+.dashboard-primary,.dashboard-side{min-width:0}
+.dashboard-primary>.section:first-child{margin-top:0}
+.dashboard-side .section{margin-top:0}
+.dashboard-side .info{grid-template-columns:1fr;gap:14px}
+.dashboard-side .card,.dashboard-side .subscription{padding:16px}
+.dashboard-side .info-row{gap:10px;align-items:flex-start}
+.dashboard-side .info-row strong{text-align:right;overflow-wrap:anywhere}
+@media(max-width:1100px){.dashboard-columns{grid-template-columns:minmax(0,1fr) 280px;gap:12px}}
+@media(max-width:850px){.dashboard-columns{grid-template-columns:minmax(0,1fr);gap:0}.dashboard-side{margin-top:20px}.dashboard-side .info{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.dashboard-side .info{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -191,6 +204,8 @@ button{cursor:pointer}
 
 </section>
 
+<div class="dashboard-columns">
+<div class="dashboard-primary">
 <section class="section" id="ordersSection">
 
 <div class="section-title">
@@ -237,6 +252,7 @@ ${l}
 
 </div>
 </section>
+</div>
 
 <div class="modal" id="orderModal">
 <div class="modal-box order-modal-box">
@@ -248,6 +264,7 @@ ${l}
 </div>
 </div>
 
+<aside class="dashboard-side">
 <section class="section" id="shopInfoSection">
 
 <div class="section-title">
@@ -318,6 +335,10 @@ Pay ₹1 & Activate Subscription
 
 </div>
 </section>
+
+</section>
+</aside>
+</div>
 
 <section class="section" id="categoriesSection">
 
