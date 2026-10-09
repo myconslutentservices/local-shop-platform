@@ -277,6 +277,70 @@ width:100%
 .logout:hover,.refresh:hover,.secondary:hover,.view-order:hover{background:initial}
 .primary:hover{background:#2563eb}
 }
+
+/* =========================================================
+   RESPONSIVE LAYOUT PATCH
+   Added without changing existing HTML, Supabase or payment JS.
+========================================================= */
+html{width:100%;max-width:100%;overflow-x:hidden}
+body{width:100%;min-width:0;overflow-x:hidden}
+button,input,select,textarea{max-width:100%}
+.topbar{flex-wrap:wrap}
+.top-actions{flex-wrap:wrap;min-width:0}
+.wrap{width:100%;min-width:0}
+.grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+.product-grid,.category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.order-section-body{max-width:100%;overscroll-behavior-x:contain}
+img,video,canvas{max-width:100%}
+
+@media(max-width:1000px){
+  .wrap{padding:20px}
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .product-grid,.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stat{font-size:24px}
+}
+
+@media(max-width:700px){
+  .topbar{align-items:flex-start;padding:12px 14px;gap:10px}
+  .brand{font-size:16px}
+  .top-actions{width:100%;justify-content:space-between}
+  .shop-name{max-width:55%;white-space:normal;overflow-wrap:anywhere}
+  .wrap{padding:14px}
+  .welcome{margin-bottom:16px}
+  .welcome h1{font-size:23px;line-height:1.25}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{padding:13px}
+  .stat{font-size:22px;overflow-wrap:anywhere}
+  .section{margin-top:18px}
+  .section-title{align-items:flex-start;flex-wrap:wrap}
+  .order-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .order-tab{min-width:0;padding:10px 8px}
+  .order-section-head{padding:12px}
+  .order-section-body{padding:0 12px}
+  .order{min-width:760px}
+  .subscription{padding:14px}
+  .sub-top{align-items:flex-start;flex-wrap:wrap}
+  .subscription-actions{display:grid;grid-template-columns:1fr}
+  .subscription-actions button{width:100%}
+  .order-detail-grid,.info,.form-grid{grid-template-columns:1fr}
+  .modal{padding:10px}
+  .modal-box{padding:15px;border-radius:12px}
+  .product-grid,.category-grid{grid-template-columns:1fr}
+  .product-img{height:190px}
+  .products-toolbar{align-items:stretch}
+  .search{min-width:0;width:100%}
+  .field input,.field textarea,.field select{width:100%;min-width:0}
+  .subscription-actions .primary,.subscription-actions .secondary{width:100%}
+}
+
+@media(max-width:380px){
+  .grid{grid-template-columns:1fr}
+  .top-actions{align-items:stretch;flex-direction:column}
+  .shop-name{max-width:100%}
+  .logout,.refresh,.secondary,.view-order{width:100%}
+  .welcome h1{font-size:21px}
+}
+
 </style>
 </head>
 
