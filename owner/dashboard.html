@@ -1331,7 +1331,8 @@ async function loadUniversalBusinessFeatures(){
   $("businessModeHint").textContent=serviceMode
     ?"This category can use services and bookings. Add services below; products remain available if your business also sells goods."
     :"Manage products for this business. Services and bookings can also be added below when needed.";
-  await Promise.all([loadServices(),loadBookings(),loadEnquiries()]);
+  await loadServices();
+  await Promise.all([loadBookings(),loadEnquiries()]);
 }
 
 async function loadServices(){
