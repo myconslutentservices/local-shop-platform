@@ -74,6 +74,7 @@ a{color:inherit;text-decoration:none}
 @media(max-width:900px){.page{padding-top:30px}.layout{grid-template-columns:minmax(0,1fr) 250px;gap:16px}.panel{padding:18px}.side-card{padding:19px;min-height:0}.illustration{height:170px}.side-card h2{font-size:21px}.fields{column-gap:15px}}
 @media(max-width:680px){.site-header{height:auto;min-height:60px;padding:10px 15px;gap:12px;flex-wrap:wrap}.brand{font-size:16px;gap:9px}.brand-mark{width:37px;height:37px;border-radius:10px}.explore{margin-left:0;font-size:12px}.header-spacer{flex:1}.help-link{display:none}.login-link{font-size:11px}.page{padding:28px 14px 30px}.page-title{margin-bottom:21px}.page-title h1{font-size:28px}.page-title p{font-size:13px;line-height:1.5}.layout{grid-template-columns:1fr}.side-card{grid-row:1;padding:14px 16px;display:grid;grid-template-columns:105px minmax(0,1fr);gap:0 14px;align-items:center}.illustration{grid-row:1/4;height:112px;margin:0}.side-card h2{font-size:17px;align-self:end;margin-bottom:5px}.side-card h3{font-size:13px;margin-bottom:6px}.side-card p{font-size:11px;line-height:1.45}.form-column{grid-row:2}.steps{margin-bottom:15px}.step-top{gap:7px}.step:not(:last-child) .step-top:after{left:36px;right:5px}.step-number{width:27px;height:27px;flex-basis:27px;font-size:11px}.step:not(:last-child) .step-top:after{top:13px}.step-label{font-size:10px;white-space:normal;line-height:1.3;max-width:100px}.panel{padding:17px 14px}.fields{grid-template-columns:1fr;row-gap:15px}.field.full{grid-column:auto}.field input,.field textarea,.field select{min-height:42px}.actions{align-items:flex-start;flex-direction:column;margin-top:18px}.button-row{width:100%;margin-left:0}.button-row .btn{flex:1}.required-note{order:2}.site-footer{padding:18px 8px}.site-footer a{padding:0 8px}}
 @media(max-width:390px){.site-header{gap:9px}.brand{font-size:14px}.brand-mark{width:33px;height:33px}.explore{font-size:11px}.login-link{width:100%;text-align:right}.page-title h1{font-size:25px}.side-card{grid-template-columns:85px minmax(0,1fr);padding:12px}.illustration{height:95px}.side-card h2{font-size:15px}.side-card h3{font-size:12px}.step-label{font-size:9px}.panel{padding:15px 12px}}
+ .password-wrap{display:flex;gap:8px;align-items:stretch}.password-wrap input{min-width:0;flex:1}.password-toggle{border:1px solid #cbdaf3;background:#fff;color:#17418b;border-radius:9px;padding:0 14px;font-weight:700;cursor:pointer}.password-toggle:focus-visible{outline:3px solid #b7d0ff;outline-offset:2px}
 </style>
 </head>
 <body>
@@ -108,8 +109,7 @@ a{color:inherit;text-decoration:none}
               <div class="field"><label for="shopName">Business Name <span class="required">*</span></label><input id="shopName" required maxlength="120" autocomplete="organization" placeholder="e.g. Sharma General Store" data-label="Business name"></div>
               <div class="field"><label for="fullName">Business Owner Name <span class="required">*</span></label><input id="fullName" required autocomplete="name" placeholder="e.g. Rajesh Sharma" data-label="Business owner name"></div>
               <div class="field"><label for="slug">Shop URL slug <span class="required">*</span></label><input id="slug" required pattern="[a-z0-9-]+" maxlength="80" placeholder="sharma-general-store" autocomplete="off" data-label="Shop URL slug"><small>Used to identify the shop in your platform.</small></div>
-              <div class="field full"><label for="description">Business Description <span class="optional">(Optional)</span></label><textarea id="description" maxlength="1000" placeholder="Tell customers about your business, products or services..."></textarea></div><div class="field full"><label for="category">Business Category <span class="required">*</span></label><select id="category" required data-label="Business category"><option value="">Choose your business category</option><option>Clothing &amp; Fashion</option><option>Restaurant &amp; Food</option><option>Sweets &amp; Bakery</option><option>Hotel &amp; Stay</option><option>Medical &amp; Pharmacy</option><option>Grocery &amp; General Store</option><option>Mobile &amp; Electronics</option><option>Computer &amp; IT</option><option>Beauty &amp; Cosmetics</option><option>Salon &amp; Barber</option><option>Footwear</option><option>Jewellery &amp; Accessories</option><option>Furniture &amp; Home Decor</option><option>Hardware &amp; Electrical</option><option>Automobile &amp; Auto Parts</option><option>Bike &amp; Scooter</option><option>Books &amp; Stationery</option><option>Flowers &amp; Gifts</option><option>Pet Shop &amp; Pet Services</option><option>Toys &amp; Kids</option><option>Gym &amp; Fitness</option><option>Event &amp; Party Services</option><option>Home Services</option><option>Repair &amp; Maintenance</option><option>Professional Services</option><option>Manufacturing &amp; Industrial</option><option>Wholesale &amp; Distribution</option><option>Transport &amp; Delivery</option><option>Other Local Business</option></select><small>Choose the category that best matches your business.</small></div><div class="field full" id="categoryDetailsWrap" hidden><label id="categoryDetailsTitle" for="categoryDetail1">A few details about your business <span class="optional">(Optional)</span></label><div class="fields" id="categoryDetailsFields" style="margin-top:10px"></div></div>
-            </div>
+              <div class="field full"><label for="description">Business Description <span class="optional">(Optional)</span></label><textarea id="description" maxlength="1000" placeholder="Tell customers about your business, products or services..."></textarea></div><div class="field full"><label for="category">Business Category <span class="required">*</span></label><select id="category" required data-label="Business category"><option value="">Choose your business category</option><option>Clothing &amp; Fashion</option><option>Restaurant &amp; Food</option><option>Sweets &amp; Bakery</option><option>Hotel &amp; Stay</option><option>Medical &amp; Pharmacy</option><option>Grocery &amp; General Store</option><option>Mobile &amp; Electronics</option><option>Computer &amp; IT</option><option>Beauty &amp; Cosmetics</option><option>Salon &amp; Barber</option><option>Footwear</option><option>Jewellery &amp; Accessories</option><option>Furniture &amp; Home Decor</option><option>Hardware &amp; Electrical</option><option>Automobile &amp; Auto Parts</option><option>Bike &amp; Scooter</option><option>Books &amp; Stationery</option><option>Flowers &amp; Gifts</option><option>Pet Shop &amp; Pet Services</option><option>Toys &amp; Kids</option><option>Gym &amp; Fitness</option><option>Event &amp; Party Services</option><option>Home Services</option><option>Repair &amp; Maintenance</option><option>Professional Services</option><option>Manufacturing &amp; Industrial</option><option>Wholesale &amp; Distribution</option><option>Transport &amp; Delivery</option><option>Other Local Business</option></select><small>Choose the category that best matches your business.</small></div></div>
             <div class="actions"><span class="required-note">Fields marked <span class="required">*</span> are required.</span><div class="button-row"><button class="btn btn-primary" type="button" data-next="2">Continue to Contact &amp; Location <span aria-hidden="true">→</span></button></div></div>
           </div>
 
@@ -127,7 +127,7 @@ a{color:inherit;text-decoration:none}
             <div class="fields">
               <div class="field full"><label for="email">Owner Email Address <span class="required">*</span></label><input id="email" type="email" required autocomplete="email" placeholder="e.g. business@example.com" data-label="Owner email address"></div>
               <div class="field"><label for="ownerPhone">Owner Contact Number <span class="optional">(Optional)</span></label><input id="ownerPhone" type="tel" autocomplete="tel" placeholder="Owner's mobile number"></div>
-              <div class="field"><label for="password">Create Password <span class="required">*</span></label><input id="password" type="password" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters" data-label="Password"><small>Use at least 8 characters.</small></div>
+              <div class="field"><label for="password">Create Password <span class="required">*</span></label><div class="password-wrap"><input id="password" type="password" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters" data-label="Password"><button type="button" class="password-toggle" id="togglePassword" aria-controls="password" aria-pressed="false">Show</button></div><small>Use at least 8 characters.</small></div>
             </div>
             <div class="actions"><span class="required-note">Review details before creating the account.</span><div class="button-row"><button class="btn btn-secondary" type="button" data-prev="2">← Back</button><button class="btn btn-primary" id="submitBtn" type="submit">Create Business Account <span aria-hidden="true">→</span></button></div></div>
           </div>
@@ -163,61 +163,14 @@ const submitBtn = document.getElementById("submitBtn");
 const messageBox = document.getElementById("message");
 const statusText = document.getElementById("statusText");
 const categoryInput = document.getElementById("category");
-const categoryDetailsWrap = document.getElementById("categoryDetailsWrap");
-const categoryDetailsFields = document.getElementById("categoryDetailsFields");
-const categoryPrompts = {
-  "Clothing & Fashion": [["main_products","Main products","e.g. Men’s wear, sarees, kidswear"],["brands","Brands / price range","e.g. Local brands, budget fashion"]],
-  "Restaurant & Food": [["cuisine","Cuisine / food type","e.g. North Indian, Chinese"],["service_type","Service type","e.g. Dine-in, takeaway, delivery"]],
-  "Sweets & Bakery": [["speciality","Speciality","e.g. Cakes, mithai, cookies"],["orders","Custom orders","e.g. Birthday cakes, bulk orders"]],
-  "Hotel & Stay": [["stay_type","Stay type","e.g. Hotel, guest house, homestay"],["facilities","Key facilities","e.g. Wi-Fi, parking, breakfast"]],
-  "Medical & Pharmacy": [["services","Services / products","e.g. Pharmacy, medical supplies"],["hours","Availability","e.g. 24-hour, daytime"]],
-  "Grocery & General Store": [["main_items","Main items","e.g. Grocery, household essentials"],["delivery","Home delivery","e.g. Nearby delivery / pickup only"]],
-  "Mobile & Electronics": [["products","Products","e.g. Smartphones, accessories"],["services","Services","e.g. Repair, trade-in"]],
-  "Computer & IT": [["speciality","IT speciality","e.g. Laptop sales, networking"],["services","Services","e.g. Repairs, software support"]],
-  "Beauty & Cosmetics": [["products","Products / speciality","e.g. Skincare, makeup"],["brands","Brands","e.g. Brands you stock"]],
-  "Salon & Barber": [["services","Services","e.g. Haircut, styling, grooming"],["audience","Main customers","e.g. Men, women, family"]],
-  "Footwear": [["products","Footwear type","e.g. Sports shoes, sandals"],["audience","Main customers","e.g. Kids, men, women"]],
-  "Jewellery & Accessories": [["speciality","Speciality","e.g. Gold, imitation, watches"],["custom_work","Custom work","e.g. Repairs, custom designs"]],
-  "Furniture & Home Decor": [["products","Products","e.g. Sofas, beds, decor"],["custom_work","Custom work","e.g. Made-to-order furniture"]],
-  "Hardware & Electrical": [["products","Main products","e.g. Tools, wiring, fittings"],["services","Services","e.g. Electrical installation"]],
-  "Automobile & Auto Parts": [["vehicle_types","Vehicle types","e.g. Cars, commercial vehicles"],["services","Services","e.g. Spare parts, servicing"]],
-  "Bike & Scooter": [["vehicle_types","Vehicle types","e.g. Bikes, scooters, EVs"],["services","Services","e.g. Repairs, accessories"]],
-  "Books & Stationery": [["products","Main products","e.g. Textbooks, office stationery"],["services","Services","e.g. Printing, photocopy"]],
-  "Flowers & Gifts": [["speciality","Speciality","e.g. Bouquets, gifts, hampers"],["orders","Custom orders","e.g. Events, same-day delivery"]],
-  "Pet Shop & Pet Services": [["services","Products / services","e.g. Pet food, grooming"],["animals","Pet types","e.g. Dogs, cats, birds"]],
-  "Toys & Kids": [["products","Main products","e.g. Toys, baby products"],["age_range","Age range","e.g. 0–3, 4–12 years"]],
-  "Gym & Fitness": [["facilities","Facilities","e.g. Weights, cardio, yoga"],["programs","Programs","e.g. Personal training, group classes"]],
-  "Event & Party Services": [["event_types","Event types","e.g. Birthdays, weddings, corporate"],["services","Services","e.g. Decoration, catering, sound"]],
-  "Home Services": [["services","Services offered","e.g. Cleaning, plumbing, pest control"],["coverage","Service area","e.g. Nearby areas / city"]],
-  "Repair & Maintenance": [["repair_types","Repair type","e.g. Appliance, phone, AC"],["onsite","On-site service","e.g. Home visits / shop only"]],
-  "Professional Services": [["profession","Profession","e.g. CA, legal, consultancy"],["speciality","Speciality","e.g. Tax, documentation, consulting"]],
-  "Manufacturing & Industrial": [["products","Products manufactured","e.g. Packaging, metal parts"],["capacity","Production / order type","e.g. Custom, bulk orders"]],
-  "Wholesale & Distribution": [["products","Products distributed","e.g. FMCG, garments"],["coverage","Supply area","e.g. Delhi NCR, North India"]],
-  "Transport & Delivery": [["transport_type","Transport type","e.g. Goods, courier, passenger"],["coverage","Service area","e.g. Local, interstate"]],
-  "Other Local Business": [["services","Main products / services","Tell customers what you offer"],["hours","Business hours","e.g. 10 AM–8 PM"]]
-};
-function renderCategoryDetails() {
-  const prompts = categoryPrompts[categoryInput.value];
-  categoryDetailsFields.innerHTML = "";
-  categoryDetailsWrap.hidden = !prompts;
-  if (!prompts) return;
-  prompts.forEach(([key,label,placeholder],index) => {
-    const field = document.createElement("div");
-    field.className = "field";
-    const id = "categoryDetail" + (index + 1);
-    const labelEl = document.createElement("label");
-    labelEl.htmlFor = id;
-    labelEl.textContent = label + " (Optional)";
-    const input = document.createElement("input");
-    input.id = id;
-    input.maxLength = 120;
-    input.placeholder = placeholder;
-    input.dataset.businessDetail = key;
-    field.append(labelEl, input);
-    categoryDetailsFields.appendChild(field);
-  });
-}
-categoryInput.addEventListener("change", renderCategoryDetails);
+const passwordToggle = document.getElementById("togglePassword");
+passwordToggle.addEventListener("click", () => {
+  const passwordInput = document.getElementById("password");
+  const show = passwordInput.type === "password";
+  passwordInput.type = show ? "text" : "password";
+  passwordToggle.textContent = show ? "Hide" : "Show";
+  passwordToggle.setAttribute("aria-pressed", String(show));
+});
 
 let currentStep = 1;
 
@@ -311,8 +264,7 @@ form.addEventListener("submit", async event => {
         whatsapp: document.getElementById("whatsapp").value.trim() || null,
         address: document.getElementById("address").value.trim() || null,
         description: document.getElementById("description").value.trim() || null,
-        category: categoryInput.value,
-        business_details: Object.fromEntries([...document.querySelectorAll("[data-business-detail]")].map(input => [input.dataset.businessDetail, input.value.trim()]).filter(([,value]) => value))
+        category: categoryInput.value
       },
       owner: {
         full_name: document.getElementById("fullName").value.trim(),
