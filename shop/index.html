@@ -473,6 +473,17 @@
       display:block
     }
 
+
+    .businessSection{margin:26px 0}.sectionTitle{font-size:23px;margin:0 0 14px}
+    .serviceCard{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:9px}
+    .serviceCard h3{font-size:18px}.serviceCard p{font-size:14px;color:#6b7280;line-height:1.5}
+    .serviceMeta{font-weight:800;font-size:17px}.businessForm{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:20px;margin-top:18px}
+    .businessForm h2{margin-bottom:8px}.businessForm .hint{color:#6b7280;font-size:13px;margin-bottom:15px;line-height:1.5}
+    .formStatus{margin-top:10px;font-size:14px;line-height:1.5}.formStatus.error{color:#b91c1c}.formStatus.ok{color:#047857}
+    .customFields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.customFields .field{min-width:0}
+    .serviceActions{display:flex;gap:9px;margin-top:auto}.serviceActions button{flex:1}
+    @media(max-width:600px){.sectionTitle{font-size:20px}.businessForm{padding:15px}.customFields{grid-template-columns:1fr}.serviceCard{padding:14px}}
+
     @media(max-width:600px){
 
       .hero h1{
@@ -555,6 +566,27 @@
 
   <section id="productsGrid" class="grid"></section>
 
+  <section id="servicesPublicSection" class="businessSection" style="display:none">
+    <h2 class="sectionTitle" id="servicesHeading">Services & offerings</h2>
+    <div id="servicesPublicGrid" class="grid"></div>
+  </section>
+  <section id="enquirySection" class="businessForm" style="display:none">
+    <h2 id="enquiryHeading">Contact this business</h2>
+    <p class="hint" id="enquiryHint">Send a message and the business will get back to you.</p>
+    <form id="publicEnquiryForm">
+      <div class="formGrid">
+        <div class="field"><label for="enquiryName">Your name *</label><input id="enquiryName" name="customer_name" required maxlength="120" autocomplete="name"></div>
+        <div class="field"><label for="enquiryPhone">Phone</label><input id="enquiryPhone" name="customer_phone" maxlength="30" autocomplete="tel"></div>
+        <div class="field"><label for="enquiryEmail">Email</label><input id="enquiryEmail" name="customer_email" type="email" maxlength="180" autocomplete="email"></div>
+        <div class="field"><label for="enquiryType">Request type</label><select id="enquiryType" name="enquiry_type"><option value="general">General enquiry</option><option value="quote">Get a quote</option><option value="service_request">Service request</option><option value="product">Product enquiry</option><option value="delivery">Delivery</option><option value="pickup">Pickup</option><option value="other">Other</option></select></div>
+        <div class="field full"><label for="enquiryMessage">How can we help? *</label><textarea id="enquiryMessage" name="message" required maxlength="4000"></textarea></div>
+      </div>
+      <div id="enquiryCustomFields" class="customFields"></div>
+      <button class="primary" id="submitEnquiryBtn" type="submit">Send enquiry</button>
+      <p id="enquiryStatus" class="formStatus" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
 </main>
 
 
@@ -618,6 +650,27 @@
 </div>
 
 
+
+<div class="overlay" id="serviceBookingModal">
+  <div class="modal">
+    <button class="close" type="button" onclick="closeServiceBooking()" aria-label="Close">×</button>
+    <h2 id="bookingTitle">Request a booking</h2><p id="bookingServiceMeta" class="hint"></p>
+    <form id="publicBookingForm">
+      <div class="formGrid">
+        <div class="field"><label for="bookingName">Your name *</label><input id="bookingName" name="customer_name" required maxlength="120" autocomplete="name"></div>
+        <div class="field"><label for="bookingPhone">Phone *</label><input id="bookingPhone" name="customer_phone" required maxlength="30" autocomplete="tel"></div>
+        <div class="field"><label for="bookingEmail">Email</label><input id="bookingEmail" name="customer_email" type="email" maxlength="180" autocomplete="email"></div>
+        <div class="field"><label for="bookingDate">Preferred date *</label><input id="bookingDate" name="booking_date" type="date" required></div>
+        <div class="field"><label for="bookingTime">Preferred time</label><input id="bookingTime" name="start_time" type="time"></div>
+        <div class="field"><label for="bookingPartySize">People / quantity</label><input id="bookingPartySize" name="party_size" type="number" min="1" max="100" value="1"></div>
+        <div class="field full"><label for="bookingNotes">Notes</label><textarea id="bookingNotes" name="notes" maxlength="3000"></textarea></div>
+      </div>
+      <div id="bookingCustomFields" class="customFields"></div>
+      <button class="primary" id="submitBookingBtn" type="submit">Request booking</button>
+      <p id="bookingStatus" class="formStatus" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 
@@ -626,6 +679,9 @@
 let shop = null;
 
 let products = [];
+let services = [];
+let categoryDefinition = null;
+let selectedService = null;
 
 let categories = [];
 
@@ -778,7 +834,7 @@ async function init(){
     await supabaseClient
       .from('shops')
       .select(
-        'id,name,slug,logo_url,phone,whatsapp,address,description,status'
+        'id,name,slug,logo_url,phone,whatsapp,address,description,status,category,business_details'
       )
       .eq('slug',slug)
       .single();
@@ -841,7 +897,24 @@ async function init(){
     'Browse products and add them to your card.';
 
 
-  const [cr,pr] =
+  const definitionResult = s.category
+    ? await supabaseClient.from('business_category_definitions')
+        .select('name,slug,listing_type,default_action,field_schema,is_active')
+        .eq('name', s.category).eq('is_active', true).maybeSingle()
+    : {data:null,error:null};
+  categoryDefinition = definitionResult.data || null;
+  const listingType = String(categoryDefinition?.listing_type || 'product_service').toLowerCase();
+  const showProducts = ['product','product_service','menu','listing'].includes(listingType);
+  const showServices = ['service','product_service','room','menu','listing'].includes(listingType);
+  document.getElementById('productsGrid').style.display = showProducts ? 'grid' : 'none';
+  document.getElementById('categoryBar').style.display = showProducts ? 'flex' : 'none';
+  document.getElementById('servicesPublicSection').style.display = showServices ? 'block' : 'none';
+  document.getElementById('enquirySection').style.display = 'block';
+  document.getElementById('servicesHeading').textContent = listingType === 'room' ? 'Rooms & stays' : (listingType === 'menu' ? 'Menu & offerings' : 'Services & offerings');
+  document.getElementById('enquiryHeading').textContent = categoryDefinition?.default_action === 'quote' ? 'Request a quote' : 'Contact ' + (s.name || 'this business');
+  renderCustomFields('enquiryCustomFields', categoryDefinition?.field_schema || []);
+
+  const [cr,pr,sr] =
     await Promise.all([
 
       supabaseClient
@@ -876,7 +949,13 @@ async function init(){
         .order(
           'created_at',
           {ascending:false}
-        )
+        ),
+
+      showServices
+        ? supabaseClient.from('services')
+            .select('id,shop_id,name,description,price,duration_minutes,image_urls,attributes,is_active')
+            .eq('shop_id', s.id).eq('is_active', true).order('name')
+        : Promise.resolve({data:[],error:null})
 
     ]);
 
@@ -923,9 +1002,19 @@ async function init(){
 
 
   renderCategories();
-
-  renderProducts();
-
+  if (showProducts) renderProducts();
+  else document.getElementById('productsGrid').innerHTML = '';
+  if (sr.error) {
+    console.error('SERVICES LOAD ERROR', sr.error);
+    document.getElementById('servicesPublicGrid').innerHTML = '<div class="empty">Services are temporarily unavailable.</div>';
+  } else {
+    services = sr.data || [];
+    renderServices();
+  }
+  if (!showProducts && !services.length) {
+    document.getElementById('message').style.display = 'block';
+    showMessage('This business has not published any listings yet. You can still send an enquiry below.');
+  }
 }
 
 
@@ -1021,9 +1110,120 @@ function filterCategory(id){
   }
 
 
-  renderProducts();
+  if (document.getElementById('productsGrid').style.display !== 'none') renderProducts();
 
 }
+
+
+/* =========================
+   SERVICES / ENQUIRIES
+========================= */
+function renderCustomFields(containerId, schema) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  if (!Array.isArray(schema)) { container.innerHTML = ''; return; }
+  container.innerHTML = schema.map((field, index) => {
+    if (!field || typeof field !== 'object') return '';
+    const key = String(field.name || field.key || ('field_' + index)).replace(/[^a-zA-Z0-9_-]/g, '');
+    if (!key) return '';
+    const label = esc(field.label || field.name || key);
+    const type = ['text','number','date','email','tel','url'].includes(field.type) ? field.type : 'text';
+    const required = field.required === true ? 'required' : '';
+    const options = Array.isArray(field.options) ? field.options : [];
+    const input = field.type === 'textarea'
+      ? '<textarea name="custom_' + esc(key) + '" ' + required + ' maxlength="1500"></textarea>'
+      : (field.type === 'select' && options.length
+        ? '<select name="custom_' + esc(key) + '" ' + required + '><option value="">Select…</option>' + options.map(o => '<option value="' + esc(typeof o === 'object' ? o.value : o) + '">' + esc(typeof o === 'object' ? (o.label || o.value) : o) + '</option>').join('') + '</select>'
+        : '<input name="custom_' + esc(key) + '" type="' + type + '" ' + required + ' maxlength="250">');
+    return '<div class="field"><label>' + label + (required ? ' *' : '') + '</label>' + input + '</div>';
+  }).join('');
+}
+function getCustomFieldValues(containerId) {
+  const root = document.getElementById(containerId), values = {};
+  if (!root) return values;
+  root.querySelectorAll('[name^="custom_"]').forEach(input => { if (input.value !== '') values[input.name.slice(7)] = input.value; });
+  return values;
+}
+function renderServices() {
+  const grid = document.getElementById('servicesPublicGrid');
+  if (!services.length) { grid.innerHTML = '<div class="empty" style="grid-column:1/-1">No services or listings published yet.</div>'; return; }
+  grid.innerHTML = services.map(service => {
+    const attrs = service.attributes && typeof service.attributes === 'object' ? service.attributes : {};
+    const images = Array.isArray(service.image_urls) ? service.image_urls : [];
+    const image = images.length && typeof images[0] === 'string' ? '<div class="pic"><img src="' + esc(images[0]) + '" alt="' + esc(service.name) + '" loading="lazy"></div>' : '';
+    const duration = service.duration_minutes ? '<div class="desc">Duration: ' + esc(service.duration_minutes) + ' minutes</div>' : '';
+    const details = Object.entries(attrs).slice(0,4).map(([k,v]) => '<div class="desc">' + esc(k.replace(/_/g,' ')) + ': ' + esc(v) + '</div>').join('');
+    const actionLabel = categoryDefinition?.default_action === 'quote' ? 'Request quote' : (categoryDefinition?.default_action === 'enquiry' ? 'Enquire' : 'Book / enquire');
+    return '<article class="serviceCard">' + image + '<h3>' + esc(service.name) + '</h3>' + (service.description ? '<p>' + esc(service.description) + '</p>' : '') + '<div class="serviceMeta">' + money(service.price) + '</div>' + duration + details + '<div class="serviceActions"><button type="button" class="primary" onclick="openServiceBooking(\'' + esc(service.id) + '\')">' + actionLabel + '</button></div></article>';
+  }).join('');
+}
+function openServiceBooking(id) {
+  selectedService = services.find(item => item.id === id);
+  if (!selectedService || !shop) return;
+  document.getElementById('bookingTitle').textContent = categoryDefinition?.default_action === 'room_booking' ? 'Request a room booking' : 'Request a booking';
+  document.getElementById('bookingServiceMeta').textContent = selectedService.name + ' · ' + money(selectedService.price);
+  document.getElementById('bookingStatus').textContent = '';
+  document.getElementById('bookingStatus').className = 'formStatus';
+  document.getElementById('publicBookingForm').reset();
+  renderCustomFields('bookingCustomFields', categoryDefinition?.field_schema || []);
+  const now = new Date(), localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0,10);
+  document.getElementById('bookingDate').min = localDate;
+  document.getElementById('serviceBookingModal').classList.add('show');
+}
+function closeServiceBooking() { document.getElementById('serviceBookingModal').classList.remove('show'); }
+function setFormStatus(id, message, ok) {
+  const el = document.getElementById(id);
+  el.textContent = message;
+  el.className = 'formStatus ' + (ok ? 'ok' : 'error');
+}
+async function submitPublicBooking(event) {
+  event.preventDefault();
+  if (!shop || !selectedService) return;
+  const form = event.currentTarget, button = document.getElementById('submitBookingBtn');
+  button.disabled = true; button.textContent = 'Sending…';
+  const values = new FormData(form), time = String(values.get('start_time') || '');
+  const payload = {
+    shop_id: shop.id, service_id: selectedService.id,
+    customer_name: String(values.get('customer_name') || '').trim(),
+    customer_phone: String(values.get('customer_phone') || '').trim(),
+    customer_email: String(values.get('customer_email') || '').trim() || null,
+    booking_date: String(values.get('booking_date') || ''),
+    start_time: time || null,
+    party_size: Math.max(1, Math.min(100, Number(values.get('party_size') || 1))),
+    notes: String(values.get('notes') || '').trim() || null,
+    details: getCustomFieldValues('bookingCustomFields')
+  };
+  const {error} = await supabaseClient.from('bookings').insert(payload);
+  button.disabled = false; button.textContent = 'Request booking';
+  if (error) { console.error('PUBLIC BOOKING ERROR', error); setFormStatus('bookingStatus', 'Booking request could not be sent. ' + (error.message || 'Please try again.'), false); return; }
+  setFormStatus('bookingStatus', 'Request sent successfully. The business will contact you to confirm.', true);
+  form.reset();
+}
+async function submitPublicEnquiry(event) {
+  event.preventDefault();
+  if (!shop) return;
+  const form = event.currentTarget, button = document.getElementById('submitEnquiryBtn');
+  button.disabled = true; button.textContent = 'Sending…';
+  const values = new FormData(form), allowed = ['general','quote','service_request','product','delivery','pickup','other'];
+  let type = String(values.get('enquiry_type') || 'general');
+  if (!allowed.includes(type)) type = 'general';
+  const payload = {
+    shop_id: shop.id,
+    customer_name: String(values.get('customer_name') || '').trim(),
+    customer_phone: String(values.get('customer_phone') || '').trim() || null,
+    customer_email: String(values.get('customer_email') || '').trim() || null,
+    enquiry_type: type, message: String(values.get('message') || '').trim(),
+    details: getCustomFieldValues('enquiryCustomFields')
+  };
+  const {error} = await supabaseClient.from('business_enquiries').insert(payload);
+  button.disabled = false; button.textContent = 'Send enquiry';
+  if (error) { console.error('PUBLIC ENQUIRY ERROR', error); setFormStatus('enquiryStatus', 'Enquiry could not be sent. ' + (error.message || 'Please try again.'), false); return; }
+  setFormStatus('enquiryStatus', 'Enquiry sent successfully. The business will contact you soon.', true);
+  form.reset();
+}
+document.getElementById('publicBookingForm').addEventListener('submit', submitPublicBooking);
+document.getElementById('publicEnquiryForm').addEventListener('submit', submitPublicEnquiry);
+document.getElementById('serviceBookingModal').addEventListener('click', event => { if (event.target.id === 'serviceBookingModal') closeServiceBooking(); });
 
 
 /* =========================
