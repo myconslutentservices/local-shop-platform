@@ -99,7 +99,7 @@ a{color:inherit;text-decoration:none}
         <div class="step" data-step-indicator="3"><div class="step-top"><span class="step-number">3</span></div><div class="step-label">Account setup</div></div>
       </div>
 
-      <div class="notice"><strong>Master account required:</strong> this registration page creates a shop through the existing protected Supabase function. It is not public self-registration.</div>
+      <div class="notice"><strong>Master account required:</strong> create your own business account here. Your account will have Owner access only; Master access is not available through this form.</div>
 
       <section class="panel">
         <form id="createForm" novalidate>
@@ -127,7 +127,7 @@ a{color:inherit;text-decoration:none}
             <div class="fields">
               <div class="field full"><label for="email">Owner Email Address <span class="required">*</span></label><input id="email" type="email" required autocomplete="email" placeholder="e.g. business@example.com" data-label="Owner email address"></div>
               <div class="field"><label for="ownerPhone">Owner Contact Number <span class="optional">(Optional)</span></label><input id="ownerPhone" type="tel" autocomplete="tel" placeholder="Owner's mobile number"></div>
-              <div class="field"><label for="password">Create Password <span class="required">*</span></label><input id="password" type="password" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters" data-label="Password"><small>Use at least 6 characters.</small></div>
+              <div class="field"><label for="password">Create Password <span class="required">*</span></label><input id="password" type="password" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters" data-label="Password"><small>Use at least 8 characters.</small></div>
             </div>
             <div class="actions"><span class="required-note">Review details before creating the account.</span><div class="button-row"><button class="btn btn-secondary" type="button" data-prev="2">← Back</button><button class="btn btn-primary" id="submitBtn" type="submit">Create Business Account <span aria-hidden="true">→</span></button></div></div>
           </div>
@@ -205,8 +205,8 @@ function validateStep(step) {
       field.focus();
       return false;
     }
-    if (field.value && field.id === "password" && field.value.length < 6) {
-      showMessage("Password must be at least 6 characters.", "err");
+    if (field.value && field.id === "password" && field.value.length < 8) {
+      showMessage("Password must be at least 8 characters.", "err");
       field.focus();
       return false;
     }
@@ -237,19 +237,14 @@ form.addEventListener("submit", async event => {
     if (firstInvalidStep) showStep(firstInvalidStep);
     return;
   }
+
   messageBox.className = "";
   messageBox.textContent = "";
   submitBtn.disabled = true;
-  statusText.textContent = "Checking Master session…";
+  statusText.textContent = "Preparing secure registration…";
+
   try {
     if (!window.supabaseClient) throw new Error("Supabase client not loaded. Check js/supabase.js.");
-    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
-    if (sessionError) throw sessionError;
-    const session = sessionData?.session;
-    if (!session?.access_token) throw new Error("Please sign in with the Master account first.");
-    const { data: me, error: meError } = await supabaseClient.from("owners").select("id, role").eq("id", session.user.id).maybeSingle();
-    if (meError) throw meError;
-    if (!me || me.role !== "master") throw new Error("Master access required. This account is not a Master.");
 
     const payload = {
       shop: {
@@ -258,8 +253,7 @@ form.addEventListener("submit", async event => {
         phone: document.getElementById("shopPhone").value.trim() || null,
         whatsapp: document.getElementById("whatsapp").value.trim() || null,
         address: document.getElementById("address").value.trim() || null,
-        description: document.getElementById("description").value.trim() || null,
-        status: document.getElementById("status").value
+        description: document.getElementById("description").value.trim() || null
       },
       owner: {
         full_name: document.getElementById("fullName").value.trim(),
@@ -268,13 +262,16 @@ form.addEventListener("submit", async event => {
         password: document.getElementById("password").value
       }
     };
-    statusText.textContent = "Creating shop and owner…";
-    const { data, error } = await supabaseClient.functions.invoke("create-shop-owner", {
-      body: payload,
-      headers: { Authorization: "Bearer " + session.access_token }
+
+    if (payload.owner.password.length < 8) throw new Error("Password must be at least 8 characters.");
+
+    statusText.textContent = "Creating your business account…";
+    const { data, error } = await supabaseClient.functions.invoke("create-public-shop-owner", {
+      body: payload
     });
+
     if (error) {
-      let detail = error.message || "Edge Function request failed.";
+      let detail = error.message || "Registration request failed.";
       try {
         const response = error.context;
         if (response && typeof response.json === "function") {
@@ -284,26 +281,30 @@ form.addEventListener("submit", async event => {
       } catch (_) {}
       throw new Error(detail);
     }
-    if (!data?.success) throw new Error(data?.error || "The function did not confirm creation.");
-    showMessage(
-      "Business account created successfully.\nShop: " + (data.shop?.name || payload.shop.name) +
-      "\nShop URL slug: " + (data.shop?.slug || payload.shop.slug) +
-      "\nOwner: " + (data.owner?.full_name || payload.owner.full_name) +
-      "\n\nThe owner can now sign in with the email and password you set.",
-      "ok"
-    );
-    form.reset();
-    document.getElementById("slug").dataset.edited = "";
-    statusText.textContent = "";
-    showStep(1);
-    messageBox.className = "ok";
-    messageBox.textContent = "Business account created successfully.\nShop: " + (data.shop?.name || payload.shop.name) +
-      "\nShop URL slug: " + (data.shop?.slug || payload.shop.slug) +
-      "\nOwner: " + (data.owner?.full_name || payload.owner.full_name) +
-      "\n\nThe owner can now sign in with the email and password you set.";
+
+    if (!data?.success) throw new Error(data?.error || "The function did not confirm account creation.");
+
+    statusText.textContent = "Signing you in…";
+    const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
+      email: payload.owner.email,
+      password: payload.owner.password
+    });
+
+    if (signInError || !signInData?.session) {
+      showMessage(
+        "Your business account was created, but automatic sign-in did not complete. Please log in with your new email and password. " +
+        (signInError?.message || ""),
+        "ok"
+      );
+      statusText.textContent = "";
+      return;
+    }
+
+    statusText.textContent = "Account ready. Opening your Owner Dashboard…";
+    window.location.replace("./owner/dashboard.html");
   } catch (error) {
     console.error("Create shop/owner error:", error);
-    showMessage(error?.message || "Could not create shop and owner.", "err");
+    showMessage(error?.message || "Could not create the business account.", "err");
     statusText.textContent = "";
   } finally {
     submitBtn.disabled = false;
