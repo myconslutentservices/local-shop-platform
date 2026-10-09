@@ -1189,10 +1189,23 @@ function setFormStatus(id, message, ok) {
   el.textContent = message;
   el.className = 'formStatus ' + (ok ? 'ok' : 'error');
 }
+function submissionErrorMessage(error, actionLabel) {
+  const message = String(error?.message || error || '').toLowerCase();
+  const isNetworkError = navigator.onLine === false ||
+    /failed to fetch|networkerror|network error|fetch failed|connection|timeout|timed out|load failed|internet/i.test(message);
+
+  if (isNetworkError) {
+    return 'No connection to the server. Check your internet and try again. Your entries have been kept.';
+  }
+
+  return actionLabel + ' could not be sent. Please try again. Your entries have been kept.';
+}
 async function submitPublicBooking(event) {
   event.preventDefault();
   if (!shop || !selectedService) return;
   const form = event.currentTarget, button = document.getElementById('submitBookingBtn');
+  if (button.disabled) return;
+  setFormStatus('bookingStatus', '', true);
   button.disabled = true; button.textContent = 'Sending…';
   const values = new FormData(form), time = String(values.get('start_time') || '');
   const payload = {
@@ -1213,7 +1226,7 @@ async function submitPublicBooking(event) {
     form.reset();
   } catch (error) {
     console.error('PUBLIC BOOKING ERROR', error);
-    setFormStatus('bookingStatus', 'Booking request could not be sent. ' + (error?.message || 'Please try again.'), false);
+    setFormStatus('bookingStatus', submissionErrorMessage(error, 'Booking request'), false);
   } finally {
     button.disabled = false;
     button.textContent = 'Request booking';
@@ -1223,6 +1236,8 @@ async function submitPublicEnquiry(event) {
   event.preventDefault();
   if (!shop) return;
   const form = event.currentTarget, button = document.getElementById('submitEnquiryBtn');
+  if (button.disabled) return;
+  setFormStatus('enquiryStatus', '', true);
   button.disabled = true; button.textContent = 'Sending…';
   const values = new FormData(form), allowed = ['general','quote','service_request','product','delivery','pickup','other'];
   let type = String(values.get('enquiry_type') || 'general');
@@ -1242,7 +1257,7 @@ async function submitPublicEnquiry(event) {
     form.reset();
   } catch (error) {
     console.error('PUBLIC ENQUIRY ERROR', error);
-    setFormStatus('enquiryStatus', 'Enquiry could not be sent. ' + (error?.message || 'Please try again.'), false);
+    setFormStatus('enquiryStatus', submissionErrorMessage(error, 'Enquiry'), false);
   } finally {
     button.disabled = false;
     button.textContent = 'Send enquiry';
