@@ -1325,7 +1325,7 @@ async function loadUniversalBusinessFeatures(){
     .eq("name",categoryName).maybeSingle();
   if(error)console.warn("Category feature metadata unavailable",error);
   businessCategory=definition||{name:categoryName,listing_type:"products",default_action:"order"};
-  const serviceMode=["services","rooms","menu","appointments","bookings"].includes(String(businessCategory.listing_type||"").toLowerCase()) ||
+  const serviceMode=["service","room","menu","listing","product_service"].includes(String(businessCategory.listing_type||"").toLowerCase()) ||
     ["Salon & Barber","Home Services","Repair & Maintenance","Professional Services","Event & Party Services","Hotel & Stay","Gym & Fitness"].includes(categoryName);
   $("businessItemsTitle").textContent=serviceMode?"Business Items · "+categoryName:"Products · "+categoryName;
   $("businessModeHint").textContent=serviceMode
@@ -1369,7 +1369,7 @@ async function loadBookings(){
  const {data,error}=await supabaseClient.from("bookings").select("id,customer_name,customer_phone,booking_date,start_time,status,notes,service_id,created_at").eq("shop_id",shop.id).order("created_at",{ascending:false}).limit(100);
  if(error){$("bookingsRows").innerHTML='<tr><td colspan="5">Could not load bookings.</td></tr>';return;}
  businessBookings=data||[];
- $("bookingsRows").innerHTML=businessBookings.length?businessBookings.map(b=>{const s=businessServices.find(x=>x.id===b.service_id);return '<tr><td>'+escapeHtml(b.customer_name)+'<br><small>'+escapeHtml(b.customer_phone)+'</small></td><td>'+escapeHtml(b.booking_date||"Not scheduled")+' '+escapeHtml((b.start_time||"").slice(0,5))+'</td><td>'+escapeHtml(s?.name||"General booking")+'</td><td>'+escapeHtml(b.status)+'</td><td><select aria-label="Booking status" onchange="updateBookingStatus(\''+b.id+'\',this.value)">'+["new","confirmed","completed","cancelled"].map(st=>'<option value="'+st+'" '+(st===b.status?'selected':'')+'>'+st+'</option>').join("")+'</select></td></tr>';}).join(""):'<tr><td colspan="5">No bookings yet.</td></tr>';
+ $("bookingsRows").innerHTML=businessBookings.length?businessBookings.map(b=>{const s=businessServices.find(x=>x.id===b.service_id);return '<tr><td>'+escapeHtml(b.customer_name)+'<br><small>'+escapeHtml(b.customer_phone)+'</small></td><td>'+escapeHtml(b.booking_date||"Not scheduled")+' '+escapeHtml((b.start_time||"").slice(0,5))+'</td><td>'+escapeHtml(s?.name||"General booking")+'</td><td>'+escapeHtml(b.status)+'</td><td><select aria-label="Booking status" onchange="updateBookingStatus(\''+b.id+'\',this.value)">'+["new","confirmed","in_progress","completed","cancelled","rejected"].map(st=>'<option value="'+st+'" '+(st===b.status?'selected':'')+'>'+st+'</option>').join("")+'</select></td></tr>';}).join(""):'<tr><td colspan="5">No bookings yet.</td></tr>';
 }
 async function updateBookingStatus(id,status){const {error}=await supabaseClient.from("bookings").update({status,updated_at:new Date().toISOString()}).eq("id",id).eq("shop_id",shop.id);if(error)return showError(error.message);await loadBookings();}
 async function loadEnquiries(){
@@ -1377,7 +1377,7 @@ async function loadEnquiries(){
  const {data,error}=await supabaseClient.from("business_enquiries").select("id,customer_name,customer_phone,customer_email,enquiry_type,message,status,created_at").eq("shop_id",shop.id).order("created_at",{ascending:false}).limit(100);
  if(error){$("enquiriesRows").innerHTML='<tr><td colspan="5">Could not load enquiries.</td></tr>';return;}
  businessEnquiries=data||[];
- $("enquiriesRows").innerHTML=businessEnquiries.length?businessEnquiries.map(q=>'<tr><td>'+escapeHtml(q.customer_name)+'</td><td>'+escapeHtml(q.customer_phone||q.customer_email||"—")+'</td><td>'+escapeHtml(q.message)+'</td><td>'+escapeHtml(q.status)+'</td><td><select aria-label="Enquiry status" onchange="updateEnquiryStatus(\''+q.id+'\',this.value)">'+["new","in_progress","responded","closed"].map(st=>'<option value="'+st+'" '+(st===q.status?'selected':'')+'>'+st.replace("_"," ")+'</option>').join("")+'</select></td></tr>').join(""):'<tr><td colspan="5">No enquiries yet.</td></tr>';
+ $("enquiriesRows").innerHTML=businessEnquiries.length?businessEnquiries.map(q=>'<tr><td>'+escapeHtml(q.customer_name)+'</td><td>'+escapeHtml(q.customer_phone||q.customer_email||"—")+'</td><td>'+escapeHtml(q.message)+'</td><td>'+escapeHtml(q.status)+'</td><td><select aria-label="Enquiry status" onchange="updateEnquiryStatus(\''+q.id+'\',this.value)">'+["new","contacted","quoted","converted","closed","cancelled"].map(st=>'<option value="'+st+'" '+(st===q.status?'selected':'')+'>'+st.replace("_"," ")+'</option>').join("")+'</select></td></tr>').join(""):'<tr><td colspan="5">No enquiries yet.</td></tr>';
 }
 async function updateEnquiryStatus(id,status){const {error}=await supabaseClient.from("business_enquiries").update({status,updated_at:new Date().toISOString()}).eq("id",id).eq("shop_id",shop.id);if(error)return showError(error.message);await loadEnquiries();}
 
