@@ -152,7 +152,8 @@ button{cursor:pointer}
 <nav class="side-nav">
 <a class="side-link active" href="#overview"><span class="nav-icon">⌂</span>Overview</a>
 <a class="side-link" href="#shopInfoSection"><span class="nav-icon">▤</span>Business Profile</a>
-<a class="side-link" href="#productsSection"><span class="nav-icon">▦</span>Products &amp; Services</a>
+<a class="side-link" href="#businessItemsSection"><span class="nav-icon">▦</span>Products &amp; Services</a>
+<a class="side-link" href="#servicesSection"><span class="nav-icon">✦</span>Services / Bookings</a>
 <a class="side-link" href="#ordersSection"><span class="nav-icon">▣</span>Orders &amp; Bookings</a>
 <a class="side-link" href="revenue.html"><span class="nav-icon">₹</span>Revenue &amp; Reports</a>
 <a class="side-link" href="#subscriptionCard"><span class="nav-icon">♕</span>Subscription</a>
@@ -355,17 +356,36 @@ Pay ₹1 & Activate Subscription
 
 </section>
 
-<section class="section" id="productsSection">
-
-<div class="section-title"><h2>Products</h2><button class="primary" id="addProductBtn">+ Add Product</button></div><details class="management-details"><summary>View / edit existing products</summary>
-<div class="products-toolbar">
-<input class="search" id="productSearch" placeholder="Search products...">
-<button class="refresh" id="refreshProductsBtn">Refresh</button>
-</div>
-
+<section class="section" id="businessItemsSection">
+<div class="section-title"><h2 id="businessItemsTitle">Products</h2><span class="muted" id="businessCategoryLabel"></span></div>
+<p class="muted" id="businessModeHint" style="margin:0 0 12px">Manage the items your customers can see.</p>
+<div class="section-title"><h3>Products</h3><button class="primary" id="addProductBtnUniversal" type="button">+ Add Product</button></div>
+<details class="management-details"><summary>View / edit existing products</summary>
+<div class="products-toolbar"><input class="search" id="productSearch" placeholder="Search products..."><button class="refresh" id="refreshProductsBtn">Refresh</button></div>
 <div class="product-grid" id="productsBox"><div class="card loading">Loading products...</div></div></details>
-
 </section>
+
+<section class="section" id="servicesSection">
+<div class="section-title"><h2>Services, Bookings &amp; Enquiries</h2><button class="primary" id="addServiceBtn" type="button">+ Add Service</button></div>
+<p class="muted" style="margin-bottom:14px">Use this area for appointments, room bookings, event services, repair work and customer enquiries.</p>
+<div class="section-title"><h3>Services</h3><button class="refresh" id="refreshServicesBtn" type="button">Refresh</button></div>
+<div class="product-grid" id="servicesBox"><div class="card loading">Loading services...</div></div>
+<div class="section-title" style="margin-top:22px"><h3>Bookings</h3><button class="refresh" id="refreshBookingsBtn" type="button">Refresh</button></div>
+<div class="card" style="overflow:auto"><table class="data-table" style="width:100%;border-collapse:collapse"><thead><tr><th align="left">Customer</th><th align="left">Date / Time</th><th align="left">Service</th><th align="left">Status</th><th align="left">Action</th></tr></thead><tbody id="bookingsRows"><tr><td colspan="5">Loading bookings…</td></tr></tbody></table></div>
+<div class="section-title" style="margin-top:22px"><h3>Enquiries / Quote Requests</h3><button class="refresh" id="refreshEnquiriesBtn" type="button">Refresh</button></div>
+<div class="card" style="overflow:auto"><table class="data-table" style="width:100%;border-collapse:collapse"><thead><tr><th align="left">Customer</th><th align="left">Contact</th><th align="left">Message</th><th align="left">Status</th><th align="left">Action</th></tr></thead><tbody id="enquiriesRows"><tr><td colspan="5">Loading enquiries…</td></tr></tbody></table></div>
+</section>
+
+<div class="modal" id="serviceModal"><div class="modal-box"><div class="modal-head"><h3 id="serviceModalTitle">Add Service</h3><button class="close" id="closeServiceModal" type="button">&times;</button></div>
+<form id="serviceForm"><input type="hidden" id="serviceId"><div class="form-grid">
+<div class="field"><label>Service name *</label><input id="serviceName" required maxlength="150"></div>
+<div class="field"><label>Price (₹) *</label><input id="servicePrice" type="number" min="0" step="0.01" required></div>
+<div class="field"><label>Duration (minutes, optional)</label><input id="serviceDuration" type="number" min="1" max="10080"></div>
+<div class="field"><label>Availability</label><label class="check"><input id="serviceActive" type="checkbox" checked> Available to customers</label></div>
+<div class="field full"><label>Description</label><textarea id="serviceDescription" maxlength="1000"></textarea></div>
+</div><div class="modal-actions"><button type="button" class="secondary" id="cancelServiceBtn">Cancel</button><button type="submit" class="primary" id="saveServiceBtn">Save Service</button></div></form></div></div>
+
+
 
 <div class="modal" id="categoryModal">
 
@@ -663,6 +683,15 @@ $("refreshBtn").onclick=loadDashboard;
 $("closeOrderModal").onclick=closeOrderModal;
 
 $("refreshProductsBtn").onclick=loadProducts;
+$("addProductBtnUniversal").onclick=()=>openProductModal();
+$("addServiceBtn").onclick=()=>openServiceModal();
+$("closeServiceModal").onclick=closeServiceModal;
+$("cancelServiceBtn").onclick=closeServiceModal;
+$("serviceForm").onsubmit=saveService;
+$("refreshServicesBtn").onclick=loadServices;
+$("refreshBookingsBtn").onclick=loadBookings;
+$("refreshEnquiriesBtn").onclick=loadEnquiries;
+
 $("productSearch").oninput=renderProducts;
 $("addProductBtn").onclick=()=>openProductModal();$("addCategoryFromProduct").onclick=()=>openCategoryModal();$("productImages").addEventListener("change",()=>$("selectedProductImages").textContent="Selected "+$("productImages").files.length+" new image(s). Maximum 10 total.");
 $("closeProductModal").onclick=closeProductModal;
@@ -1277,6 +1306,81 @@ $("totalProducts").textContent=count??0;
 }
 
 
+
+/* =========================
+   UNIVERSAL BUSINESS FEATURES
+========================= */
+let businessCategory = null;
+let businessServices = [];
+let businessBookings = [];
+let businessEnquiries = [];
+
+async function loadUniversalBusinessFeatures(){
+  if(!shop?.id)return;
+  const categoryName=shop.category||"Other Local Business";
+  $("businessCategoryLabel").textContent=categoryName;
+  const {data:definition,error}=await supabaseClient
+    .from("business_category_definitions")
+    .select("name,listing_type,default_action,field_schema")
+    .eq("name",categoryName).maybeSingle();
+  if(error)console.warn("Category feature metadata unavailable",error);
+  businessCategory=definition||{name:categoryName,listing_type:"products",default_action:"order"};
+  const serviceMode=["services","rooms","menu","appointments","bookings"].includes(String(businessCategory.listing_type||"").toLowerCase()) ||
+    ["Salon & Barber","Home Services","Repair & Maintenance","Professional Services","Event & Party Services","Hotel & Stay","Gym & Fitness"].includes(categoryName);
+  $("businessItemsTitle").textContent=serviceMode?"Business Items · "+categoryName:"Products · "+categoryName;
+  $("businessModeHint").textContent=serviceMode
+    ?"This category can use services and bookings. Add services below; products remain available if your business also sells goods."
+    :"Manage products for this business. Services and bookings can also be added below when needed.";
+  await Promise.all([loadServices(),loadBookings(),loadEnquiries()]);
+}
+
+async function loadServices(){
+ if(!shop?.id)return;
+ const {data,error}=await supabaseClient.from("services")
+  .select("id,shop_id,name,description,price,duration_minutes,is_active,created_at")
+  .eq("shop_id",shop.id).order("created_at",{ascending:false});
+ if(error){$("servicesBox").innerHTML='<div class="card empty">Services could not be loaded. '+escapeHtml(error.message)+'</div>';return;}
+ businessServices=data||[];
+ $("servicesBox").innerHTML=businessServices.length?businessServices.map(s=>'<article class="product-card card" style="padding:14px"><h3>'+escapeHtml(s.name)+'</h3><p>'+escapeHtml(s.description||"")+'</p><p><strong>'+money(s.price)+'</strong>'+(s.duration_minutes?' · '+s.duration_minutes+' min':'')+'</p><p>'+ (s.is_active?'<span class="in">Available</span>':'<span class="hidden-status">Unavailable</span>')+'</p><div class="category-actions"><button class="secondary" onclick="openServiceModal(\''+s.id+'\')">Edit</button><button class="danger" onclick="deleteService(\''+s.id+'\')">Delete</button></div></article>').join(""):'<div class="card empty">No services yet. Click + Add Service.</div>';
+}
+function openServiceModal(id=null){
+ clearError();$("serviceForm").reset();$("serviceId").value="";$("serviceActive").checked=true;
+ $("serviceModalTitle").textContent=id?"Edit Service":"Add Service";$("saveServiceBtn").textContent=id?"Update Service":"Save Service";
+ if(id){const s=businessServices.find(x=>x.id===id);if(!s)return;$("serviceId").value=s.id;$("serviceName").value=s.name||"";$("servicePrice").value=s.price??0;$("serviceDuration").value=s.duration_minutes||"";$("serviceDescription").value=s.description||"";$("serviceActive").checked=!!s.is_active;}
+ $("serviceModal").classList.add("show");
+}
+function closeServiceModal(){$("serviceModal").classList.remove("show");}
+async function saveService(e){
+ e.preventDefault();if(!shop?.id)return showError("Shop could not be verified.");
+ const id=$("serviceId").value;const payload={shop_id:shop.id,name:$("serviceName").value.trim(),price:Number($("servicePrice").value),duration_minutes:$("serviceDuration").value?Number($("serviceDuration").value):null,description:$("serviceDescription").value.trim()||null,is_active:$("serviceActive").checked};
+ if(!payload.name||!Number.isFinite(payload.price)||payload.price<0)return showError("Enter a valid service name and price.");
+ const b=$("saveServiceBtn");b.disabled=true;b.textContent="Saving…";
+ try{const result=id?await supabaseClient.from("services").update(payload).eq("id",id).eq("shop_id",shop.id):await supabaseClient.from("services").insert(payload);if(result.error)throw result.error;closeServiceModal();await loadServices();}
+ catch(err){showError(err.message||"Service could not be saved.");}
+ finally{b.disabled=false;b.textContent=id?"Update Service":"Save Service";}
+}
+async function deleteService(id){
+ const s=businessServices.find(x=>x.id===id);if(!s||!confirm('Delete service "'+s.name+'"?'))return;
+ const {error}=await supabaseClient.from("services").delete().eq("id",id).eq("shop_id",shop.id);
+ if(error)return showError(error.message);await loadServices();
+}
+async function loadBookings(){
+ if(!shop?.id)return;
+ const {data,error}=await supabaseClient.from("bookings").select("id,customer_name,customer_phone,booking_date,start_time,status,notes,service_id,created_at").eq("shop_id",shop.id).order("created_at",{ascending:false}).limit(100);
+ if(error){$("bookingsRows").innerHTML='<tr><td colspan="5">Could not load bookings.</td></tr>';return;}
+ businessBookings=data||[];
+ $("bookingsRows").innerHTML=businessBookings.length?businessBookings.map(b=>{const s=businessServices.find(x=>x.id===b.service_id);return '<tr><td>'+escapeHtml(b.customer_name)+'<br><small>'+escapeHtml(b.customer_phone)+'</small></td><td>'+escapeHtml(b.booking_date||"Not scheduled")+' '+escapeHtml((b.start_time||"").slice(0,5))+'</td><td>'+escapeHtml(s?.name||"General booking")+'</td><td>'+escapeHtml(b.status)+'</td><td><select aria-label="Booking status" onchange="updateBookingStatus(\''+b.id+'\',this.value)">'+["new","confirmed","completed","cancelled"].map(st=>'<option value="'+st+'" '+(st===b.status?'selected':'')+'>'+st+'</option>').join("")+'</select></td></tr>';}).join(""):'<tr><td colspan="5">No bookings yet.</td></tr>';
+}
+async function updateBookingStatus(id,status){const {error}=await supabaseClient.from("bookings").update({status,updated_at:new Date().toISOString()}).eq("id",id).eq("shop_id",shop.id);if(error)return showError(error.message);await loadBookings();}
+async function loadEnquiries(){
+ if(!shop?.id)return;
+ const {data,error}=await supabaseClient.from("business_enquiries").select("id,customer_name,customer_phone,customer_email,enquiry_type,message,status,created_at").eq("shop_id",shop.id).order("created_at",{ascending:false}).limit(100);
+ if(error){$("enquiriesRows").innerHTML='<tr><td colspan="5">Could not load enquiries.</td></tr>';return;}
+ businessEnquiries=data||[];
+ $("enquiriesRows").innerHTML=businessEnquiries.length?businessEnquiries.map(q=>'<tr><td>'+escapeHtml(q.customer_name)+'</td><td>'+escapeHtml(q.customer_phone||q.customer_email||"—")+'</td><td>'+escapeHtml(q.message)+'</td><td>'+escapeHtml(q.status)+'</td><td><select aria-label="Enquiry status" onchange="updateEnquiryStatus(\''+q.id+'\',this.value)">'+["new","in_progress","responded","closed"].map(st=>'<option value="'+st+'" '+(st===q.status?'selected':'')+'>'+st.replace("_"," ")+'</option>').join("")+'</select></td></tr>').join(""):'<tr><td colspan="5">No enquiries yet.</td></tr>';
+}
+async function updateEnquiryStatus(id,status){const {error}=await supabaseClient.from("business_enquiries").update({status,updated_at:new Date().toISOString()}).eq("id",id).eq("shop_id",shop.id);if(error)return showError(error.message);await loadEnquiries();}
+
 /* =========================
    DASHBOARD
 ========================= */
@@ -1363,7 +1467,7 @@ data:s,
 error:sErr
 }=await supabaseClient
 .from("shops")
-.select("id,name,slug,phone,whatsapp,address,description,status")
+.select("id,name,slug,phone,whatsapp,address,description,status,category,business_details")
 .eq("id",owner.shop_id)
 .single();
 
@@ -1405,6 +1509,7 @@ shop.status||"—";
 
 await loadCategories();
 await loadProducts();
+await loadUniversalBusinessFeatures();
 await loadOrdersOnly();
 await loadSubscription();
 
