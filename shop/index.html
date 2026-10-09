@@ -1206,11 +1206,18 @@ async function submitPublicBooking(event) {
     notes: [String(values.get('notes') || '').trim(), ...Object.entries(getCustomFieldValues('bookingCustomFields')).map(([k,v]) => k.replace(/_/g,' ') + ': ' + v)].filter(Boolean).join(' | ') || null,
     details: getCustomFieldValues('bookingCustomFields')
   };
-  const {error} = await supabaseClient.from('bookings').insert(payload);
-  button.disabled = false; button.textContent = 'Request booking';
-  if (error) { console.error('PUBLIC BOOKING ERROR', error); setFormStatus('bookingStatus', 'Booking request could not be sent. ' + (error.message || 'Please try again.'), false); return; }
-  setFormStatus('bookingStatus', 'Request sent successfully. The business will contact you to confirm.', true);
-  form.reset();
+  try {
+    const {error} = await supabaseClient.from('bookings').insert(payload);
+    if (error) throw error;
+    setFormStatus('bookingStatus', 'Request sent successfully. The business will contact you to confirm.', true);
+    form.reset();
+  } catch (error) {
+    console.error('PUBLIC BOOKING ERROR', error);
+    setFormStatus('bookingStatus', 'Booking request could not be sent. ' + (error?.message || 'Please try again.'), false);
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Request booking';
+  }
 }
 async function submitPublicEnquiry(event) {
   event.preventDefault();
@@ -1228,11 +1235,18 @@ async function submitPublicEnquiry(event) {
     enquiry_type: type, message: [String(values.get('message') || '').trim(), ...Object.entries(getCustomFieldValues('enquiryCustomFields')).map(([k,v]) => k.replace(/_/g,' ') + ': ' + v)].filter(Boolean).join(' | '),
     details: getCustomFieldValues('enquiryCustomFields')
   };
-  const {error} = await supabaseClient.from('business_enquiries').insert(payload);
-  button.disabled = false; button.textContent = 'Send enquiry';
-  if (error) { console.error('PUBLIC ENQUIRY ERROR', error); setFormStatus('enquiryStatus', 'Enquiry could not be sent. ' + (error.message || 'Please try again.'), false); return; }
-  setFormStatus('enquiryStatus', 'Enquiry sent successfully. The business will contact you soon.', true);
-  form.reset();
+  try {
+    const {error} = await supabaseClient.from('business_enquiries').insert(payload);
+    if (error) throw error;
+    setFormStatus('enquiryStatus', 'Enquiry sent successfully. The business will contact you soon.', true);
+    form.reset();
+  } catch (error) {
+    console.error('PUBLIC ENQUIRY ERROR', error);
+    setFormStatus('enquiryStatus', 'Enquiry could not be sent. ' + (error?.message || 'Please try again.'), false);
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Send enquiry';
+  }
 }
 document.getElementById('publicBookingForm').addEventListener('submit', submitPublicBooking);
 document.getElementById('publicEnquiryForm').addEventListener('submit', submitPublicEnquiry);
