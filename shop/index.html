@@ -1155,7 +1155,7 @@ function renderServices() {
     const duration = service.duration_minutes ? '<div class="desc">Duration: ' + esc(service.duration_minutes) + ' minutes</div>' : '';
     const details = Object.entries(attrs).slice(0,4).map(([k,v]) => '<div class="desc">' + esc(k.replace(/_/g,' ')) + ': ' + esc(v) + '</div>').join('');
     const action = String(categoryDefinition?.default_action || 'booking').toLowerCase();
-    const actionLabel = action === 'quote' ? 'Request quote' : (action === 'service_request' ? 'Request service' : (action === 'enquiry' ? 'Enquire' : (action === 'contact' ? 'Contact' : (action === 'appointment' ? 'Book appointment' : (action === 'room_booking' ? 'Book room' : 'Book / enquire'))));
+    const actionLabel = action === 'quote' ? 'Request quote' : (action === 'service_request' ? 'Request service' : (action === 'enquiry' ? 'Enquire' : (action === 'contact' ? 'Contact' : (action === 'appointment' ? 'Book appointment' : (action === 'room_booking' ? 'Book room' : 'Book / enquire')))));
     return '<article class="serviceCard">' + image + '<h3>' + esc(service.name) + '</h3>' + (service.description ? '<p>' + esc(service.description) + '</p>' : '') + '<div class="serviceMeta">' + money(service.price) + '</div>' + duration + details + '<div class="serviceActions"><button type="button" class="primary" onclick="openServiceAction(\'' + esc(service.id) + '\')">' + actionLabel + '</button></div></article>';
   }).join('');
 }
