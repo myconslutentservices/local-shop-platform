@@ -174,6 +174,29 @@ passwordToggle.addEventListener("click", () => {
 
 let currentStep = 1;
 
+// Load active business categories from the central Master-managed registry.
+// The HTML list remains a fallback if the category API is temporarily unavailable.
+async function loadBusinessCategories() {
+  if (!window.supabaseClient || !categoryInput) return;
+  try {
+    const { data, error } = await supabaseClient
+      .from("business_category_definitions")
+      .select("name, sort_order")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true });
+    if (error) throw error;
+    if (!Array.isArray(data) || !data.length) return;
+    const previous = categoryInput.value;
+    categoryInput.replaceChildren(new Option("Choose your business category", ""));
+    data.forEach(item => categoryInput.add(new Option(item.name, item.name)));
+    if (data.some(item => item.name === previous)) categoryInput.value = previous;
+  } catch (error) {
+    console.warn("Could not load live business categories; using the built-in fallback list.", error);
+  }
+}
+loadBusinessCategories();
+
+
 function showMessage(text, type) {
   messageBox.textContent = text;
   messageBox.className = type;
