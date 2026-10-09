@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Owner Dashboard | Local Shop Platform</title>
+<title>Owner Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
@@ -55,6 +55,11 @@ border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px
 .loading,.empty{text-align:center;padding:35px 10px;color:#64748b}
 
 .orders-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.order-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.order-tab{border:1px solid #334155;background:#0f172a;color:#cbd5e1;border-radius:9px;padding:10px 13px}
+.order-tab.active{background:#2563eb;border-color:#2563eb;color:white}
+.order-section{display:none}.order-section.selected{display:block}
+#categoriesSection,#productsSection{display:none}
 .order-section{overflow:hidden}
 .order-section-head{
 display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #263244
@@ -279,8 +284,8 @@ width:100%
 
 <header class="topbar">
 <div class="brand">
-Local Shop Platform
-<small>Owner Management Panel</small>
+My Business
+<small>Management</small>
 </div>
 
 <div class="top-actions">
@@ -295,7 +300,7 @@ Local Shop Platform
 
 <div class="welcome">
 <h1>Welcome, <span id="ownerName">Owner</span> 👋</h1>
-<p>Manage your shop, products, orders and subscription from one place.</p>
+<p>Manage your shop, orders and subscription.</p>
 </div>
 
 <section class="grid">
@@ -318,7 +323,7 @@ Local Shop Platform
 <div class="muted">View all orders →</div>
 </div>
 
-<div class="card stat-card" onclick="document.getElementById('productsSection').scrollIntoView({behavior:'smooth'})">
+<div class="card stat-card" onclick="window.location.href='products.html'">
 <div class="stat-label">Products</div>
 <div class="stat" id="totalProducts">0</div>
 <div class="muted">Manage products →</div>
@@ -339,6 +344,14 @@ Local Shop Platform
 <button class="refresh" id="refreshBtn">Refresh Orders</button>
 </div>
 
+<div class="order-tabs" id="orderTabs">
+<button class="order-tab active" data-status="new">New</button>
+<button class="order-tab" data-status="confirmed">Confirmed</button>
+<button class="order-tab" data-status="preparing">Preparing</button>
+<button class="order-tab" data-status="out_for_delivery">Out for Delivery</button>
+<button class="order-tab" data-status="delivered">Delivered</button>
+<button class="order-tab" data-status="cancelled">Cancelled</button>
+</div>
 <div class="orders-grid" id="ordersContainer">
 
 <script>
@@ -454,6 +467,10 @@ Pay ₹1 & Activate Subscription
 
 <section class="section" id="categoriesSection">
 
+<div class="section-title">
+<h2>Products & Categories</h2>
+<a class="primary" href="products.html" style="text-decoration:none;display:inline-block">Open management page</a>
+</div>
 <div class="section-title">
 <h2>Categories</h2>
 <button class="primary" id="addCategoryBtn">+ Add Category</button>
@@ -1632,27 +1649,19 @@ countsAsRevenue(x)
 
 
 function renderOrders(list){
-
 orderSections.forEach(([s])=>{
-
-const f=list.filter(
-o=>normalizeOrderStatus(o.status)===s
-);
-
+const f=list.filter(o=>normalizeOrderStatus(o.status)===s);
 $("count-"+s).textContent=f.length;
-
-$("orders-"+s).innerHTML=f.length
-
-?f.map(renderSingleOrder).join("")
-
-:`<div class="empty">
-No ${statusLabel(s).toLowerCase()} orders.
-</div>`;
-
+$("orders-"+s).innerHTML=f.length?f.map(renderSingleOrder).join(""):`<div class="empty">No ${statusLabel(s).toLowerCase()} orders.</div>`;
+$("orders-"+s).closest(".order-section").classList.toggle("selected",s===activeOrderStatus);
 });
-
+document.querySelectorAll(".order-tab").forEach(b=>b.classList.toggle("active",b.dataset.status===activeOrderStatus));
 }
 
+let activeOrderStatus="new";
+document.getElementById("orderTabs").addEventListener("click",e=>{
+const b=e.target.closest("[data-status]");if(!b)return;activeOrderStatus=b.dataset.status;renderOrders(currentOrders);
+});
 
 function renderSingleOrder(o){
 
