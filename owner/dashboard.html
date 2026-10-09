@@ -134,7 +134,7 @@ button{cursor:pointer}
 @media(max-width:850px){.dashboard-columns{grid-template-columns:minmax(0,1fr);gap:0}.dashboard-side{margin-top:20px}.dashboard-side .info{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.dashboard-side .info{grid-template-columns:1fr}}
 
-</style>
+.modal{z-index:1000;overflow-y:auto;background:rgba(15,23,42,.46);padding:24px}.modal-box{background:#fff;color:#172b50;border:1px solid #dbe5f4;border-radius:16px;padding:24px;width:min(820px,100%);max-height:calc(100vh - 48px);overflow-y:auto;box-shadow:0 22px 70px rgba(15,35,70,.2)}.modal-head{margin-bottom:18px}.modal-head h3{font-size:22px;color:#102750}.modal-box .field{gap:7px;margin:8px 0}.modal-box .field>label{font-size:13px;font-weight:700;color:#243b60}.modal-box .field input:not([type=checkbox]):not([type=file]),.modal-box .field textarea,.modal-box .field select{background:#fff;color:#172b50;border:1px solid #d4dfef;border-radius:8px;padding:12px 13px;min-height:43px}.modal-box .field textarea{min-height:84px;resize:vertical}.modal-box .field input:focus,.modal-box .field textarea:focus,.modal-box .field select:focus{outline:2px solid #c8dcff;border-color:#4380f6}.modal-box .field small{font-size:11px;color:#7185a5}.modal-box .category-select-row button{white-space:nowrap;background:#fff;color:#2563eb;border-color:#9bbcf7}.modal-box .modal-actions{position:sticky;bottom:-24px;background:#fff;padding:14px 0 0;margin-top:18px;justify-content:flex-end}.modal-box .modal-actions button{border-radius:8px;padding:11px 16px}.upload-layout{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}.upload-dropzone{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:250px;min-height:108px;padding:14px;border:1.5px dashed #cbd9ed;border-radius:10px;background:#f8fbff;color:#3972ce;cursor:pointer;text-align:center}.upload-dropzone strong{font-size:12px}.upload-dropzone small{font-size:10px;color:#8293ae}.upload-icon{font-size:26px;line-height:1}.upload-input{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important}.image-gallery{display:flex;flex-wrap:wrap;gap:10px;margin-top:0}.image-tile{width:104px;position:relative}.image-tile img{width:104px;height:108px;object-fit:cover;border-radius:9px;border:1px solid #dce5f2;background:#f1f5fb}.image-tile label{display:flex;gap:4px;font-size:10px;align-items:center;color:#b42318}.modal-box .size-group-toggle{margin:8px 0 7px}.modal-box .size-group-toggle label{display:flex;align-items:center;gap:8px;font-weight:700;font-size:12px;color:#344967}.modal-box .size-options{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 13px;padding:12px;background:#f5f8fd;border:1px solid #e5edf8;border-radius:10px}.modal-box .size-options label{display:inline-flex;align-items:center;gap:6px;border:1px solid #d5dfec;border-radius:20px;padding:7px 12px;background:#fff;color:#435775;font-size:12px;font-weight:600;cursor:pointer}.modal-box .size-options label:has(input:checked){background:#2563eb;border-color:#2563eb;color:#fff}.modal-box .size-options input{accent-color:#2563eb}.modal-box #hasSizes,.modal-box #productActive,.modal-box .checks input{accent-color:#2563eb}@media(max-width:600px){.modal{padding:10px}.modal-box{padding:16px;border-radius:12px;max-height:calc(100vh - 20px)}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.upload-dropzone{width:100%;min-height:95px}.modal-box .modal-actions{bottom:-16px}.image-tile,.image-tile img{width:82px}.image-tile img{height:82px}}</style>
 </head>
 
 <body>
@@ -450,23 +450,14 @@ Active category
 </select><button type="button" class="secondary" id="addCategoryFromProduct">+ Add Category</button></div>
 </div>
 
-<div class="field full"><label>Product Images (up to 10)</label><input id="productImages" type="file" accept="image/*" multiple><small>Choose images from your device. No image URL needed.</small><div id="existingProductImages" class="image-gallery"></div><div id="selectedProductImages" class="muted"></div></div>
+<div class="field full"><label>Product Images (up to 10)</label><div class="upload-layout"><label class="upload-dropzone" for="productImages"><span class="upload-icon">⇧</span><strong>Choose images or drag and drop</strong><small>JPG, PNG, WebP · Up to 10 images total</small></label><input id="productImages" class="upload-input" type="file" accept="image/*" multiple><div id="existingProductImages" class="image-gallery"></div></div><div id="selectedProductImages" class="muted"></div></div>
 
 <div class="field full">
 <label>Description</label>
 <textarea id="productDescription" maxlength="1000"></textarea>
 </div>
 
-<div class="field full">
-<label>Sizes / Variants (optional)</label>
-<div class="checks">
-${["XS","S","M","L","XL","XXL","XXXL","XXXXL","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","Free Size"].map(s=>
-`<label class="check">
-<input type="checkbox" value="${s}" class="sizeCheck">${s}
-</label>`
-).join("")}
-</div><input id="customProductSizes" placeholder="Custom sizes, comma-separated: 28, 30, 32 or 500 ml, 1 L"><small>Choose common sizes or enter any custom sizes.</small>
-</div>
+<div class="field full"><label>Sizes / Variants (optional)</label><div class="size-group-toggle"><label><input type="checkbox" id="showLetterSizes"> Clothing sizes (letter sizes)</label></div><div id="letterSizesWrap" class="size-options" hidden></div><div class="size-group-toggle"><label><input type="checkbox" id="showNumberSizes"> Waist sizes (numeric)</label></div><div id="numberSizesWrap" class="size-options" hidden></div></div>
 
 <div class="field full">
 
@@ -521,6 +512,7 @@ let products=[];
 let currentOrders=[];let retainedProductImages=[];let removedProductImages=[];
 
 const $=id=>document.getElementById(id);
+const letterSizeList=["XS","S","M","L","XL","XXL","XXXL","XXXXL","Free Size"];const numberSizeList=["28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46"];$("letterSizesWrap").innerHTML=letterSizeList.map(s=>'<label><input type="checkbox" value="'+s+'" class="sizeCheck letter-size">'+s+'</label>').join("");$("numberSizesWrap").innerHTML=numberSizeList.map(s=>'<label><input type="checkbox" value="'+s+'" class="sizeCheck number-size">'+s+'</label>').join("");function toggleSizeGroup(group,show){const wrap=$(group==="letter"?"letterSizesWrap":"numberSizesWrap");wrap.hidden=!show;if(!show)wrap.querySelectorAll(".sizeCheck").forEach(x=>x.checked=false);$("hasSizes").checked=!!document.querySelector(".sizeCheck:checked");}$("showLetterSizes").onchange=e=>toggleSizeGroup("letter",e.target.checked);$("showNumberSizes").onchange=e=>toggleSizeGroup("number",e.target.checked);
 
 const showError=m=>{
 $("errorBox").textContent=m;
@@ -1100,7 +1092,7 @@ $("productStock").value=0;
 
 $("productActive").checked=true;
 
-document.querySelectorAll(".sizeCheck").forEach(x=>x.checked=false);retainedProductImages=[];removedProductImages=[];$("productImages").value="";$("existingProductImages").innerHTML="";$("selectedProductImages").textContent="";$("customProductSizes").value="";$("productCost").value=0;
+document.querySelectorAll(".sizeCheck").forEach(x=>x.checked=false);retainedProductImages=[];removedProductImages=[];$("productImages").value="";$("existingProductImages").innerHTML="";$("selectedProductImages").textContent="";$("productCost").value=0;
 
 $("modalTitle").textContent="Add Product";
 
@@ -1136,7 +1128,7 @@ $("productStock").value=p.stock??0;
 
 $("productCategory").value=p.category_id||"";
 
-retainedProductImages=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);removedProductImages=[];renderExistingProductImages();$("productImages").value="";$("selectedProductImages").textContent="";$("customProductSizes").value="";
+retainedProductImages=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);removedProductImages=[];renderExistingProductImages();$("productImages").value="";$("selectedProductImages").textContent="";
 
 $("productDescription").value=p.description||"";
 
@@ -1144,9 +1136,7 @@ $("hasSizes").checked=!!p.has_sizes;
 
 $("productActive").checked=p.is_active!==false;
 
-const sizes=Array.isArray(p.sizes)?p.sizes:[];
-
-document.querySelectorAll(".sizeCheck").forEach(x=>x.checked=sizes.includes(x.value));const commonSizes=[...document.querySelectorAll(".sizeCheck")].map(x=>x.value);$("customProductSizes").value=sizes.filter(x=>!commonSizes.includes(x)).join(", ");
+const sizes=Array.isArray(p.sizes)?p.sizes:[];const showLetters=sizes.some(s=>letterSizeList.includes(s));const showNumbers=sizes.some(s=>numberSizeList.includes(s));$("showLetterSizes").checked=showLetters;$("showNumberSizes").checked=showNumbers;$("letterSizesWrap").hidden=!showLetters;$("numberSizesWrap").hidden=!showNumbers;document.querySelectorAll(".sizeCheck").forEach(x=>x.checked=sizes.includes(x.value));
 
 }
 
@@ -1183,8 +1173,7 @@ const category_id=$("productCategory").value||null;
 const image_url=retainedProductImages.filter(url=>!removedProductImages.includes(url))[0]||null;
 const cost_price=Number($("productCost").value||0);
 const chosenProductFiles=[...$("productImages").files];
-const customSizes=$("customProductSizes").value.split(",").map(x=>x.trim()).filter(Boolean);
-const allSizes=[...new Set([...document.querySelectorAll(".sizeCheck:checked")].map(x=>x.value).concat(customSizes))];
+const allSizes=[...new Set([...document.querySelectorAll(".sizeCheck:checked")].map(x=>x.value))];
 if(retainedProductImages.filter(url=>!removedProductImages.includes(url)).length+chosenProductFiles.length>10)return showError("Maximum 10 images per product. Remove old images or select fewer.");
 if(!Number.isFinite(cost_price)||cost_price<0)return showError("Please enter a valid cost price.");
 
