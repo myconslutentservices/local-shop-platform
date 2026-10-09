@@ -47,7 +47,7 @@ button{cursor:pointer}
 .stat{font-size:27px;font-weight:800;color:#112e64;overflow-wrap:anywhere}
 .muted,.sub{color:#7185a5;font-size:12px;margin-top:6px}
 .cancelled-mini{color:#c36a33;font-size:12px;margin-top:7px}
-.section{margin-top:22px;scroll-margin-top:86px}.management-details{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;margin-top:10px}.management-details>summary{cursor:pointer;color:var(--blue);font-weight:700;font-size:13px}.management-details[open]>summary{margin-bottom:12px}
+.section{margin-top:22px;scroll-margin-top:86px}.profit-chart-card{margin:12px 0 16px;padding:16px}.chart-summary{font-size:13px;color:var(--muted);margin:8px 0}.chart-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}.chart-legend span{display:flex;align-items:center;gap:7px}.chart-legend i{display:inline-block;width:20px;height:3px;border-radius:4px}.legend-revenue{background:#2563eb}.legend-profit{background:#0f9f6e}#profitChart svg{display:block;width:100%;height:auto;max-height:290px}.management-details{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;margin-top:10px}.management-details>summary{cursor:pointer;color:var(--blue);font-weight:700;font-size:13px}.management-details[open]>summary{margin-bottom:12px}
 .section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
 .section-title h2{font-size:18px;color:#132f63}
 .orders-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
@@ -221,6 +221,7 @@ button{cursor:pointer}
 <button class="order-tab" data-status="delivered">Delivered</button>
 <button class="order-tab" data-status="cancelled">Cancelled</button>
 </div>
+<div class="card profit-chart-card"><div class="section-title"><h3>Business Growth · Last 7 Days</h3><span class="muted">Paid revenue vs estimated gross profit/loss</span></div><div id="profitChartSummary" class="chart-summary">Loading sales trend…</div><div id="profitChart" role="img" aria-label="Line chart of paid revenue and estimated gross profit or loss over the last seven days"></div><div class="chart-legend"><span><i class="legend-revenue"></i> Paid revenue</span><span><i class="legend-profit"></i> Estimated gross profit/loss</span></div><p class="muted">Profit is estimated using current product cost prices and order item quantities. Historical cost changes and other expenses are not included.</p></div>
 <div class="orders-grid" id="ordersContainer">
 
 <script>
@@ -1461,9 +1462,43 @@ currentOrders=data||[];
 updateOrderStats();
 
 renderOrders(currentOrders);
+await renderProfitChart();
 
 }
 
+
+async function renderProfitChart(){
+ const host=$("profitChart"),summary=$("profitChartSummary");if(!host||!summary)return;
+ try{
+  const days=[];const today=new Date();today.setHours(0,0,0,0);
+  for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);days.push({date:d,key:d.toISOString().slice(0,10),label:d.toLocaleDateString("en-IN",{day:"numeric",month:"short"}),revenue:0,cost:0,profit:0})}
+  const dayMap=new Map(days.map(d=>[d.key,d]));
+  const paid=currentOrders.filter(countsAsRevenue);
+  const paidIds=paid.map(o=>o.id);
+  paid.forEach(o=>{const day=dayMap.get(new Date(o.created_at).toISOString().slice(0,10));if(day)day.revenue+=Number(o.total_amount||0)});
+  if(paidIds.length){
+   const [{data:items,error:itemError},{data:costProducts,error:costError}]=await Promise.all([
+    supabaseClient.from("order_items").select("order_id,product_id,quantity").in("order_id",paidIds),
+    supabaseClient.from("products").select("id,cost_price").eq("shop_id",shop.id)
+   ]);
+   if(itemError)throw itemError;if(costError)throw costError;
+   const orderMap=new Map(paid.map(o=>[o.id,o]));
+   const costMap=new Map((costProducts||[]).map(p=>[p.id,Number(p.cost_price||0)]));
+   (items||[]).forEach(item=>{const order=orderMap.get(item.order_id);if(!order)return;const day=dayMap.get(new Date(order.created_at).toISOString().slice(0,10));if(day)day.cost+=Number(item.quantity||0)*Number(costMap.get(item.product_id)||0)});
+  }
+  days.forEach(d=>d.profit=d.revenue-d.cost);
+  const revenueTotal=days.reduce((s,d)=>s+d.revenue,0),profitTotal=days.reduce((s,d)=>s+d.profit,0);
+  summary.textContent="7-day paid revenue: "+money(revenueTotal)+" · Estimated gross "+(profitTotal<0?"loss: ":"profit: ")+money(Math.abs(profitTotal));
+  const w=720,h=230,left=42,right=16,top=18,bottom=34,plotW=w-left-right,plotH=h-top-bottom;
+  const values=days.flatMap(d=>[d.revenue,d.profit]);let min=Math.min(0,...values),max=Math.max(1,...values);const pad=(max-min)*.12||1;min-=pad;max+=pad;
+  const x=i=>left+(plotW*(i/(days.length-1)));const y=v=>top+(max-v)/(max-min)*plotH;
+  const poly=key=>days.map((d,i)=>x(i)+","+y(d[key])).join(" ");
+  const zero=y(0);
+  const labels=days.map((d,i)=>'<text x="'+x(i)+'" y="'+(h-10)+'" font-size="11" text-anchor="middle" fill="#7185a5">'+escapeHtml(d.label)+'</text>').join("");
+  const dots=key=>days.map((d,i)=>'<circle cx="'+x(i)+'" cy="'+y(d[key])+'" r="3.5" fill="'+(key==="revenue"?"#2563eb":"#0f9f6e")+'"><title>'+escapeHtml(d.label)+': '+money(d[key])+'</title></circle>').join("");
+  host.innerHTML='<svg viewBox="0 0 '+w+' '+h+'" aria-hidden="true"><line x1="'+left+'" y1="'+zero+'" x2="'+(w-right)+'" y2="'+zero+'" stroke="#d8e2f1" stroke-dasharray="4 4"/><polyline points="'+poly("revenue")+'" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="'+poly("profit")+'" fill="none" stroke="#0f9f6e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'+dots("revenue")+dots("profit")+labels+'</svg>';
+ }catch(e){summary.textContent="Could not calculate the sales trend: "+(e.message||"Please refresh the dashboard.");host.innerHTML=""}
+}
 
 function updateOrderStats(){
 
