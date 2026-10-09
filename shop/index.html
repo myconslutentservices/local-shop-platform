@@ -1201,7 +1201,7 @@ async function submitPublicBooking(event) {
     booking_date: String(values.get('booking_date') || ''),
     start_time: time || null,
     party_size: Math.max(1, Math.min(100, Number(values.get('party_size') || 1))),
-    notes: String(values.get('notes') || '').trim() || null,
+    notes: [String(values.get('notes') || '').trim(), ...Object.entries(getCustomFieldValues('bookingCustomFields')).map(([k,v]) => k.replace(/_/g,' ') + ': ' + v)].filter(Boolean).join(' | ') || null,
     details: getCustomFieldValues('bookingCustomFields')
   };
   const {error} = await supabaseClient.from('bookings').insert(payload);
@@ -1223,7 +1223,7 @@ async function submitPublicEnquiry(event) {
     customer_name: String(values.get('customer_name') || '').trim(),
     customer_phone: String(values.get('customer_phone') || '').trim() || null,
     customer_email: String(values.get('customer_email') || '').trim() || null,
-    enquiry_type: type, message: String(values.get('message') || '').trim(),
+    enquiry_type: type, message: [String(values.get('message') || '').trim(), ...Object.entries(getCustomFieldValues('enquiryCustomFields')).map(([k,v]) => k.replace(/_/g,' ') + ': ' + v)].filter(Boolean).join(' | '),
     details: getCustomFieldValues('enquiryCustomFields')
   };
   const {error} = await supabaseClient.from('business_enquiries').insert(payload);
