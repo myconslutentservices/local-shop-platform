@@ -693,7 +693,7 @@ $("refreshBookingsBtn").onclick=loadBookings;
 $("refreshEnquiriesBtn").onclick=loadEnquiries;
 
 $("productSearch").oninput=renderProducts;
-$("addProductBtn").onclick=()=>openProductModal();$("addCategoryFromProduct").onclick=()=>openCategoryModal();$("productImages").addEventListener("change",()=>$("selectedProductImages").textContent="Selected "+$("productImages").files.length+" new image(s). Maximum 10 total.");
+if($("addProductBtn"))$("addProductBtn").onclick=()=>openProductModal();if($("addProductBtnUniversal"))$("addProductBtnUniversal").onclick=()=>openProductModal();$("addCategoryFromProduct").onclick=()=>openCategoryModal();$("productImages").addEventListener("change",()=>$("selectedProductImages").textContent="Selected "+$("productImages").files.length+" new image(s). Maximum 10 total.");
 $("closeProductModal").onclick=closeProductModal;
 $("cancelProductBtn").onclick=closeProductModal;
 $("productForm").onsubmit=saveProduct;
