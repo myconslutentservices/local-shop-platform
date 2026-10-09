@@ -47,7 +47,7 @@ button{cursor:pointer}
 .stat{font-size:27px;font-weight:800;color:#112e64;overflow-wrap:anywhere}
 .muted,.sub{color:#7185a5;font-size:12px;margin-top:6px}
 .cancelled-mini{color:#c36a33;font-size:12px;margin-top:7px}
-.section{margin-top:22px;scroll-margin-top:86px}
+.section{margin-top:22px;scroll-margin-top:86px}.management-details{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;margin-top:10px}.management-details>summary{cursor:pointer;color:var(--blue);font-weight:700;font-size:13px}.management-details[open]>summary{margin-bottom:12px}
 .section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
 .section-title h2{font-size:18px;color:#132f63}
 .orders-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
@@ -99,7 +99,7 @@ button{cursor:pointer}
 .primary:hover{background:#174fcb}.primary:disabled{opacity:.55;cursor:not-allowed}
 .search{flex:1;min-width:190px}
 .products-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
-.product-grid,.category-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.category-select-row{display:flex;gap:8px;align-items:center}.category-select-row select{flex:1;min-width:0}.image-gallery{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}.image-tile{width:82px}.image-tile img{width:82px;height:82px;object-fit:cover;border:1px solid var(--line);border-radius:8px}.image-tile label{display:flex;gap:4px;font-size:11px;align-items:center}.field input[type=file]{padding:9px;background:#fff}.product-grid,.category-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .product-card{overflow:hidden;min-width:0}
 .product-img{height:170px;background:#f1f5fb;display:flex;align-items:center;justify-content:center;color:#7185a5;font-size:12px}
 .product-img img{width:100%;height:100%;object-fit:cover}
@@ -342,41 +342,27 @@ Pay ₹1 & Activate Subscription
 
 <section class="section" id="categoriesSection">
 
-<div class="section-title">
-<h2>Products & Categories</h2>
-<a class="primary" href="products.html" style="text-decoration:none;display:inline-block">Open management page</a>
-</div>
-<div class="section-title">
-<h2>Categories</h2>
-<button class="primary" id="addCategoryBtn">+ Add Category</button>
-</div>
+<div class="section-title"><h2>Products & Categories</h2></div>
+<details class="management-details"><summary>Manage categories</summary><div class="section-title"><h2>Categories</h2><button class="primary" id="addCategoryBtn">+ Add Category</button></div>
 
 <div class="products-toolbar">
 <input class="search" id="categorySearch" placeholder="Search categories...">
 <button class="refresh" id="refreshCategoriesBtn">Refresh</button>
 </div>
 
-<div class="category-grid" id="categoriesBox">
-<div class="card loading">Loading categories...</div>
-</div>
+<div class="category-grid" id="categoriesBox"><div class="card loading">Loading categories...</div></div></details>
 
 </section>
 
 <section class="section" id="productsSection">
 
-<div class="section-title">
-<h2>Products</h2>
-<button class="primary" id="addProductBtn">+ Add Product</button>
-</div>
-
+<div class="section-title"><h2>Products</h2><button class="primary" id="addProductBtn">+ Add Product</button></div><details class="management-details"><summary>View / edit existing products</summary>
 <div class="products-toolbar">
 <input class="search" id="productSearch" placeholder="Search products...">
 <button class="refresh" id="refreshProductsBtn">Refresh</button>
 </div>
 
-<div class="product-grid" id="productsBox">
-<div class="card loading">Loading products...</div>
-</div>
+<div class="product-grid" id="productsBox"><div class="card loading">Loading products...</div></div></details>
 
 </section>
 
@@ -445,8 +431,10 @@ Active category
 </div>
 
 <div class="field">
-<label>Price (₹) *</label>
+<label>Selling Price (₹) *</label>
 <input id="productPrice" type="number" min="0" step="0.01" required>
+</div>
+<div class="field"><label>Cost Price per item (₹)</label><input id="productCost" type="number" min="0" step="0.01" value="0"><small>Used to estimate gross profit/loss.</small>
 </div>
 
 <div class="field">
@@ -458,13 +446,10 @@ Active category
 <label>Category</label>
 <select id="productCategory">
 <option value="">No category</option>
-</select>
+</select><button type="button" class="secondary" id="addCategoryFromProduct">+ Add Category</button></div>
 </div>
 
-<div class="field full">
-<label>Image URL</label>
-<input id="productImage" type="url" placeholder="https://...">
-</div>
+<div class="field full"><label>Product Images (up to 10)</label><input id="productImages" type="file" accept="image/*" multiple><small>Choose images from your device. No image URL needed.</small><div id="existingProductImages" class="image-gallery"></div><div id="selectedProductImages" class="muted"></div></div>
 
 <div class="field full">
 <label>Description</label>
@@ -472,14 +457,14 @@ Active category
 </div>
 
 <div class="field full">
-<label>Sizes (optional)</label>
+<label>Sizes / Variants (optional)</label>
 <div class="checks">
-${["S","M","L","XL","XXL","XXXL"].map(s=>
+${["XS","S","M","L","XL","XXL","XXXL","XXXXL","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","Free Size"].map(s=>
 `<label class="check">
 <input type="checkbox" value="${s}" class="sizeCheck">${s}
 </label>`
 ).join("")}
-</div>
+</div><input id="customProductSizes" placeholder="Custom sizes, comma-separated: 28, 30, 32 or 500 ml, 1 L"><small>Choose common sizes or enter any custom sizes.</small>
 </div>
 
 <div class="field full">
@@ -532,7 +517,7 @@ let owner=null;
 let shop=null;
 let categories=[];
 let products=[];
-let currentOrders=[];
+let currentOrders=[];let retainedProductImages=[];let removedProductImages=[];
 
 const $=id=>document.getElementById(id);
 
@@ -686,7 +671,7 @@ $("closeOrderModal").onclick=closeOrderModal;
 
 $("refreshProductsBtn").onclick=loadProducts;
 $("productSearch").oninput=renderProducts;
-$("addProductBtn").onclick=()=>openProductModal();
+$("addProductBtn").onclick=()=>openProductModal();$("addCategoryFromProduct").onclick=()=>{closeProductModal();openCategoryModal();};$("productImages").addEventListener("change",()=>$("selectedProductImages").textContent="Selected "+$("productImages").files.length+" new image(s). Maximum 10 total.");
 $("closeProductModal").onclick=closeProductModal;
 $("cancelProductBtn").onclick=closeProductModal;
 $("productForm").onsubmit=saveProduct;
@@ -966,7 +951,7 @@ data,
 error
 }=await supabaseClient
 .from("products")
-.select("id,shop_id,category_id,name,description,price,image_url,has_sizes,sizes,stock,is_active,created_at")
+.select("id,shop_id,category_id,name,description,price,cost_price,image_url,image_urls,has_sizes,sizes,stock,is_active,created_at")
 .eq("shop_id",shop.id)
 .order("created_at",{ascending:false});
 
@@ -1103,6 +1088,7 @@ Delete
 }
 
 
+function renderExistingProductImages(){$("existingProductImages").innerHTML=retainedProductImages.map((url,i)=>'<div class="image-tile"><img src="'+escapeHtml(url)+'" alt="Product image '+(i+1)+'"><label><input type="checkbox" data-remove-product-image="'+escapeHtml(url)+'"> Remove</label></div>').join("");$("existingProductImages").querySelectorAll("[data-remove-product-image]").forEach(box=>box.addEventListener("change",()=>{if(box.checked)removedProductImages.push(box.dataset.removeProductImage);else removedProductImages=removedProductImages.filter(x=>x!==box.dataset.removeProductImage);}));}
 function resetProductForm(){
 
 $("productForm").reset();
@@ -1113,9 +1099,7 @@ $("productStock").value=0;
 
 $("productActive").checked=true;
 
-document
-.querySelectorAll(".sizeCheck")
-.forEach(x=>x.checked=false);
+document.querySelectorAll(".sizeCheck").forEach(x=>x.checked=false);retainedProductImages=[];removedProductImages=[];$("productImages").value="";$("existingProductImages").innerHTML="";$("selectedProductImages").textContent="";$("customProductSizes").value="";$("productCost").value=0;
 
 $("modalTitle").textContent="Add Product";
 
@@ -1145,12 +1129,13 @@ $("productId").value=p.id;
 $("productName").value=p.name||"";
 
 $("productPrice").value=p.price??"";
+$("productCost").value=p.cost_price??0;
 
 $("productStock").value=p.stock??0;
 
 $("productCategory").value=p.category_id||"";
 
-$("productImage").value=p.image_url||"";
+retainedProductImages=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);removedProductImages=[];renderExistingProductImages();$("productImages").value="";$("selectedProductImages").textContent="";$("customProductSizes").value="";
 
 $("productDescription").value=p.description||"";
 
@@ -1160,9 +1145,7 @@ $("productActive").checked=p.is_active!==false;
 
 const sizes=Array.isArray(p.sizes)?p.sizes:[];
 
-document
-.querySelectorAll(".sizeCheck")
-.forEach(x=>x.checked=sizes.includes(x.value));
+document.querySelectorAll(".sizeCheck").forEach(x=>x.checked=sizes.includes(x.value));const commonSizes=[...document.querySelectorAll(".sizeCheck")].map(x=>x.value);$("customProductSizes").value=sizes.filter(x=>!commonSizes.includes(x)).join(", ");
 
 }
 
@@ -1196,15 +1179,19 @@ parseInt($("productStock").value||"0",10)
 
 const category_id=$("productCategory").value||null;
 
-const image_url=$("productImage").value.trim()||null;
+const image_url=retainedProductImages.filter(url=>!removedProductImages.includes(url))[0]||null;
+const cost_price=Number($("productCost").value||0);
+const chosenProductFiles=[...$("productImages").files];
+const customSizes=$("customProductSizes").value.split(",").map(x=>x.trim()).filter(Boolean);
+const allSizes=[...new Set([...document.querySelectorAll(".sizeCheck:checked")].map(x=>x.value).concat(customSizes))];
+if(retainedProductImages.filter(url=>!removedProductImages.includes(url)).length+chosenProductFiles.length>10)return showError("Maximum 10 images per product. Remove old images or select fewer.");
+if(!Number.isFinite(cost_price)||cost_price<0)return showError("Please enter a valid cost price.");
 
 const description=$("productDescription").value.trim()||null;
 
 const has_sizes=$("hasSizes").checked;
 
-const sizes=has_sizes
-?[...document.querySelectorAll(".sizeCheck:checked")].map(x=>x.value)
-:[];
+const sizes=allSizes;
 
 const is_active=$("productActive").checked;
 
@@ -1228,28 +1215,16 @@ category_id,
 name,
 description,
 price,
+cost_price,
 image_url,
-has_sizes,
+image_urls:retainedProductImages.filter(url=>!removedProductImages.includes(url)),
+has_sizes:allSizes.length>0,
 sizes,
 stock,
 is_active
 };
 
-const r=id
-
-?await supabaseClient
-.from("products")
-.update(payload)
-.eq("id",id)
-.eq("shop_id",shop.id)
-
-:await supabaseClient
-.from("products")
-.insert(payload);
-
-if(r.error)throw r.error;
-
-closeProductModal();
+let productId=id;let r;if(id){r=await supabaseClient.from("products").update(payload).eq("id",id).eq("shop_id",shop.id)}else{r=await supabaseClient.from("products").insert(payload).select("id").single();if(!r.error)productId=r.data.id}if(r.error)throw r.error;const uploadedProductImages=[];for(const file of chosenProductFiles){const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");const path=shop.id+"/"+productId+"/"+crypto.randomUUID()+"-"+safeName;const up=await supabaseClient.storage.from("shop-assets").upload(path,file,{upsert:false,contentType:file.type||"application/octet-stream"});if(up.error)throw up.error;uploadedProductImages.push(supabaseClient.storage.from("shop-assets").getPublicUrl(up.data.path).data.publicUrl)}const finalProductImages=[...retainedProductImages.filter(url=>!removedProductImages.includes(url)),...uploadedProductImages].slice(0,10);const imagePatch=await supabaseClient.from("products").update({image_url:finalProductImages[0]||null,image_urls:finalProductImages}).eq("id",productId).eq("shop_id",shop.id);if(imagePatch.error)throw imagePatch.error;closeProductModal();
 
 await loadProducts();
 
