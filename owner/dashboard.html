@@ -76,7 +76,7 @@ button{cursor:pointer}
 .order-actions select,.field input,.field textarea,.field select,.search{border:1px solid #d3e0f4;background:#fff;color:#17315f;border-radius:8px;padding:9px;outline:none}
 .order-actions select:focus,.field input:focus,.field textarea:focus,.field select:focus,.search:focus{border-color:#7ba4ff;box-shadow:0 0 0 3px #eaf1ff}
 .modal{display:none;position:fixed;inset:0;background:rgba(13,31,65,.48);z-index:50;padding:20px;overflow:auto}
-.modal.show{display:flex;align-items:center;justify-content:center}
+.modal.show{display:flex;align-items:center;justify-content:center}#categoryModal{z-index:60}
 .modal-box{width:min(650px,100%);background:#fff;border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:0 18px 55px rgba(15,40,80,.2)}
 .order-modal-box{width:min(760px,100%)}
 .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;color:#15336a}
@@ -672,7 +672,7 @@ $("closeOrderModal").onclick=closeOrderModal;
 
 $("refreshProductsBtn").onclick=loadProducts;
 $("productSearch").oninput=renderProducts;
-$("addProductBtn").onclick=()=>openProductModal();$("addCategoryFromProduct").onclick=()=>{closeProductModal();openCategoryModal();};$("productImages").addEventListener("change",()=>$("selectedProductImages").textContent="Selected "+$("productImages").files.length+" new image(s). Maximum 10 total.");
+$("addProductBtn").onclick=()=>openProductModal();$("addCategoryFromProduct").onclick=()=>openCategoryModal();$("productImages").addEventListener("change",()=>$("selectedProductImages").textContent="Selected "+$("productImages").files.length+" new image(s). Maximum 10 total.");
 $("closeProductModal").onclick=closeProductModal;
 $("cancelProductBtn").onclick=closeProductModal;
 $("productForm").onsubmit=saveProduct;
