@@ -17,6 +17,89 @@
 @media(max-width:1050px){.category-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.actions{gap:7px}.owner-nav-link,.master-nav-link{padding:9px 10px;font-size:12px}.brand{min-width:auto}.product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.wrap{width:min(100% - 28px,620px)}.header{height:68px}.brandmark{width:38px;height:38px}.brandname{font-size:17px}.tagline{font-size:9px}.actions{display:none}.menu-btn{display:block}.mobile-menu{display:none;position:absolute;top:60px;right:14px;width:min(260px,calc(100vw - 28px));padding:9px;background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow)}.mobile-menu.open{display:block}.mobile-menu a{display:block;padding:13px;border-radius:8px;font-size:14px}.mobile-menu a:hover{background:#f1f7ff;color:var(--blue)}.hero{min-height:0}.hero-inner{padding:34px 0}.hero h1{font-size:clamp(32px,8vw,42px)}.hero p{font-size:14px}.search-row{grid-template-columns:1fr 1fr}.searchbox{grid-column:1/-1}.search-row .btn{grid-column:1/-1}.category-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.category{min-height:94px}.section-heading h2{font-size:21px}.business-grid,.product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product-image{height:130px}.business-banner{padding:15px;align-items:flex-start;flex-direction:column}.business-banner .btn{width:100%}.footer-inner{flex-direction:column;text-align:center}.footer-note{order:3}}
 @media(max-width:390px){.brandname{font-size:15px}.tagline{font-size:8px}.brandmark{width:34px;height:34px}.search-row{grid-template-columns:1fr}.searchbox,.search-row .btn{grid-column:auto}.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.business-grid,.product-grid{grid-template-columns:1fr}.product-image{height:190px}}
+
+/* ===== Continuous, lightweight galaxy theme ===== */
+:root{--blue:#4aa3ff;--navy:#eaf4ff;--muted:#b3c6df;--line:rgba(126,177,255,.22);--bg:#050b18;--card:rgba(10,22,43,.82);--shadow:0 12px 34px rgba(0,0,0,.24)}
+html{scroll-behavior:smooth;scroll-padding-top:82px}
+body{background:#030712;color:#eaf4ff;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:
+ radial-gradient(1px 1px at 7% 17%,#fff 98%,transparent 100%),
+ radial-gradient(1.5px 1.5px at 19% 67%,#9dd8ff 98%,transparent 100%),
+ radial-gradient(1px 1px at 31% 39%,#fff 98%,transparent 100%),
+ radial-gradient(1.5px 1.5px at 47% 83%,#c3b5ff 98%,transparent 100%),
+ radial-gradient(1px 1px at 59% 22%,#fff 98%,transparent 100%),
+ radial-gradient(1.5px 1.5px at 74% 61%,#83c8ff 98%,transparent 100%),
+ radial-gradient(1px 1px at 88% 13%,#fff 98%,transparent 100%),
+ radial-gradient(1.5px 1.5px at 94% 76%,#c4b5fd 98%,transparent 100%);
+ background-size:100% 100%;animation:starDrift 38s ease-in-out infinite alternate}
+body::after{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;background:
+ radial-gradient(ellipse at 18% 28%,rgba(25,93,190,.2),transparent 42%),
+ radial-gradient(ellipse at 82% 52%,rgba(104,42,181,.17),transparent 40%),
+ radial-gradient(ellipse at 48% 94%,rgba(10,115,190,.13),transparent 38%);
+ filter:blur(18px);animation:nebulaDrift 48s ease-in-out infinite alternate}
+@keyframes starDrift{from{transform:translate3d(-3px,0,0)}to{transform:translate3d(4px,-8px,0)}}
+@keyframes nebulaDrift{from{transform:translate3d(-1%,0,0) scale(1)}to{transform:translate3d(1%,1%,0) scale(1.035)}}
+@keyframes galaxySpin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+.header{background:rgba(4,11,27,.84);border-bottom:1px solid rgba(91,166,255,.34);box-shadow:0 6px 24px rgba(0,0,0,.16);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);color:#f5f9ff}
+.brandname{color:#f4f8ff;text-shadow:0 0 18px rgba(62,156,255,.3)}
+.brand-logo{box-shadow:0 0 20px rgba(60,150,255,.18)}
+.owner-nav-link,.master-nav-link{background:rgba(10,26,50,.8);border-color:rgba(116,180,255,.42);color:#e8f3ff;transition:transform .18s,box-shadow .18s,border-color .18s}
+.master-nav-link{background:linear-gradient(135deg,#164ea5,#39227a);border-color:#559eff;color:#fff}
+.owner-nav-link:hover,.master-nav-link:hover{border-color:#64d8ff;color:#fff;box-shadow:0 0 18px rgba(54,154,255,.25);transform:translateY(-1px)}
+.btn{transition:transform .18s,box-shadow .18s,background .18s,border-color .18s}
+.btn-primary{background:linear-gradient(110deg,#0875f5,#5441d8);color:#fff;box-shadow:0 0 22px rgba(28,115,255,.24);border-color:rgba(128,191,255,.3)}
+.btn-primary:hover{background:linear-gradient(110deg,#168bff,#6953f1);box-shadow:0 0 26px rgba(57,147,255,.42);transform:translateY(-1px)}
+.btn-outline{background:rgba(8,20,41,.8);color:#d9ecff;border-color:rgba(110,176,255,.5)}
+.hero{min-height:390px;isolation:isolate;background:
+ radial-gradient(ellipse at 72% 50%,rgba(54,125,255,.22),transparent 34%),
+ radial-gradient(ellipse at 77% 52%,rgba(141,65,255,.19),transparent 45%),
+ linear-gradient(100deg,rgba(3,8,22,.97),rgba(4,13,32,.84) 52%,rgba(5,11,28,.63));}
+.hero::before{content:"";position:absolute;z-index:-1;pointer-events:none;width:min(68vw,740px);aspect-ratio:1;right:-7%;top:50%;border-radius:50%;background:
+ radial-gradient(ellipse at center,rgba(255,255,255,.95) 0,rgba(153,215,255,.8) 1.2%,rgba(58,142,255,.48) 4%,rgba(70,72,210,.18) 12%,transparent 26%),
+ repeating-conic-gradient(from 8deg at 50% 50%,transparent 0deg,rgba(92,175,255,.05) 7deg,rgba(153,113,255,.3) 12deg,transparent 18deg,rgba(82,188,255,.18) 24deg,transparent 31deg),
+ radial-gradient(ellipse at 40% 36%,rgba(39,149,255,.2),transparent 44%);
+ filter:blur(2px);opacity:.85;animation:galaxySpin 140s linear infinite}
+.hero::after{content:"";position:absolute;z-index:-1;pointer-events:none;width:min(74vw,800px);height:min(25vw,220px);right:-5%;top:50%;border:1px solid rgba(111,194,255,.3);border-radius:50%;transform:translateY(-50%) rotate(-19deg);box-shadow:0 0 18px rgba(53,145,255,.12),inset 0 0 18px rgba(130,95,255,.08)}
+.hero-inner{position:relative;z-index:1}
+.hero h1{color:#f8fbff;text-shadow:0 3px 28px rgba(0,0,0,.3)}
+.hero h1 span{background:linear-gradient(90deg,#6ce7ff,#68a9ff 48%,#b5a2ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:#d8e8ff}
+.searchbox,.selectbox{background:rgba(247,251,255,.96);border-color:rgba(147,190,255,.5);box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.categories-section,.businesses-section,.products-section{background:transparent}
+.section-heading h2{color:#f3f8ff;text-shadow:0 0 20px rgba(63,143,255,.12)}
+.section-heading p{color:#b8cbe3}
+.category{border-color:rgba(177,205,255,.72);box-shadow:0 5px 22px rgba(0,0,0,.2);transition:transform .2s,border-color .2s,box-shadow .2s}
+.category:hover,.category.active{border-color:#63baff;box-shadow:0 0 0 1px rgba(91,183,255,.22),0 8px 28px rgba(18,112,255,.2);transform:translateY(-3px)}
+.business-card,.product-card{background:rgba(8,20,41,.88);border-color:rgba(117,170,240,.24);color:#edf6ff;box-shadow:0 9px 28px rgba(0,0,0,.2);transition:transform .2s,border-color .2s,box-shadow .2s}
+.business-card:hover,.product-card:hover{transform:translateY(-3px);border-color:rgba(91,178,255,.58);box-shadow:0 12px 34px rgba(17,91,201,.16)}
+.business-card h3,.product-body h3{color:#f5f9ff}
+.business-card .meta,.product-body p{color:#b7c9e0}
+.business-logo{box-shadow:0 0 24px rgba(64,144,255,.1)}
+.product-image{background:linear-gradient(135deg,#101f3c,#14152e);color:#a7c4e8}
+.product-price{color:#8ddaff}
+.business-banner{background:radial-gradient(ellipse at 90% 0%,rgba(87,91,255,.25),transparent 48%),linear-gradient(115deg,rgba(8,28,62,.96),rgba(21,22,63,.94));border:1px solid rgba(89,171,255,.54);box-shadow:0 0 30px rgba(23,104,255,.12);color:#f5f9ff;position:relative;overflow:hidden}
+.business-banner::after{content:"";position:absolute;pointer-events:none;left:-15%;right:-15%;bottom:-36px;height:65px;border-top:1px solid rgba(111,206,255,.3);border-radius:50%;filter:blur(.2px)}
+.business-banner strong{color:#fff}.business-banner p{color:#c1d4ef}.banner-icon{color:#74caff;text-shadow:0 0 18px rgba(73,175,255,.42)}
+.notice{background:rgba(10,23,44,.88);border-color:rgba(111,170,255,.25);color:#d1e2f8}
+.empty-state{border-color:rgba(129,177,241,.3);color:#c1d4ef;background:rgba(8,20,41,.42)}
+.footer{background:rgba(2,7,19,.94);border-top:1px solid rgba(91,166,255,.48);color:#f2f7ff;position:relative}
+.footer-note{color:#afc4df}.footer-mark{box-shadow:0 0 18px rgba(66,148,255,.24)}
+.menu-btn{background:rgba(9,23,45,.9);color:#eaf4ff;border-color:rgba(113,177,255,.45)}
+@media(max-width:760px){
+ .actions{display:none;position:absolute;top:60px;right:14px;width:min(280px,calc(100vw - 28px));padding:12px;background:rgba(5,15,34,.97);border:1px solid rgba(102,174,255,.42);border-radius:14px;box-shadow:0 14px 36px rgba(0,0,0,.4);backdrop-filter:blur(18px);z-index:20;flex-direction:column;align-items:stretch;gap:9px}
+ .actions.open{display:flex}
+ .actions>a{width:100%;min-height:42px}
+ .owner-nav-link,.master-nav-link{font-size:13px}
+ .hero{min-height:350px}
+ .hero::before{width:115vw;right:-48%;opacity:.55}
+ .hero::after{width:120vw;height:34vw;right:-50%;opacity:.55}
+}
+@media(max-width:390px){.actions{top:56px}}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
 </style>
 </head>
 <body>
@@ -24,9 +107,8 @@
   <div class="wrap nav">
     <a class="brand" href="#" aria-label="My Conslutent Services home"><span class="brand-logo-wrap"><svg class="brand-logo" viewBox="0 0 100 100" role="img" aria-label="My Conslutent Services logo" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="47" fill="#fff" stroke="#0b2d68" stroke-width="4"/><circle cx="50" cy="50" r="42" fill="none" stroke="#e3ae27" stroke-width="2"/><circle cx="48" cy="27" r="8" fill="#0b2d68"/><path d="M33 52Q34 37 48 37Q62 37 63 52L60 57H36Z" fill="#0b2d68"/><path d="M29 59L23 43Q34 32 45 35L48 43L53 35Q66 32 76 43L70 59L61 54L58 67H39L36 54Z" fill="#1765cf"/><rect x="35" y="53" width="28" height="22" rx="3" fill="#0b2d68" stroke="#fff" stroke-width="2"/><path d="M42 53V48Q42 44 46 44H52Q56 44 56 48V53" fill="none" stroke="#fff" stroke-width="3"/><rect x="46" y="59" width="7" height="7" rx="1" fill="#e3ae27"/><path d="M19 62Q20 78 42 82M57 81Q77 75 83 55" fill="none" stroke="#1765cf" stroke-width="4" stroke-linecap="round"/><path d="M74 56L84 52L82 63" fill="none" stroke="#e3ae27" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="brandname">My Conslutent Services</span></a>
     
-    <div class="actions"><a class="btn btn-primary" href="register-business.html">Register Your Business</a><a class="owner-nav-link" href="owner/login.html">Owner Section</a><a class="master-nav-link" href="master/login.html" rel="nofollow">Master Panel</a></div>
+    <div class="actions" id="navActions" aria-label="Main actions"><a class="btn btn-primary" href="register-business.html">Register Your Business</a><a class="owner-nav-link" href="owner/login.html">Owner Section</a><a class="master-nav-link" href="master/login.html" rel="nofollow">Master Panel</a></div>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">☰</button>
-    <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation"><a href="register-business.html">Register Your Business</a><a href="owner/login.html">Owner Section</a><a class="master-nav-link" href="master/login.html" rel="nofollow">Master Panel</a></nav>
   </div>
 </header>
 
@@ -67,6 +149,15 @@
     </div>
   </section>
 </main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand"><span class="footer-mark" aria-hidden="true">✦</span><span>My Conslutent Services</span></div>
+    <div class="footer-note">Discover local businesses, products and services — all in one place.</div>
+    <a href="#home" aria-label="Back to top">Back to top ↑</a>
+  </div>
+</footer>
+
 
 <footer class="footer" id="contact"><div class="wrap footer-inner">
   <div class="footer-brand"><span class="footer-mark">▣</span> My Conslutent Services</div>
@@ -160,8 +251,8 @@ $("searchForm").addEventListener("submit",e=>{
  renderBusinesses();
 });
 $("categorySelect").addEventListener("change",e=>{if(e.target.value)chooseCategory(e.target.value);else{activeCategory="";document.querySelectorAll(".category").forEach(b=>b.classList.remove("active"));renderBusinesses()}});
-$("menuBtn").addEventListener("click",()=>{const open=$("mobileMenu").classList.toggle("open");$("menuBtn").setAttribute("aria-expanded",String(open))});
-document.addEventListener("click",e=>{if(!$("mobileMenu").contains(e.target)&&e.target!==$("menuBtn")){$("mobileMenu").classList.remove("open");$("menuBtn").setAttribute("aria-expanded","false")}});
+$("menuBtn").addEventListener("click",()=>{const open=$("navActions").classList.toggle("open");$("menuBtn").setAttribute("aria-expanded",String(open));$("menuBtn").setAttribute("aria-label",open?"Close menu":"Open menu")});
+document.addEventListener("click",e=>{if(!$("navActions").contains(e.target)&&e.target!==$("menuBtn")){$("navActions").classList.remove("open");$("menuBtn").setAttribute("aria-expanded","false");$("menuBtn").setAttribute("aria-label","Open menu")}});
 async function loadDirectory(){
  try{
   if(typeof supabaseClient==="undefined"||!supabaseClient)throw new Error("Supabase client is not configured in js/supabase.js.");
