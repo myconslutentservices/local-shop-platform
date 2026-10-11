@@ -16,6 +16,7 @@
 @media(max-width:350px){.header-actions{grid-template-columns:1fr}.stats-grid{gap:8px}.stat-value{font-size:20px}}
 @media(hover:none){tbody tr:hover{background:transparent}.btn:active{transform:scale(.98)}}
 </style>
+  <link rel="stylesheet" href="master-theme.css">
 </head>
 <body>
 <header class="header"><div class="container header-inner"><div class="brand"><h1>Master Panel</h1><p>Revenue & Reports</p></div><div class="header-actions"><button class="btn btn-light" onclick="goBack()">← Dashboard</button><button class="btn btn-danger" onclick="logout()">Logout</button></div></div></header>
@@ -70,5 +71,6 @@ function renderTransactions(){const tbody=document.getElementById("transactionsB
 function renderStatusSummary(){const tbody=document.getElementById("statusBody"),map={};filteredOrders.forEach(order=>{const status=String(order.status||"unknown").toLowerCase();if(!map[status])map[status]={orders:0,value:0};map[status].orders++;map[status].value+=orderAmount(order)});const rows=Object.entries(map).sort((a,b)=>b[1].orders-a[1].orders);if(!rows.length){tbody.innerHTML='<tr><td colspan="3" class="empty">No order data available.</td></tr>';return}tbody.innerHTML=rows.map(([status,data])=>`<tr><td>${getStatusBadge(status)}</td><td><strong>${data.orders}</strong></td><td>${money(data.value)}</td></tr>`).join("")}
 function goBack(){window.location.href="dashboard.html"}async function logout(){await supabaseClient.auth.signOut();window.location.href="login.html"}async function init(){const valid=await verifyMaster();if(!valid)return;await loadData()}init();
 </script>
+<script src="master-shell.js"></script>
 </body>
 </html>
