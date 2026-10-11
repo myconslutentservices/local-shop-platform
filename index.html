@@ -183,7 +183,7 @@ body::after{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
 .suggestion-copy strong{font-size:13px;overflow-wrap:anywhere}
 .suggestion-copy small{font-size:11px;color:#64748b;overflow-wrap:anywhere}
 .suggestion-empty{padding:14px 12px;color:#64748b;font-size:13px}
-.shops-section{padding:26px 0 18px}
+.shops-section,.companies-section{padding:26px 0 18px}
 .shop-grid,.business-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
 .shop-card{min-width:0;padding:18px;border:1px solid rgba(117,170,240,.24);border-radius:17px}
 .shop-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
@@ -194,7 +194,7 @@ body::after{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
 .shop-card .shop-description{min-height:42px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .shop-card .shop-location{margin:8px 0 14px;line-height:1.4;overflow-wrap:anywhere}
 .shop-card .btn{width:100%;min-height:42px}
-.shop-grid .empty-state{grid-column:1/-1}
+.shop-grid .empty-state{grid-column:1/-1}.result-group-label{grid-column:1/-1;font-size:17px;font-weight:800;padding:8px 0 0;border-bottom:1px solid rgba(117,170,240,.24);margin-top:6px}
 @media(max-width:1050px){.shop-grid,.business-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.shop-grid,.business-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.shop-card{padding:14px}.shop-card .business-logo{width:54px;height:54px}.shop-category{font-size:10px;padding:5px 7px}.search-control{grid-column:1/-1}.search-row .selectbox,.search-row>.btn{grid-column:auto}}
 @media(max-width:430px){.shop-grid,.business-grid{grid-template-columns:1fr}.shop-card{padding:16px}.shop-card .shop-description{min-height:0}.search-row{grid-template-columns:1fr}.search-control,.search-row .selectbox,.search-row>.btn{grid-column:1/-1}.search-suggestions{max-height:50vh}}
@@ -214,19 +214,23 @@ body::after{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
 <main id="home">
   <section class="hero">
     <div class="wrap hero-inner">
-      <h1>Discover Local Shops <span>&amp; Businesses Near You</span></h1>
-      <p>Find trusted local shops, explore businesses, and discover products and services — all in one place.</p>
+      <h1>Find Local Shops <span>&amp; Trusted Businesses</span></h1>
+      <p>Explore nearby shops and businesses, compare what they offer, and find the right place for your needs.</p>
       <form class="search-row" id="searchForm" role="search">
-        <div class="search-control"><label class="searchbox"><span class="search-icon" aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Search shops, categories, products or services…" autocomplete="off" aria-label="Search shops, categories, products or services" aria-controls="searchSuggestions" aria-expanded="false"><button class="clear-search" id="clearSearch" type="button" aria-label="Clear search" hidden>×</button></label><div class="search-suggestions" id="searchSuggestions" role="listbox" hidden></div></div>
+        <div class="search-control"><label class="searchbox"><span class="search-icon" aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Search" autocomplete="off" aria-label="Search" aria-controls="searchSuggestions" aria-expanded="false"><button class="clear-search" id="clearSearch" type="button" aria-label="Clear search" hidden>×</button></label><div class="search-suggestions" id="searchSuggestions" role="listbox" hidden></div></div>
         <label class="selectbox"><span aria-hidden="true">▦</span><select id="categorySelect" aria-label="Choose a category"><option value="">All categories</option></select></label>
-        <button class="btn btn-primary" type="submit"><span aria-hidden="true">⌕</span> Search</button>
+        <button class="btn btn-primary" type="submit"><span aria-hidden="true">⌕</span> Find Businesses</button>
       </form>
     </div>
   </section>
 
   <section class="wrap shops-section" id="shopsSection" aria-labelledby="shopsHeading">
-    <div class="section-heading"><h2 id="shopsHeading">Explore Local Shops</h2><p>Discover active shops, their details and what they offer.</p></div>
+    <div class="section-heading"><h2 id="shopsHeading">Local Shops</h2><p>Discover local stores, their locations and what they offer.</p></div>
     <div class="shop-grid" id="shopsGrid" aria-live="polite"><div class="empty-state">Loading shops…</div></div>
+  </section>
+  <section class="wrap companies-section" id="companiesSection" aria-labelledby="companiesHeading">
+    <div class="section-heading"><h2 id="companiesHeading">Companies &amp; Businesses</h2><p>Explore businesses separately from local retail shops.</p></div>
+    <div class="shop-grid" id="companiesGrid" aria-live="polite"><div class="empty-state">Loading businesses…</div></div>
   </section>
 
   <section class="wrap categories-section" id="categories">
@@ -297,12 +301,26 @@ function shopCard(shop){
  const logo=imageOf(shop),cat=categoryOf(shop)||"Category not specified",address=val(shop,["address"],"Location not specified"),description=val(shop,["description"],"Explore this local shop and its available products or services.");
  return '<article class="business-card shop-card"><div class="shop-card-top"><div class="business-logo">'+(logo?'<img src="'+esc(logo)+'" alt="'+esc(nameOfShop(shop))+' logo" loading="lazy" onerror="this.onerror=null;this.style.display=\'none\';this.parentElement.classList.add(\'logo-fallback\');this.parentElement.textContent=\'🏪\'">':'🏪')+'</div><span class="shop-category">'+esc(cat)+'</span></div><h3>'+esc(nameOfShop(shop))+'</h3><div class="meta shop-description">'+esc(description)+'</div><div class="meta shop-location">📍 '+esc(address)+'</div><button class="btn btn-primary" type="button" data-open-shop="'+esc(shop.id)+'">View Shop <span aria-hidden="true">→</span></button></article>';
 }
+function listingType(shop){
+ const d=shop.business_details&&typeof shop.business_details==="object"?shop.business_details:{};
+ const raw=norm(val(d,["business_type","listing_type","entity_type","type"],""));
+ if(/company|corporate|business|service provider/.test(raw))return "company";
+ if(/shop|store|retail|merchant/.test(raw))return "shop";
+ return "shop";
+}
 function renderShops(){
- const grid=$("shopsGrid");
- const visible=shops.filter(s=>norm(s.status)==="active");
- if(directoryError&&!shops.length){grid.innerHTML='<div class="empty-state">Shops could not be loaded. '+esc(directoryError)+' Please check the Supabase read permissions and try again.</div>';return}
- if(!visible.length){grid.innerHTML='<div class="empty-state">No active shops are available yet.</div>';return}
- grid.innerHTML=visible.map(shopCard).join("");
+ const active=shops.filter(s=>norm(s.status)==="active");
+ const shopList=active.filter(s=>listingType(s)==="shop");
+ const companyList=active.filter(s=>listingType(s)==="company");
+ const grid=$("shopsGrid"),companyGrid=$("companiesGrid");
+ if(directoryError&&!shops.length){
+  const msg='<div class="empty-state">Listings could not be loaded. '+esc(directoryError)+' Please check Supabase read permissions and try again.</div>';
+  grid.innerHTML=msg;companyGrid.innerHTML=msg;return;
+ }
+ grid.innerHTML=shopList.length?shopList.map(shopCard).join(""):'<div class="empty-state">No active shops are available yet.</div>';
+ companyGrid.innerHTML=companyList.length?companyList.map(shopCard).join(""):'<div class="empty-state">No separately identified companies or businesses are available in the current database records.</div>';
+ grid.querySelectorAll("[data-open-shop]").forEach(b=>b.addEventListener("click",()=>openShop(b.dataset.openShop)));
+ companyGrid.querySelectorAll("[data-open-shop]").forEach(b=>b.addEventListener("click",()=>openShop(b.dataset.openShop)));
 }
 function buildCategories(){
  const names=categoryNames();
@@ -313,10 +331,14 @@ function buildCategories(){
 function renderBusinesses(){
  const section=$("businessesSection"),grid=$("businessGrid");
  const list=shops.filter(s=>(!activeCategory||shopHasCategory(s,activeCategory)||activeCategoryShopIds.includes(String(s.id)))&&shopMatchesText(s,searchText)&&norm(s.status)==="active");
+ const shopList=list.filter(s=>listingType(s)==="shop"),companyList=list.filter(s=>listingType(s)==="company");
  section.classList.add("visible");
- $("businessHeading").textContent=searchText?'Search results for “'+searchText+'”':activeCategory?activeCategory+" Shops & Businesses":"Matching Shops & Businesses";
- $("businessSubheading").textContent=list.length?list.length+" matching shop"+(list.length===1?"":"s")+" found. Select one to view its products and services.":"No matching listings were found in the data currently accessible to this page.";
- grid.innerHTML=list.length?list.map(shopCard).join(""):'<div class="empty-state">No matching shops or businesses found. Try a different keyword or category.</div>';
+ $("businessHeading").textContent=activeCategory?activeCategory+" — Matching Shops & Businesses":searchText?'Search results for “'+searchText+'”':"Matching Shops & Businesses";
+ $("businessSubheading").textContent=list.length?list.length+" matching listing"+(list.length===1?"":"s")+" found. Shops and companies are grouped separately below.":"No matching listings were found in the data currently accessible to this page.";
+ grid.innerHTML=list.length?
+  (shopList.length?'<div class="result-group-label">Shops</div>'+shopList.map(shopCard).join(""):"")+
+  (companyList.length?'<div class="result-group-label">Companies &amp; Businesses</div>'+companyList.map(shopCard).join(""):""):
+  '<div class="empty-state">No matching shops or businesses found. Try a different keyword or category.</div>';
  grid.querySelectorAll("[data-open-shop]").forEach(b=>b.addEventListener("click",()=>openShop(b.dataset.openShop)));
 }
 function chooseCategory(c,shopIds=[]){
