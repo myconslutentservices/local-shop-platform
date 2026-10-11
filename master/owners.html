@@ -1712,7 +1712,7 @@
               <td>
 
                 <div class="owner-cell">
-                <div class="owner-avatar" aria-hidden="true">${escapeHtml((owner.full_name||"O").trim().split(/\\s+/).slice(0,2).map(part=>part.charAt(0)).join("").toUpperCase())}</div>
+                <div class="owner-avatar" aria-hidden="true">${escapeHtml((owner.full_name||"O").trim().split(/\s+/).slice(0,2).map(part=>part.charAt(0)).join("").toUpperCase())}</div>
                 <div class="owner-copy">
                 <div class="owner-name">
                   ${escapeHtml(
@@ -1814,7 +1814,7 @@
         owner.id;
 
 
-      const initials = (owner.full_name || "O").trim().split(/\\s+/).slice(0,2).map(part=>part.charAt(0)).join("").toUpperCase();
+      const initials = (owner.full_name || "O").trim().split(/\s+/).slice(0,2).map(part=>part.charAt(0)).join("").toUpperCase();
       selectedOwner.setAttribute("data-initials", initials || "O");
       selectedOwner.innerHTML = `
 
@@ -1828,6 +1828,10 @@
 
       newPassword.value =
         "";
+
+      confirmPassword.value = "";
+      confirmPassword.type = "password";
+      showConfirmPassword.textContent = "Show";
 
 
       newPassword.type =
