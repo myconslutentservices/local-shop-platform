@@ -199,6 +199,16 @@ body::after{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
 @media(max-width:760px){.shop-grid,.business-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.shop-card{padding:14px}.shop-card .business-logo{width:54px;height:54px}.shop-category{font-size:10px;padding:5px 7px}.search-control{grid-column:1/-1}.search-row .selectbox,.search-row>.btn{grid-column:auto}}
 @media(max-width:430px){.shop-grid,.business-grid{grid-template-columns:1fr}.shop-card{padding:16px}.shop-card .shop-description{min-height:0}.search-row{grid-template-columns:1fr}.search-control,.search-row .selectbox,.search-row>.btn{grid-column:1/-1}.search-suggestions{max-height:50vh}}
 
+
+/* Category-first customer discovery: no always-visible shop directory */
+.shops-section,.companies-section{display:none!important}
+.result-group-label{grid-column:1/-1;color:#a9d7ff;font-size:14px;font-weight:800;letter-spacing:.02em;padding:15px 2px 0;border-top:1px solid rgba(117,170,240,.22);margin-top:5px}
+.result-group-label:first-child{border-top:0;margin-top:0}
+.listing-owner{display:inline-block;color:#a8d7ff;font-size:11px;font-weight:700;margin-bottom:8px}
+#businessGrid{grid-template-columns:repeat(4,minmax(0,1fr))}
+#businessGrid .result-group-label{grid-column:1/-1}
+@media(max-width:760px){#businessGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){#businessGrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -224,17 +234,8 @@ body::after{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
     </div>
   </section>
 
-  <section class="wrap shops-section" id="shopsSection" aria-labelledby="shopsHeading">
-    <div class="section-heading"><h2 id="shopsHeading">Local Shops</h2><p>Discover local stores, their locations and what they offer.</p></div>
-    <div class="shop-grid" id="shopsGrid" aria-live="polite"><div class="empty-state">Loading shops…</div></div>
-  </section>
-  <section class="wrap companies-section" id="companiesSection" aria-labelledby="companiesHeading">
-    <div class="section-heading"><h2 id="companiesHeading">Companies &amp; Businesses</h2><p>Explore businesses separately from local retail shops.</p></div>
-    <div class="shop-grid" id="companiesGrid" aria-live="polite"><div class="empty-state">Loading businesses…</div></div>
-  </section>
-
   <section class="wrap categories-section" id="categories">
-    <div class="section-heading"><h2>Browse Categories</h2><p>Choose a category that exists in the current directory to find related shops and listings.</p></div>
+    <div class="section-heading"><h2>Explore by Category</h2><p>Choose a category to discover matching businesses, products and services—all in one place.</p></div>
     <div class="category-grid" id="categoryGrid"></div>
     <div class="notice" id="dataNotice" role="status"></div>
   </section>
@@ -308,38 +309,46 @@ function listingType(shop){
  if(/shop|store|retail|merchant/.test(raw))return "shop";
  return "shop";
 }
-function renderShops(){
- const active=shops.filter(s=>norm(s.status)==="active");
- const shopList=active.filter(s=>listingType(s)==="shop");
- const companyList=active.filter(s=>listingType(s)==="company");
- const grid=$("shopsGrid"),companyGrid=$("companiesGrid");
- if(directoryError&&!shops.length){
-  const msg='<div class="empty-state">Listings could not be loaded. '+esc(directoryError)+' Please check Supabase read permissions and try again.</div>';
-  grid.innerHTML=msg;companyGrid.innerHTML=msg;return;
- }
- grid.innerHTML=shopList.length?shopList.map(shopCard).join(""):'<div class="empty-state">No active shops are available yet.</div>';
- companyGrid.innerHTML=companyList.length?companyList.map(shopCard).join(""):'<div class="empty-state">No separately identified companies or businesses are available in the current database records.</div>';
- grid.querySelectorAll("[data-open-shop]").forEach(b=>b.addEventListener("click",()=>openShop(b.dataset.openShop)));
- companyGrid.querySelectorAll("[data-open-shop]").forEach(b=>b.addEventListener("click",()=>openShop(b.dataset.openShop)));
-}
 function buildCategories(){
  const names=categoryNames();
  $("categorySelect").innerHTML='<option value="">All categories</option>'+names.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join("");
  $("categoryGrid").innerHTML=names.length?names.map(c=>'<button class="category" type="button" data-category="'+esc(c)+'"><span class="cat-icon" style="background:'+categoryColor(c)+'">'+iconOf(c)+'</span><span>'+esc(c)+'</span></button>').join(""):'<div class="empty-state">No categories are available in the current database results.</div>';
  $("categoryGrid").querySelectorAll("[data-category]").forEach(b=>b.addEventListener("click",()=>chooseCategory(b.dataset.category)));
 }
+function listingProductCard(item,shop,kind){
+ const isService=kind==="service",name=isService?nameOfService(item):nameOfProduct(item);
+ const price=val(item,["price"],null),img=imageOf(item),desc=val(item,["description"],"Contact this business for more information.");
+ const stock=val(item,["stock"],null),available=isService?item.is_active!==false:item.is_active!==false&&!(stock!==null&&Number(stock)<=0);
+ return '<article class="product-card"><div class="product-image">'+(img?'<img src="'+esc(img)+'" alt="'+esc(name)+'" loading="lazy" onerror="this.onerror=null;this.style.display=\'none\';this.parentElement.textContent=\'Image unavailable\'">':(isService?"Service":"Product"))+'</div><div class="product-body"><span class="listing-owner">'+esc(nameOfShop(shop))+'</span><h3>'+esc(name)+'</h3><p>'+esc(desc)+'</p><div class="product-price">'+(price===null?"Price on request":money(price))+'</div><button class="btn '+(available?"btn-primary":"btn-outline")+'" type="button" data-view-item="'+esc(item.id)+'" data-item-kind="'+kind+'" data-shop-id="'+esc(shop.id)+'" '+(available?"":"disabled")+'>'+(available?"Contact / Enquire":"Unavailable")+'</button></div></article>';
+}
 function renderBusinesses(){
  const section=$("businessesSection"),grid=$("businessGrid");
+ const hasFilter=!!(activeCategory||searchText);
+ if(!hasFilter){section.classList.remove("visible");grid.innerHTML="";return}
  const list=shops.filter(s=>(!activeCategory||shopHasCategory(s,activeCategory)||activeCategoryShopIds.includes(String(s.id)))&&shopMatchesText(s,searchText)&&norm(s.status)==="active");
  const shopList=list.filter(s=>listingType(s)==="shop"),companyList=list.filter(s=>listingType(s)==="company");
+ const productHits=[],serviceHits=[];
+ list.forEach(shop=>{
+  productsForShop(shop).filter(p=>{
+   const category=categories.find(c=>String(c.id)===String(p.category_id));
+   const categoryOk=!activeCategory||categoryMatch(category?.name,activeCategory)||shopHasCategory(shop,activeCategory);
+   const textOk=!searchText||[p.name,p.description,shop.name].some(v=>norm(v).includes(searchText));
+   return categoryOk&&textOk;
+  }).forEach(p=>productHits.push({item:p,shop}));
+  servicesForShop(shop).filter(v=>!searchText||[v.name,v.description,shop.name].some(x=>norm(x).includes(searchText))).forEach(v=>serviceHits.push({item:v,shop}));
+ });
  section.classList.add("visible");
- $("businessHeading").textContent=activeCategory?activeCategory+" — Matching Shops & Businesses":searchText?'Search results for “'+searchText+'”':"Matching Shops & Businesses";
- $("businessSubheading").textContent=list.length?list.length+" matching listing"+(list.length===1?"":"s")+" found. Shops and companies are grouped separately below.":"No matching listings were found in the data currently accessible to this page.";
- grid.innerHTML=list.length?
-  (shopList.length?'<div class="result-group-label">Shops</div>'+shopList.map(shopCard).join(""):"")+
-  (companyList.length?'<div class="result-group-label">Companies &amp; Businesses</div>'+companyList.map(shopCard).join(""):""):
-  '<div class="empty-state">No matching shops or businesses found. Try a different keyword or category.</div>';
+ $("businessHeading").textContent=activeCategory?activeCategory+" — Discover":'Search results for “'+searchText+'”';
+ const total=list.length+productHits.length+serviceHits.length;
+ $("businessSubheading").textContent=total?list.length+" matching businesses · "+(productHits.length+serviceHits.length)+" matching products/services. Business details and offerings are shown together below.":"No matching results were found in the data currently accessible to this page.";
+ grid.innerHTML=total?
+  (shopList.length?'<div class="result-group-label">Local Shops</div>'+shopList.map(shopCard).join(""):"")+
+  (companyList.length?'<div class="result-group-label">Companies &amp; Businesses</div>'+companyList.map(shopCard).join(""):"")+
+  (productHits.length?'<div class="result-group-label">Products</div>'+productHits.map(x=>listingProductCard(x.item,x.shop,"product")).join(""):"")+
+  (serviceHits.length?'<div class="result-group-label">Services</div>'+serviceHits.map(x=>listingProductCard(x.item,x.shop,"service")).join(""):""):
+  '<div class="empty-state">No matching businesses, products or services found. Try another keyword or category.</div>';
  grid.querySelectorAll("[data-open-shop]").forEach(b=>b.addEventListener("click",()=>openShop(b.dataset.openShop)));
+ grid.querySelectorAll("[data-view-item]").forEach(b=>b.addEventListener("click",()=>viewProduct(b.dataset.viewItem,b.dataset.itemKind,b.dataset.shopId)));
 }
 function chooseCategory(c,shopIds=[]){
  activeCategory=c||"";activeCategoryShopIds=shopIds.map(String);activeShop=null;searchText="";$("searchInput").value="";$("clearSearch").hidden=true;$("categorySelect").value=activeCategory;
@@ -359,15 +368,17 @@ function openShop(id){
  }).join(""):'<div class="empty-state">This shop has not added any active products or services yet.</div>';
  $("productsSection").scrollIntoView({behavior:"smooth",block:"start"});
 }
-function viewProduct(id,kind){
- const source=kind==="service"?services:products,p=source.find(x=>String(x.id)===String(id));if(!p||!activeShop)return;
+function viewProduct(id,kind,shopId){
+ const source=kind==="service"?services:products,p=source.find(x=>String(x.id)===String(id));
+ const owner=shops.find(s=>String(s.id)===String(shopId))||activeShop;if(!p||!owner)return;
+ activeShop=owner;
  const name=kind==="service"?nameOfService(p):nameOfProduct(p),description=val(p,["description"],"No additional details provided."),price=val(p,["price"],null);
  const msg=name+"\n"+(price===null?"Price on request":money(price))+"\n\n"+description+"\n\nContact this business directly to enquire.";
- const phone=String(val(activeShop,["whatsapp","phone"],"")).replace(/\D/g,"");
- if(phone){if(confirm(msg+"\n\nPress OK to contact the business on WhatsApp, or Cancel to keep browsing.")){window.open("https://wa.me/"+phone+"?text="+encodeURIComponent("Hello, I'm enquiring about "+name+" from "+nameOfShop(activeShop)+"."),"_blank","noopener,noreferrer")}}
+ const phone=String(val(owner,["whatsapp","phone"],"")).replace(/\D/g,"");
+ if(phone){if(confirm(msg+"\n\nPress OK to contact the business on WhatsApp, or Cancel to keep browsing.")){window.open("https://wa.me/"+phone+"?text="+encodeURIComponent("Hello, I'm enquiring about "+name+" from "+nameOfShop(owner)+"."),"_blank","noopener,noreferrer")}}
  else alert(msg+"\n\nBusiness contact number is not available yet.");
 }
-$("productGrid").addEventListener("click",e=>{const b=e.target.closest("[data-view-item]");if(b)viewProduct(b.dataset.viewItem,b.dataset.itemKind)});
+$("productGrid").addEventListener("click",e=>{const b=e.target.closest("[data-view-item]");if(b)viewProduct(b.dataset.viewItem,b.dataset.itemKind,b.dataset.shopId)});
 $("backToBusinesses").addEventListener("click",()=>{$("businessesSection").scrollIntoView({behavior:"smooth",block:"start"})});
 function suggestionItems(query){
  const q=norm(query);if(!q)return [];
@@ -418,7 +429,7 @@ async function loadDirectory(){
  if(pr.error){productsError=pr.error.message;console.warn("Products unavailable:",pr.error);products=[]}else products=pr.data||[];
  if(cr.error){console.warn("Categories unavailable:",cr.error);categories=[]}else categories=cr.data||[];
  if(svr.error){servicesError=svr.error.message;console.warn("Services unavailable:",svr.error);services=[]}else services=svr.data||[];
- renderShops();buildCategories();renderBusinesses();
+ buildCategories();renderBusinesses();
  if(directoryError)showNotice("Shops could not be loaded: "+directoryError,true);
  else if(productsError||servicesError)showNotice("Shops loaded, but some product or service results are unavailable because of database access or query errors.");
  else if(!shops.length)showNotice("No active shops are currently visible to this page. This may mean there are no active shops or Supabase read policies do not allow public access.");
@@ -426,8 +437,8 @@ async function loadDirectory(){
 }
 if(typeof supabaseClient==="undefined"||!supabaseClient){
  directoryError="Supabase client is not configured.";
- renderShops();buildCategories();showNotice(directoryError,true);
-}else loadDirectory().catch(err=>{console.error("Directory load failed:",err);directoryError=err?.message||"Unexpected database error";renderShops();buildCategories();showNotice("Directory could not load: "+directoryError,true)});
+ buildCategories();showNotice(directoryError,true);
+}else loadDirectory().catch(err=>{console.error("Directory load failed:",err);directoryError=err?.message||"Unexpected database error";buildCategories();showNotice("Directory could not load: "+directoryError,true)});
 })();
 </script>
 </body>
