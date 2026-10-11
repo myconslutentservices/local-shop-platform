@@ -816,6 +816,80 @@
 
     }
 
+
+    /* Owners page-only visual layer. Scoped so shared navigation and other pages stay untouched. */
+    body.master-shell{--owners-bg:#020817;--owners-card:#0a1835;--owners-panel:#101d3d;--owners-blue:#1677ff;--owners-neon:#00a8ff;--owners-purple:#762bff;--owners-cyan:#00d9ff;--owners-green:#00d6a0;--owners-red:#ff4565;--owners-border:rgba(70,120,255,.25)}
+    body.master-shell .main{max-width:1560px!important;padding-top:30px!important}
+    body.master-shell .page-head{align-items:center;padding:26px 28px;margin-bottom:22px;border:1px solid var(--owners-border);border-radius:22px;background:radial-gradient(ellipse at 85% 10%,rgba(118,43,255,.2),transparent 34%),radial-gradient(ellipse at 62% 100%,rgba(0,217,255,.1),transparent 35%),linear-gradient(125deg,rgba(10,24,53,.98),rgba(7,17,39,.98));box-shadow:0 20px 55px rgba(0,0,0,.18)}
+    body.master-shell .page-title h1{font-size:clamp(26px,3vw,35px)!important;letter-spacing:-.04em!important;margin-bottom:9px}
+    body.master-shell .page-title p{font-size:13px!important;line-height:1.7;color:#a9bce0!important}
+    body.master-shell .owner-count{display:inline-flex;align-items:center;gap:9px;padding:10px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(22,119,255,.17),rgba(118,43,255,.14));border:1px solid rgba(0,168,255,.32);color:#bfeaff;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);font-size:12px}
+    body.master-shell .owner-count:before{content:"";width:7px;height:7px;border-radius:50%;background:#00d9ff;box-shadow:0 0 12px #00a8ff}
+    body.master-shell .toolbar{gap:12px;margin-bottom:18px}
+    body.master-shell .search-box{position:relative}
+    body.master-shell .search-box:before{content:"⌕";position:absolute;left:16px;top:50%;transform:translateY(-54%);font-size:24px;color:#7fa7ff;pointer-events:none;z-index:1}
+    body.master-shell .search-box input{height:49px!important;padding:0 16px 0 46px!important;border-radius:13px!important;background:rgba(10,24,53,.88)!important;border:1px solid rgba(89,125,197,.27)!important;color:#fff!important;transition:border-color .2s,box-shadow .2s}
+    body.master-shell .search-box input:focus{border-color:#00a8ff!important;box-shadow:0 0 0 3px rgba(0,168,255,.12),0 0 25px rgba(22,119,255,.08)!important}
+    body.master-shell .refresh-btn{height:49px;padding:0 18px!important;display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:12px!important;border:1px solid rgba(90,127,194,.27)!important;background:linear-gradient(145deg,#101d3d,#0a1835)!important;color:#dce9ff!important;box-shadow:none!important;transition:all .2s}
+    body.master-shell .refresh-btn:before{content:"↻";font-size:19px;color:#72dfff}
+    body.master-shell .refresh-btn:hover{border-color:rgba(0,168,255,.5)!important;background:#13264a!important;transform:translateY(-1px)}
+    body.master-shell .table-card{border:1px solid rgba(70,120,255,.28)!important;border-radius:18px!important;background:linear-gradient(145deg,rgba(10,24,53,.98),rgba(5,15,34,.99))!important;box-shadow:0 20px 50px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.025)!important}
+    body.master-shell .table-wrap{overscroll-behavior-x:contain}
+    body.master-shell table{min-width:940px!important}
+    body.master-shell th{padding:17px 18px!important;background:rgba(16,29,61,.9)!important;color:#8fa9d6!important;border-bottom:1px solid rgba(70,120,255,.2)!important;font-size:10px!important;letter-spacing:.12em!important}
+    body.master-shell td{padding:17px 18px!important;border-bottom:1px solid rgba(104,133,183,.11)!important;color:#cbd9f1!important;font-size:12px!important}
+    body.master-shell tbody tr{transition:background .18s}
+    body.master-shell tbody tr:hover{background:linear-gradient(90deg,rgba(22,119,255,.08),rgba(118,43,255,.035))!important}
+    body.master-shell .owner-cell{display:flex;align-items:center;gap:12px;min-width:190px}
+    body.master-shell .owner-avatar{width:39px;height:39px;flex:0 0 39px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,rgba(22,119,255,.27),rgba(118,43,255,.24));border:1px solid rgba(100,147,255,.3);color:#e5efff;font-weight:800;font-size:13px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+    body.master-shell .owner-name{font-size:12px!important;line-height:1.45;margin-bottom:5px;color:#f3f7ff!important}
+    body.master-shell .owner-id{max-width:170px;color:#758db8!important;font-size:10px!important}
+    body.master-shell .email{color:#9bdcff!important;font-size:12px;max-width:240px}
+    body.master-shell .phone{color:#c2d0e8!important;white-space:nowrap}
+    body.master-shell .shop-name{color:#edf3ff!important;font-size:12px;margin-bottom:5px}
+    body.master-shell .shop-slug{color:#8198c1!important;font-size:10px}
+    body.master-shell .role-badge{padding:6px 10px;border-radius:8px!important;background:linear-gradient(120deg,rgba(22,119,255,.17),rgba(0,217,255,.08))!important;border:1px solid rgba(0,168,255,.27)!important;color:#85e6ff!important;font-size:10px!important;letter-spacing:.08em;box-shadow:0 0 16px rgba(0,168,255,.04)}
+    body.master-shell .action-btn{height:36px;padding:0 12px!important;display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:10px!important;border:1px solid rgba(255,69,101,.25)!important;background:linear-gradient(120deg,rgba(255,69,101,.12),rgba(118,43,255,.1))!important;color:#ffb0c0!important;font-size:11px!important;box-shadow:none!important;transition:all .18s}
+    body.master-shell .action-btn:before{content:"↻";font-size:14px}
+    body.master-shell .action-btn:hover{border-color:rgba(255,69,101,.48)!important;background:linear-gradient(120deg,rgba(255,69,101,.2),rgba(118,43,255,.17))!important;transform:translateY(-1px)}
+    body.master-shell .empty,body.master-shell .loading{padding:55px 22px!important;color:#9db1d4!important;font-size:13px!important;line-height:1.7}
+    body.master-shell .loading:before{content:"";display:block;width:25px;height:25px;margin:0 auto 13px;border:2px solid rgba(0,168,255,.16);border-top-color:#00d9ff;border-right-color:#762bff;border-radius:50%;animation:ownersSpin .8s linear infinite}
+    @keyframes ownersSpin{to{transform:rotate(360deg)}}
+    body.master-shell .empty:before{content:"◇";display:block;margin-bottom:10px;color:#779cff;font-size:29px}
+    body.master-shell .modal-overlay{background:rgba(1,5,18,.78)!important;backdrop-filter:blur(12px);padding:20px;opacity:0;transition:opacity .2s}
+    body.master-shell .modal-overlay.show{opacity:1}
+    body.master-shell .modal{max-width:500px!important;border-radius:21px!important;border:1px solid rgba(76,123,255,.38)!important;background:radial-gradient(ellipse at 100% 0,rgba(118,43,255,.15),transparent 35%),linear-gradient(145deg,#0d1b39,#071329)!important;box-shadow:0 30px 100px rgba(0,0,0,.55),0 0 40px rgba(22,119,255,.07)!important;animation:ownersModalIn .22s ease-out}
+    @keyframes ownersModalIn{from{transform:translateY(10px) scale(.985);opacity:.6}to{transform:translateY(0) scale(1);opacity:1}}
+    body.master-shell .modal-head{padding:23px 24px!important;border-bottom:1px solid rgba(70,120,255,.18)!important}
+    body.master-shell .modal-head h2{font-size:20px!important;letter-spacing:-.025em}
+    body.master-shell .modal-head p{font-size:12px!important;color:#9eb2d5!important}
+    body.master-shell .close-btn{width:35px;height:35px;border-radius:10px!important;border:1px solid rgba(100,130,183,.25)!important;background:#101f40!important;color:#b8cbed!important;box-shadow:none!important}
+    body.master-shell .close-btn:hover{background:#1a2d55!important;color:#fff!important}
+    body.master-shell .modal-body{padding:23px 24px!important}
+    body.master-shell .selected-owner{display:flex;align-items:center;gap:12px;position:relative;margin-bottom:23px;padding:15px!important;border-radius:14px!important;border:1px solid rgba(70,120,255,.22)!important;background:linear-gradient(120deg,rgba(22,119,255,.1),rgba(118,43,255,.08))!important}
+    body.master-shell .selected-owner:before{content:attr(data-initials);display:grid;place-items:center;width:42px;height:42px;flex:0 0 42px;border-radius:13px;background:linear-gradient(145deg,#1677ff,#762bff);color:white;font-weight:800;font-size:13px;box-shadow:0 7px 18px rgba(22,119,255,.2)}
+    body.master-shell .selected-owner .selected-owner-copy{min-width:0;display:block}
+    body.master-shell .selected-owner strong{font-size:13px!important;margin-bottom:5px!important;color:#f2f6ff}
+    body.master-shell .selected-owner span{display:block;color:#8ddfff!important;font-size:11px!important;overflow-wrap:anywhere}
+    body.master-shell .field{margin-bottom:19px}
+    body.master-shell .field label{font-size:12px!important;color:#c6d5ee!important;margin-bottom:8px}
+    body.master-shell .password-wrap input{height:47px!important;border-radius:11px!important;border:1px solid rgba(93,123,176,.32)!important;background:#061127!important;padding:0 68px 0 13px!important;color:#fff!important;transition:border-color .18s,box-shadow .18s}
+    body.master-shell .password-wrap input:focus{border-color:#00a8ff!important;box-shadow:0 0 0 3px rgba(0,168,255,.12),0 0 22px rgba(0,168,255,.06)!important}
+    body.master-shell .show-btn{color:#69dfff!important;font-size:11px!important;font-weight:700}
+    body.master-shell .password-help{color:#8197bb!important;font-size:10px!important;line-height:1.6}
+    body.master-shell .modal-message{border-radius:11px!important;padding:11px 13px!important}
+    body.master-shell .modal-message.error{color:#ffadbb!important;background:rgba(255,69,101,.09)!important;border-color:rgba(255,69,101,.3)!important}
+    body.master-shell .modal-message.success{color:#8ff4d8!important;background:rgba(0,214,160,.08)!important;border-color:rgba(0,214,160,.28)!important}
+    body.master-shell .modal-actions{padding:17px 24px 22px!important;border-top:1px solid rgba(70,120,255,.16)!important}
+    body.master-shell .modal-btn{height:43px!important;border-radius:11px!important;font-size:12px!important}
+    body.master-shell .cancel-btn{background:#101e3b!important;border:1px solid rgba(100,130,183,.24)!important;color:#c4d3ed!important;box-shadow:none!important}
+    body.master-shell .reset-btn{background:linear-gradient(115deg,#1677ff,#762bff)!important;border:1px solid rgba(122,148,255,.4)!important;box-shadow:0 8px 22px rgba(73,77,255,.2)!important}
+    body.master-shell .reset-btn:hover{filter:brightness(1.12)}
+    body.master-shell .reset-btn:disabled{opacity:.65;cursor:wait}
+    @media(max-width:760px){body.master-shell .main{padding:20px 14px 32px!important}body.master-shell .page-head{align-items:flex-start;flex-direction:column;padding:22px 19px!important;gap:15px!important;border-radius:17px!important}body.master-shell .owner-count{align-self:flex-start}body.master-shell .toolbar{align-items:stretch!important;flex-direction:column!important}body.master-shell .refresh-btn{width:100%}body.master-shell .table-card{border-radius:14px!important}body.master-shell .modal-overlay{padding:12px!important}}
+    @media(max-width:480px){body.master-shell .main{padding:16px 10px 25px!important}body.master-shell .page-title h1{font-size:25px!important}body.master-shell .modal-overlay{align-items:flex-end!important;padding:7px!important}body.master-shell .modal{max-height:94vh;overflow-y:auto;border-radius:20px 20px 12px 12px!important}body.master-shell .modal-head,body.master-shell .modal-body{padding:18px!important}body.master-shell .modal-actions{padding:14px 18px 18px!important;flex-direction:column-reverse}body.master-shell .modal-actions .modal-btn{width:100%;min-height:44px}body.master-shell .selected-owner{padding:12px!important}}
+    @media(prefers-reduced-motion:reduce){body.master-shell .modal,body.master-shell .modal-overlay,body.master-shell .action-btn,body.master-shell .refresh-btn{animation:none!important;transition:none!important}}
+
   </style>
 
   <link rel="stylesheet" href="master-theme.css">
@@ -1077,6 +1151,8 @@
               id="newPassword"
               placeholder="Enter new password"
               autocomplete="new-password"
+              minlength="6"
+              required
             >
 
 
@@ -1097,6 +1173,14 @@
 
         </div>
 
+        <div class="field">
+          <label for="confirmPassword">Confirm Password *</label>
+          <div class="password-wrap">
+            <input type="password" id="confirmPassword" placeholder="Confirm new password" autocomplete="new-password" minlength="6" required>
+            <button type="button" class="show-btn" id="showConfirmPassword">Show</button>
+          </div>
+          <div class="password-help">Enter the same password again to confirm it.</div>
+        </div>
 
       </div>
 
@@ -1171,6 +1255,12 @@
 
     const showNewPassword =
       document.getElementById("showNewPassword");
+
+    const confirmPassword =
+      document.getElementById("confirmPassword");
+
+    const showConfirmPassword =
+      document.getElementById("showConfirmPassword");
 
     const modalMessage =
       document.getElementById("modalMessage");
@@ -1560,7 +1650,7 @@
 
 
       ownerCount.textContent =
-        `${filtered.length} Owner${filtered.length === 1 ? "" : "s"}`;
+        `${allOwners.length} Owner${allOwners.length === 1 ? "" : "s"}`;
 
 
       loading.style.display =
@@ -1621,6 +1711,9 @@
 
               <td>
 
+                <div class="owner-cell">
+                <div class="owner-avatar" aria-hidden="true">${escapeHtml((owner.full_name||"O").trim().split(/\\s+/).slice(0,2).map(part=>part.charAt(0)).join("").toUpperCase())}</div>
+                <div class="owner-copy">
                 <div class="owner-name">
                   ${escapeHtml(
                     owner.full_name ||
@@ -1632,6 +1725,8 @@
                   ${escapeHtml(
                     owner.id
                   )}
+                </div>
+                </div>
                 </div>
 
               </td>
@@ -1719,20 +1814,13 @@
         owner.id;
 
 
+      const initials = (owner.full_name || "O").trim().split(/\\s+/).slice(0,2).map(part=>part.charAt(0)).join("").toUpperCase();
+      selectedOwner.setAttribute("data-initials", initials || "O");
       selectedOwner.innerHTML = `
 
-        <strong>
-          ${escapeHtml(
-            owner.full_name ||
-            "Owner"
-          )}
-        </strong>
-
-        <span>
-          ${escapeHtml(
-            owner.email ||
-            "Email unavailable"
-          )}
+        <span class="selected-owner-copy">
+          <strong>${escapeHtml(owner.full_name || "Owner")}</strong>
+          <span>${escapeHtml(owner.email || "Email unavailable")}</span>
         </span>
 
       `;
@@ -1778,6 +1866,10 @@
 
       newPassword.value =
         "";
+
+      confirmPassword.value = "";
+      confirmPassword.type = "password";
+      showConfirmPassword.textContent = "Show";
 
       clearModalMessage();
 
@@ -1833,6 +1925,8 @@
       const password =
         newPassword.value;
 
+      const confirmation =
+        confirmPassword.value;
 
       if (!password) {
 
@@ -1857,6 +1951,18 @@
 
       }
 
+
+      if (!confirmation) {
+        showModalMessage("Please confirm the new password.", "error");
+        confirmPassword.focus();
+        return;
+      }
+
+      if (password !== confirmation) {
+        showModalMessage("The passwords do not match. Please try again.", "error");
+        confirmPassword.focus();
+        return;
+      }
 
       confirmResetBtn.disabled =
         true;
@@ -1889,6 +1995,8 @@
 
         newPassword.value =
           "";
+
+        confirmPassword.value = "";
 
 
         setTimeout(() => {
@@ -1957,6 +2065,12 @@
       }
     );
 
+
+    showConfirmPassword.addEventListener("click", () => {
+      const visible = confirmPassword.type === "password";
+      confirmPassword.type = visible ? "text" : "password";
+      showConfirmPassword.textContent = visible ? "Hide" : "Show";
+    });
 
     // =========================
     // SEARCH
