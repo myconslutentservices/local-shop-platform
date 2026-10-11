@@ -1,0 +1,87 @@
+/* Master Panel premium dark UI — visual layer only; no data/auth behavior. */
+:root{color-scheme:dark;--mp-bg:#080d1a;--mp-surface:#101a2c;--mp-surface-2:#142039;--mp-border:rgba(148,163,184,.17);--mp-text:#e8efff;--mp-muted:#94a7c7;--mp-blue:#4f7cff;--mp-cyan:#36d9f5;--mp-purple:#a78bfa;--mp-shadow:0 18px 48px rgba(0,0,0,.22)}
+html{background:var(--mp-bg)!important;scroll-behavior:smooth}
+body.master-shell{background:radial-gradient(ellipse at 75% -10%,rgba(68,91,210,.18),transparent 38%),radial-gradient(ellipse at 5% 25%,rgba(54,217,245,.07),transparent 34%),var(--mp-bg)!important;color:var(--mp-text)!important;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;min-height:100vh;padding-left:264px;transition:padding .2s ease}
+body.master-shell *{scrollbar-color:#344462 transparent}
+body.master-shell ::selection{background:rgba(79,124,255,.35);color:#fff}
+body.master-shell a{transition:color .18s ease}
+body.master-shell .mp-sidebar{position:fixed;inset:0 auto 0 0;width:264px;z-index:1000;padding:22px 15px 18px;background:linear-gradient(180deg,rgba(16,26,44,.98),rgba(9,15,29,.98));border-right:1px solid var(--mp-border);box-shadow:14px 0 40px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:22px;overflow-y:auto;backdrop-filter:blur(22px)}
+body.master-shell .mp-brand{display:flex;align-items:center;gap:12px;padding:2px 9px 20px;border-bottom:1px solid var(--mp-border);text-decoration:none;color:var(--mp-text)}
+body.master-shell .mp-brand-mark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--mp-blue),#7757e8 58%,var(--mp-cyan));box-shadow:0 8px 24px rgba(79,124,255,.28);font-size:20px;font-weight:900;color:#fff}
+body.master-shell .mp-brand-copy{min-width:0}
+body.master-shell .mp-brand-copy strong{display:block;font-size:14px;letter-spacing:.02em}
+body.master-shell .mp-brand-copy span{display:block;margin-top:4px;color:var(--mp-muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+body.master-shell .mp-nav-label{padding:0 12px;color:#7184a8;font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+body.master-shell .mp-nav{display:grid;gap:5px}
+body.master-shell .mp-nav a{display:flex;align-items:center;gap:12px;min-height:43px;padding:10px 12px;border:1px solid transparent;border-radius:12px;text-decoration:none;color:#9eafcd;font-size:13px;font-weight:600;transition:background .18s,border-color .18s,color .18s,transform .18s}
+body.master-shell .mp-nav a .mp-nav-icon{width:22px;text-align:center;font-size:16px;flex:0 0 22px}
+body.master-shell .mp-nav a:hover{background:rgba(79,124,255,.09);border-color:rgba(79,124,255,.13);color:#eef3ff;transform:translateX(2px)}
+body.master-shell .mp-nav a[aria-current=page]{background:linear-gradient(100deg,rgba(79,124,255,.23),rgba(126,91,235,.12));border-color:rgba(109,142,255,.25);color:#fff;box-shadow:inset 3px 0 0 var(--mp-blue)}
+body.master-shell .mp-sidebar-bottom{margin-top:auto;padding:14px;border:1px solid var(--mp-border);border-radius:14px;background:linear-gradient(135deg,rgba(79,124,255,.1),rgba(54,217,245,.04))}
+body.master-shell .mp-sidebar-bottom strong{display:block;font-size:12px}
+body.master-shell .mp-sidebar-bottom span{display:block;margin-top:5px;font-size:11px;line-height:1.5;color:var(--mp-muted)}
+body.master-shell .mp-mobile-toggle{display:none}
+body.master-shell .mp-overlay{display:none}
+body.master-shell .header,body.master-shell .topbar,body.master-shell .topbar,.master-shell .topbar,body.master-shell header,body.master-shell .header{background:rgba(11,18,34,.78)!important;color:var(--mp-text)!important;border-bottom:1px solid var(--mp-border)!important;box-shadow:0 8px 30px rgba(0,0,0,.12)!important;backdrop-filter:blur(20px);position:relative;z-index:20}
+body.master-shell .container,body.master-shell .main,body.master-shell main,body.master-shell .wrap{max-width:1600px!important;width:100%!important;margin-left:auto!important;margin-right:auto!important;padding-left:clamp(16px,2.5vw,38px)!important;padding-right:clamp(16px,2.5vw,38px)!important}
+body.master-shell .container,body.master-shell .main,body.master-shell main{padding-top:26px!important;padding-bottom:44px!important}
+body.master-shell h1,body.master-shell h2,body.master-shell h3,body.master-shell h4{color:#eef4ff!important;letter-spacing:-.025em}
+body.master-shell p,body.master-shell .muted,body.master-shell .page-title p,body.master-shell .page-title small{color:var(--mp-muted)!important}
+body.master-shell .stat-card,body.master-shell .stat,body.master-shell .card,body.master-shell .panel,body.master-shell .section,body.master-shell .filters,body.master-shell .filter-box,body.master-shell .shop-card,body.master-shell .setting,body.master-shell .notification,body.master-shell .login-box,body.master-shell .table-wrapper,body.master-shell .table-wrap,body.master-shell .tableWrap,body.master-shell .modal-box,body.master-shell .dialog,body.master-shell .modal-content,body.master-shell .quick-card,body.master-shell .chart-card,body.master-shell .empty,body.master-shell .owner-card,body.master-shell .product-card,body.master-shell .support-card{background:linear-gradient(145deg,rgba(19,31,52,.96),rgba(13,23,41,.98))!important;color:var(--mp-text)!important;border:1px solid var(--mp-border)!important;border-radius:16px!important;box-shadow:var(--mp-shadow)!important}
+body.master-shell .stat-card,body.master-shell .stat{transition:transform .2s,border-color .2s,box-shadow .2s}
+body.master-shell .stat-card:hover,body.master-shell .stat:hover{transform:translateY(-2px);border-color:rgba(79,124,255,.4)!important;box-shadow:0 20px 48px rgba(0,0,0,.3)!important}
+body.master-shell .stat-value,body.master-shell .stat .number,body.master-shell .stat-card .value{color:#f3f7ff!important;font-variant-numeric:tabular-nums}
+body.master-shell .stat-label,body.master-shell .stat-card .label,body.master-shell .label{color:#9aafd0!important}
+body.master-shell input,body.master-shell select,body.master-shell textarea{background:#0a1324!important;color:#e8efff!important;border:1px solid #2a3a57!important;border-radius:10px!important;box-shadow:none!important}
+body.master-shell input::placeholder,body.master-shell textarea::placeholder{color:#7184a5!important}
+body.master-shell input:focus,body.master-shell select:focus,body.master-shell textarea:focus{border-color:var(--mp-blue)!important;box-shadow:0 0 0 3px rgba(79,124,255,.15)!important;outline:none!important}
+body.master-shell label,body.master-shell .field label{color:#b7c7e2!important}
+body.master-shell button,body.master-shell .btn,body.master-shell .add-btn,body.master-shell .primary,body.master-shell .login-btn{transition:transform .18s,filter .18s,box-shadow .18s;background:linear-gradient(135deg,#4e7bff,#6659e8)!important;color:white!important;border:1px solid rgba(147,174,255,.22)!important;border-radius:10px!important;box-shadow:0 6px 18px rgba(79,124,255,.13)}
+body.master-shell button:hover,body.master-shell .btn:hover,body.master-shell .add-btn:hover,body.master-shell .primary:hover{filter:brightness(1.1);box-shadow:0 8px 24px rgba(79,124,255,.2)}
+body.master-shell button:active{transform:translateY(1px)}
+body.master-shell .secondary,body.master-shell .btn-light,body.master-shell .top-btn{background:#1a2943!important;color:#dbe7ff!important;border:1px solid #304363!important;box-shadow:none!important}
+body.master-shell .danger,body.master-shell .delete-btn,body.master-shell .btn-danger,body.master-shell .logout-btn{background:linear-gradient(135deg,#e34e72,#c9355e)!important;color:#fff!important;border-color:rgba(255,130,160,.2)!important}
+body.master-shell .status,body.master-shell .badge,body.master-shell .pill{border:1px solid rgba(148,163,184,.16)}
+body.master-shell table{color:var(--mp-text)!important;border-collapse:separate!important;border-spacing:0!important}
+body.master-shell th{background:#172640!important;color:#9fb4d8!important;border-bottom:1px solid #2a3a57!important}
+body.master-shell td{color:#d4e0f5!important;border-bottom:1px solid rgba(148,163,184,.12)!important}
+body.master-shell tr:hover td{background:rgba(79,124,255,.045)}
+body.master-shell .table-wrapper,body.master-shell .table-wrap,body.master-shell .tableWrap{overflow-x:auto!important}
+body.master-shell .modal,body.master-shell .overlay{background:rgba(2,6,18,.78)!important;backdrop-filter:blur(8px)}
+body.master-shell .modal-box,body.master-shell .dialog,body.master-shell .modal-content{border:1px solid #2c3e5f!important}
+body.master-shell .error,body.master-shell .error-box{background:rgba(190,48,75,.15)!important;color:#ffb5c3!important;border:1px solid rgba(244,83,120,.3)!important}
+body.master-shell .success,body.master-shell .success-box{background:rgba(22,163,74,.13)!important;color:#9af0bd!important;border:1px solid rgba(34,197,94,.25)!important}
+body.master-shell .empty,body.master-shell .loading{color:var(--mp-muted)!important}
+body.master-shell hr{border-color:var(--mp-border)!important}
+body.master-shell a{color:#8eb3ff}
+body.master-shell .header a,body.master-shell .topbar a{color:inherit}
+body.master-shell .page-title,body.master-shell .top-bar{margin-bottom:24px}
+body.master-shell .page-title h1,body.master-shell .top-bar h2{font-size:clamp(23px,2.2vw,31px)!important}
+@media(max-width:1100px){body.master-shell{padding-left:230px}body.master-shell .mp-sidebar{width:230px;padding-left:11px;padding-right:11px}body.master-shell .mp-brand-copy strong{font-size:13px}}
+@media(max-width:760px){
+ body.master-shell{padding-left:0;padding-top:62px}
+ body.master-shell .mp-sidebar{width:min(290px,86vw);transform:translateX(-105%);transition:transform .24s ease;box-shadow:22px 0 55px rgba(0,0,0,.42)}
+ body.master-shell.mp-nav-open .mp-sidebar{transform:translateX(0)}
+ body.master-shell .mp-overlay{display:block;position:fixed;inset:0;background:rgba(2,6,18,.66);z-index:999;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+ body.master-shell.mp-nav-open .mp-overlay{opacity:1;visibility:visible}
+ body.master-shell .mp-mobile-toggle{display:grid;place-items:center;position:fixed;top:11px;left:12px;width:42px;height:42px;z-index:1001;border-radius:12px!important;background:#172640!important;color:#fff!important;border:1px solid #344768!important;box-shadow:0 8px 24px rgba(0,0,0,.25)!important;font-size:20px}
+ body.master-shell .header,body.master-shell .topbar,body.master-shell header{padding-left:64px!important}
+ body.master-shell .container,body.master-shell .main,body.master-shell main,body.master-shell .wrap{padding-left:14px!important;padding-right:14px!important}
+ body.master-shell .container,body.master-shell .main,body.master-shell main{padding-top:18px!important}
+ body.master-shell .stats,body.master-shell .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ body.master-shell .shops-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ body.master-shell .filter-grid,body.master-shell .filter-grid,.master-shell .filter-grid,body.master-shell .toolbar,body.master-shell .topbar:not(header .topbar){grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.master-shell .two-column{grid-template-columns:1fr!important}
+}
+@media(max-width:480px){
+ body.master-shell .stats,body.master-shell .stats-grid,body.master-shell .shops-grid{grid-template-columns:1fr!important}
+ body.master-shell .stat-card,body.master-shell .stat,body.master-shell .card,body.master-shell .panel,body.master-shell .section,body.master-shell .filters,body.master-shell .filter-box{padding:15px!important;border-radius:13px!important}
+ body.master-shell .header,body.master-shell .topbar,body.master-shell header{gap:10px!important;flex-wrap:wrap}
+ body.master-shell .header h1,body.master-shell .topbar h1,body.master-shell header h1{font-size:19px!important}
+ body.master-shell .filter-grid,body.master-shell .toolbar{grid-template-columns:1fr!important}
+ body.master-shell .formGrid{grid-template-columns:1fr!important}
+ body.master-shell .field.full{grid-column:auto!important}
+ body.master-shell .header-actions,body.master-shell .top-actions{flex-wrap:wrap}
+ body.master-shell button,body.master-shell .btn{max-width:100%;overflow-wrap:anywhere}
+}
+@media(prefers-reduced-motion:reduce){body.master-shell *,body.master-shell *::before,body.master-shell *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
