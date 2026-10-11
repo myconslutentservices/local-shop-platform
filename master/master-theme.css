@@ -85,3 +85,16 @@ body.master-shell .page-title h1,body.master-shell .top-bar h2{font-size:clamp(2
  body.master-shell button,body.master-shell .btn{max-width:100%;overflow-wrap:anywhere}
 }
 @media(prefers-reduced-motion:reduce){body.master-shell *,body.master-shell *::before,body.master-shell *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Master login page */
+body.master-login{color-scheme:dark;background:radial-gradient(ellipse at 20% 10%,rgba(79,124,255,.2),transparent 36%),radial-gradient(ellipse at 80% 90%,rgba(54,217,245,.11),transparent 35%),#080d1a!important;color:var(--mp-text)!important;font-family:Inter,ui-sans-serif,system-ui,sans-serif!important}
+body.master-login .login-box{background:linear-gradient(145deg,rgba(19,31,52,.97),rgba(10,18,33,.98))!important;border:1px solid var(--mp-border)!important;border-radius:22px!important;box-shadow:0 30px 90px rgba(0,0,0,.38),0 0 55px rgba(79,124,255,.08)!important;color:var(--mp-text)!important}
+body.master-login h1,body.master-login h2{color:#f1f5ff!important}
+body.master-login .subtitle,body.master-login p{color:var(--mp-muted)!important}
+body.master-login label{color:#bdcce5!important}
+body.master-login input{background:#091326!important;color:#eef4ff!important;border:1px solid #2b3c5b!important}
+body.master-login input:focus{border-color:var(--mp-blue)!important;box-shadow:0 0 0 3px rgba(79,124,255,.16)!important}
+body.master-login .logo{background:linear-gradient(135deg,#4f7cff,#7455e8 60%,#36d9f5)!important;box-shadow:0 12px 30px rgba(79,124,255,.3)}
+body.master-login .login-btn{background:linear-gradient(135deg,#4f7cff,#6859e8)!important;box-shadow:0 10px 28px rgba(79,124,255,.2)}
+body.master-login .error{background:rgba(190,48,75,.16)!important;color:#ffb5c3!important;border-color:rgba(244,83,120,.3)!important}
+body.master-login .success{background:rgba(22,163,74,.13)!important;color:#9af0bd!important;border-color:rgba(34,197,94,.25)!important}
