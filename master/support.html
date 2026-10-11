@@ -286,11 +286,175 @@ button{
 @media(hover:none){
   button:hover{filter:none}
 }
+
+/* Support Center premium redesign — scoped to this page only. No ticket logic or handlers changed. */
+body.support-page{
+  --sp-bg:#020817;--sp-card:#0A1835;--sp-panel:#101D3D;--sp-blue:#1677FF;--sp-neon:#00A8FF;
+  --sp-purple:#762BFF;--sp-cyan:#00D9FF;--sp-green:#00D6A0;--sp-orange:#FF9D27;--sp-red:#FF4565;
+  --sp-text:#FFFFFF;--sp-muted:#A9BCE0;--sp-border:rgba(70,120,255,.25);
+  margin:0;background:radial-gradient(ellipse at 8% 0%,rgba(22,119,255,.17),transparent 36%),radial-gradient(ellipse at 92% 10%,rgba(118,43,255,.14),transparent 32%),var(--sp-bg);
+  color:var(--sp-text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;overflow-x:hidden
+}
+body.support-page .header{
+  position:relative;isolation:isolate;display:flex;align-items:center;gap:20px;justify-content:space-between;
+  padding:23px max(3%,calc((100vw - 1440px)/2));color:#fff;
+  background:linear-gradient(115deg,rgba(5,15,37,.97),rgba(10,24,53,.95) 58%,rgba(27,18,67,.94));
+  border-bottom:1px solid var(--sp-border);box-shadow:0 12px 38px rgba(0,0,0,.22);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)
+}
+body.support-page .header:before{content:"";position:absolute;left:0;bottom:-1px;width:100%;height:2px;background:linear-gradient(90deg,var(--sp-blue),var(--sp-purple),var(--sp-cyan));opacity:.8;z-index:-1}
+body.support-page .header>div{position:relative;padding-left:54px}
+body.support-page .header>div:before{content:"✉";position:absolute;left:0;top:1px;display:grid;place-items:center;width:40px;height:40px;border-radius:13px;color:#69d8ff;font-size:20px;background:linear-gradient(145deg,rgba(0,168,255,.18),rgba(118,43,255,.18));border:1px solid rgba(0,168,255,.32);box-shadow:0 0 22px rgba(0,168,255,.1)}
+body.support-page .header h1{font-size:clamp(23px,2.4vw,31px);font-weight:850;letter-spacing:-.035em;line-height:1.2;margin:0;background:linear-gradient(100deg,#fff 12%,#b6dcff 65%,#c4a8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+body.support-page .header small{display:block;color:var(--sp-muted);font-size:13px;margin-top:8px;letter-spacing:.01em}
+body.support-page button{border:1px solid transparent;border-radius:11px;padding:10px 15px;min-height:42px;cursor:pointer;font-size:13px;font-weight:750;letter-spacing:.01em;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease;touch-action:manipulation}
+body.support-page button:hover{transform:translateY(-2px)}
+body.support-page button:focus-visible{outline:2px solid var(--sp-cyan);outline-offset:3px}
+body.support-page .primary{color:#fff;background:linear-gradient(110deg,#1677ff,#5149ff 68%,#762bff);box-shadow:0 8px 22px rgba(22,119,255,.22)}
+body.support-page .primary:hover{box-shadow:0 10px 28px rgba(22,119,255,.36)}
+body.support-page .secondary{background:rgba(16,29,61,.9);color:#e7f0ff;border-color:var(--sp-border)}
+body.support-page .secondary:hover{border-color:rgba(0,217,255,.45);box-shadow:0 0 20px rgba(0,168,255,.1)}
+body.support-page .danger{background:rgba(255,69,101,.13);color:#ff91a4;border-color:rgba(255,69,101,.25)}
+body.support-page .container{width:min(1440px,94%);max-width:1440px;margin:30px auto 58px;padding:0}
+body.support-page .topbar{
+  display:grid;grid-template-columns:minmax(230px,1fr) minmax(170px,230px) auto;align-items:center;gap:13px;
+  padding:18px;margin-bottom:21px;border:1px solid var(--sp-border);border-radius:17px;
+  background:linear-gradient(145deg,rgba(13,29,62,.94),rgba(7,19,43,.97));box-shadow:0 14px 36px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.025);position:relative;overflow:hidden
+}
+body.support-page .topbar:before{content:"";position:absolute;left:0;top:0;height:2px;width:100%;background:linear-gradient(90deg,var(--sp-blue),var(--sp-purple),var(--sp-cyan))}
+body.support-page input,body.support-page select,body.support-page textarea{
+  min-width:0;width:100%;min-height:45px;padding:11px 13px;border:1px solid rgba(120,155,220,.24);border-radius:11px;
+  font-size:13px;line-height:1.45;outline:none;background:rgba(3,12,29,.85);color:#f2f7ff;
+  transition:border-color .2s ease,box-shadow .2s ease
+}
+body.support-page input::placeholder{color:#788fb5}
+body.support-page input:focus,body.support-page select:focus,body.support-page textarea:focus{border-color:var(--sp-neon);box-shadow:0 0 0 3px rgba(0,168,255,.12),0 0 18px rgba(0,168,255,.08)}
+body.support-page select option{background:#0a1835;color:#fff}
+body.support-page #search{padding-left:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%237e9bc8' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:13px center}
+body.support-page #statusFilter{appearance:auto;cursor:pointer}
+body.support-page .topbar>.primary{min-width:125px;white-space:nowrap}
+body.support-page .topbar>.primary:before{content:"↻";font-size:17px;display:inline-block;margin-right:8px;vertical-align:-1px}
+body.support-page .topbar>.primary:hover:before{animation:sp-spin .7s ease-in-out}
+@keyframes sp-spin{to{transform:rotate(360deg)}}
+body.support-page .card{
+  min-width:0;padding:0;border:1px solid var(--sp-border);border-radius:18px;overflow:hidden;
+  background:linear-gradient(145deg,rgba(10,24,53,.97),rgba(5,15,35,.98));box-shadow:0 16px 42px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.025)
+}
+body.support-page .card:before{content:"SUPPORT TICKETS";display:block;padding:20px 22px 16px;color:#f4f8ff;font-size:15px;font-weight:850;letter-spacing:.055em}
+body.support-page .table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+body.support-page table{width:100%;min-width:900px;border-collapse:separate;border-spacing:0}
+body.support-page th{padding:14px 15px;background:rgba(17,34,69,.9);color:#9eb8e0;border-top:1px solid rgba(70,120,255,.16);border-bottom:1px solid rgba(70,120,255,.24);font-size:10px;font-weight:850;letter-spacing:.085em;text-transform:uppercase;white-space:nowrap}
+body.support-page td{padding:15px;color:#dce8fb;border-bottom:1px solid rgba(70,120,255,.12);font-size:12px;line-height:1.55;vertical-align:middle;overflow-wrap:anywhere}
+body.support-page tbody tr{transition:background .18s ease}
+body.support-page tbody tr:hover{background:rgba(22,119,255,.07)}
+body.support-page tbody tr:last-child td{border-bottom:0}
+body.support-page td:first-child{color:#72cfff;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+body.support-page td:nth-child(2){color:#f0f5ff;font-weight:650}
+body.support-page td:nth-child(4){color:#edf4ff;font-weight:650;min-width:150px}
+body.support-page td:nth-child(7) button{min-width:75px;padding:8px 13px;min-height:35px}
+body.support-page .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;font-size:10px;line-height:1.3;font-weight:850;letter-spacing:.025em;text-transform:capitalize;white-space:nowrap;border:1px solid transparent}
+body.support-page .badge:before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+body.support-page .badge.new{background:rgba(22,119,255,.14);color:#79beff;border-color:rgba(22,119,255,.26)}
+body.support-page .badge.open{background:rgba(0,168,255,.12);color:#56d0ff;border-color:rgba(0,168,255,.25)}
+body.support-page .badge.pending{background:rgba(255,157,39,.13);color:#ffc16c;border-color:rgba(255,157,39,.27)}
+body.support-page .badge.resolved{background:rgba(0,214,160,.12);color:#4ce6ba;border-color:rgba(0,214,160,.25)}
+body.support-page .badge.closed{background:rgba(143,157,183,.12);color:#bdc9dc;border-color:rgba(143,157,183,.22)}
+body.support-page .empty{position:relative;padding:42px 20px;text-align:center;color:#a9bce0;font-size:0;line-height:1.6}
+body.support-page .empty:before{content:"✉";display:grid;place-items:center;width:62px;height:62px;margin:0 auto 17px;border-radius:20px;font-size:27px;color:#62d7ff;background:linear-gradient(145deg,rgba(0,168,255,.17),rgba(118,43,255,.2));border:1px solid rgba(0,168,255,.32);box-shadow:0 0 35px rgba(0,168,255,.12)}
+body.support-page .empty:after{content:"No Support Tickets Found";display:block;color:#f0f6ff;font-size:17px;font-weight:800;line-height:1.4;margin-top:0}
+body.support-page .empty{font-size:0}
+body.support-page .empty:after{white-space:normal}
+body.support-page .empty::first-line{font-size:0}
+body.support-page .error{display:none;margin-bottom:18px;padding:14px 16px;border-radius:12px;background:rgba(255,69,101,.1);color:#ff9bab;border:1px solid rgba(255,69,101,.27);font-size:13px;line-height:1.55;overflow-wrap:anywhere}
+body.support-page .modal{background:rgba(1,6,19,.78);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);padding:22px}
+body.support-page .modal-box{max-width:690px;padding:24px;border-radius:20px;border:1px solid rgba(70,120,255,.35);background:linear-gradient(145deg,#0c1d40,#071329);color:#edf4ff;box-shadow:0 28px 90px rgba(0,0,0,.52),0 0 45px rgba(22,119,255,.1)}
+body.support-page .modal-head{padding-bottom:17px;margin-bottom:19px;border-bottom:1px solid rgba(70,120,255,.19)}
+body.support-page .modal-head h2{font-size:21px;font-weight:850;letter-spacing:-.025em;color:#fff}
+body.support-page .modal-head .secondary{width:40px;min-width:40px;padding:7px;font-size:17px}
+body.support-page .detail{padding:13px 14px;margin-bottom:10px;border-radius:12px;background:rgba(16,29,61,.73);border:1px solid rgba(70,120,255,.15);color:#bdcfea;font-size:13px;line-height:1.65;overflow-wrap:anywhere;white-space:normal}
+body.support-page .detail b{color:#f5f8ff;display:inline-block;min-width:88px}
+body.support-page .field{margin:20px 0 16px}
+body.support-page .field label{display:block;margin-bottom:8px;color:#b9cbe8;font-size:11px;font-weight:850;letter-spacing:.075em;text-transform:uppercase}
+body.support-page .actions{display:flex;gap:10px;flex-wrap:wrap;padding-top:3px}
+body.support-page .actions button{flex:1;min-width:120px}
+body.support-page .status-select{min-width:150px}
+@media(max-width:1100px){
+ body.support-page .container{width:94%;margin-top:24px}
+ body.support-page .topbar{grid-template-columns:minmax(0,1fr) minmax(170px,.7fr);gap:11px}
+ body.support-page .topbar>.primary{grid-column:1/-1;width:100%}
+ body.support-page table{min-width:860px}
+}
+@media(max-width:700px){
+ body.support-page .header{padding:17px 4%;align-items:center;gap:12px}
+ body.support-page .header>div{padding-left:47px}
+ body.support-page .header>div:before{width:36px;height:36px;font-size:18px;border-radius:11px}
+ body.support-page .header h1{font-size:22px}
+ body.support-page .header small{font-size:12px;line-height:1.45}
+ body.support-page .header>button{flex-shrink:0;min-height:40px;padding:9px 11px;font-size:12px}
+ body.support-page .container{width:92%;margin:20px auto 38px;padding:0}
+ body.support-page .topbar{grid-template-columns:minmax(0,1fr);gap:10px;padding:14px;margin-bottom:16px;border-radius:15px}
+ body.support-page .topbar>.primary{grid-column:auto;width:100%}
+ body.support-page .card{border-radius:15px}
+ body.support-page .card:before{padding:17px 16px 14px;font-size:13px}
+ body.support-page .table-wrap{overflow:visible}
+ body.support-page table{min-width:0;width:100%;border-collapse:separate;border-spacing:0 10px;padding:0 10px 10px}
+ body.support-page thead{display:none}
+ body.support-page tbody,body.support-page tbody tr,body.support-page td{display:block;width:100%}
+ body.support-page tbody tr{padding:7px 13px;border:1px solid rgba(70,120,255,.23);border-radius:13px;background:linear-gradient(140deg,rgba(16,34,72,.85),rgba(7,19,43,.96));box-shadow:0 5px 17px rgba(0,0,0,.14)}
+ body.support-page tbody tr:hover{background:linear-gradient(140deg,rgba(20,43,86,.9),rgba(7,19,43,.98))}
+ body.support-page td{display:grid;grid-template-columns:88px minmax(0,1fr);gap:10px;padding:10px 0;border:0;border-bottom:1px solid rgba(70,120,255,.12);font-size:12px;text-align:left}
+ body.support-page td:before{color:#849fc8;font-size:10px;font-weight:850;letter-spacing:.055em;text-transform:uppercase;content:""}
+ body.support-page td:nth-child(1):before{content:"Ticket"}
+ body.support-page td:nth-child(2):before{content:"Owner"}
+ body.support-page td:nth-child(3):before{content:"Shop"}
+ body.support-page td:nth-child(4):before{content:"Subject"}
+ body.support-page td:nth-child(5):before{content:"Status"}
+ body.support-page td:nth-child(6):before{content:"Created"}
+ body.support-page td:nth-child(7):before{content:"Action"}
+ body.support-page td:last-child{border-bottom:0}
+ body.support-page td:nth-child(7) button{width:100%;min-height:40px}
+ body.support-page .empty{padding:28px 12px}
+ body.support-page .modal{align-items:flex-end;padding:0}
+ body.support-page .modal-box{max-width:none;max-height:92vh;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom))}
+ body.support-page .modal-head h2{font-size:19px}
+ body.support-page .actions{display:grid;grid-template-columns:1fr 1fr}
+ body.support-page .actions button{width:100%;min-width:0}
+}
+@media(max-width:420px){
+ body.support-page .header{align-items:stretch;flex-direction:column}
+ body.support-page .header>button{width:100%}
+ body.support-page .header>div{min-height:40px}
+ body.support-page .container{width:94%;margin-top:16px}
+ body.support-page .topbar{padding:12px}
+ body.support-page .card:before{padding-left:14px}
+ body.support-page table{padding-left:7px;padding-right:7px}
+ body.support-page tbody tr{padding:6px 10px}
+ body.support-page td{grid-template-columns:74px minmax(0,1fr);gap:8px;font-size:11px}
+ body.support-page td:before{font-size:9px}
+ body.support-page .modal-box{padding:17px 12px calc(17px + env(safe-area-inset-bottom))}
+ body.support-page .detail{padding:11px;font-size:12px}
+ body.support-page .detail b{min-width:75px}
+ body.support-page .actions{grid-template-columns:1fr}
+}
+@media(max-width:340px){
+ body.support-page .header h1{font-size:20px}
+ body.support-page .container{width:95%}
+ body.support-page td{grid-template-columns:65px minmax(0,1fr);gap:7px}
+ body.support-page .modal-head h2{font-size:17px}
+}
+@media(hover:none){
+ body.support-page button:hover{transform:none;box-shadow:none}
+ body.support-page button:active{transform:scale(.985)}
+ body.support-page tbody tr:hover{background:linear-gradient(140deg,rgba(16,34,72,.85),rgba(7,19,43,.96))}
+}
+@media(prefers-reduced-motion:reduce){
+ body.support-page *,body.support-page *:before,body.support-page *:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
+}
+
 </style>
   <link rel="stylesheet" href="master-theme.css">
 </head>
 
-<body>
+<body class="support-page">
 
 <div class="header">
   <div>
