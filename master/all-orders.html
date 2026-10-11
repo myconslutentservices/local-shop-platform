@@ -16,6 +16,7 @@ html,body{width:100%;min-height:100%;overflow-x:hidden}body{background:#f5f7fb;c
 @media(min-width:1600px){.container{padding-left:30px;padding-right:30px}.stats{grid-template-columns:repeat(5,1fr)}}
 @media(hover:none){.top-btn:hover,.logout-btn:hover,.view-btn:hover{background:inherit}.logout-btn{background:#dc2626}.view-btn{background:#2563eb}}
 </style>
+  <link rel="stylesheet" href="master-theme.css">
 </head>
 <body>
 <header class="topbar"><div class="brand">Pro Master Panel<small>All Orders Management</small></div><div class="top-actions"><button class="top-btn" onclick="goDashboard()">Dashboard</button><button class="top-btn" onclick="goShops()">Shops</button><button class="top-btn logout-btn" onclick="logout()">Logout</button></div></header>
@@ -46,5 +47,6 @@ function closeOrderModal(){document.getElementById("orderModal").style.display="
 async function startPage(){clearError();try{const isMaster=await verifyMaster();if(!isMaster)return;await loadShops();await loadOrders();applyUrlFilter()}catch(error){console.error("ALL ORDERS ERROR:",error);showError(error?.message||"Orders could not be loaded.")}}
 document.getElementById("orderModal").addEventListener("click",function(event){if(event.target===document.getElementById("orderModal"))closeOrderModal()});document.addEventListener("keydown",function(event){if(event.key==="Escape")closeOrderModal()});window.addEventListener("load",startPage);
 </script>
+<script src="master-shell.js"></script>
 </body>
 </html>
