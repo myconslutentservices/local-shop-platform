@@ -23,6 +23,7 @@ input:focus,select:focus{border-color:#2563eb}button{border:0;border-radius:8px;
 @media(max-width:350px){.container{padding:0 8px}.card{padding:12px}button{padding:9px 12px}}
 @media(hover:none){button:hover{transform:none}}
 </style>
+  <link rel="stylesheet" href="master-theme.css">
 </head>
 <body>
 <div class="header"><div><h1>Settings</h1><small>Manage master platform settings</small></div><button class="secondary" onclick="location.href='dashboard.html'">← Dashboard</button></div>
@@ -46,4 +47,6 @@ async function saveOne(key,value){const {data:existing}=await supabaseClient.fro
 async function saveSettings(){try{await saveOne("platform_name",document.getElementById("platform_name").value.trim());await saveOne("support_email",document.getElementById("support_email").value.trim());await saveOne("support_phone",document.getElementById("support_phone").value.trim());await saveOne("maintenance_mode",document.getElementById("maintenance_mode").value);showSuccess("Settings saved successfully.")}catch(error){showError(error.message)}}
 (async()=>{if(await checkMaster()){await loadSettings()}})();
 </script>
-</body></html>
+<script src="master-shell.js"></script>
+</body>
+</html>
