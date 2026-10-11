@@ -541,9 +541,65 @@ button:active{
 </style>
 
   <link rel="stylesheet" href="master-theme.css">
+<style id="notifications-premium-theme">
+/* Page-scoped visual redesign only. Existing application JavaScript is untouched. */
+body.notifications-page{--nt-bg:#020817;--nt-card:#0A1835;--nt-panel:#101D3D;--nt-blue:#1677FF;--nt-neon:#00A8FF;--nt-purple:#762BFF;--nt-cyan:#00D9FF;--nt-green:#00D6A0;--nt-orange:#FF9D27;--nt-red:#FF4565;--nt-text:#fff;--nt-muted:#A9BCE0;--nt-border:rgba(70,120,255,.25);min-height:100vh;background:radial-gradient(ellipse at 8% -8%,rgba(22,119,255,.18),transparent 38%),radial-gradient(ellipse at 96% 10%,rgba(118,43,255,.14),transparent 34%),var(--nt-bg);color:var(--nt-text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body.notifications-page .header{position:relative;isolation:isolate;overflow:hidden;padding:24px clamp(16px,3vw,38px);background:linear-gradient(112deg,rgba(10,24,53,.98),rgba(13,24,58,.97) 58%,rgba(36,22,79,.95));border-bottom:1px solid var(--nt-border);box-shadow:0 12px 36px rgba(0,0,0,.22)}
+body.notifications-page .header:after{content:"";position:absolute;z-index:-1;right:-85px;top:-190px;width:360px;height:360px;border-radius:50%;background:rgba(0,168,255,.12);filter:blur(4px);pointer-events:none}
+body.notifications-page .header h1{display:flex;align-items:center;gap:13px;margin:0;color:#fff;font-size:clamp(23px,2.2vw,30px);font-weight:800;letter-spacing:-.7px}
+body.notifications-page .header h1:before{content:"♧";display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border:1px solid rgba(0,217,255,.4);border-radius:14px;background:linear-gradient(145deg,rgba(22,119,255,.26),rgba(118,43,255,.25));box-shadow:inset 0 0 20px rgba(0,168,255,.13),0 0 25px rgba(22,119,255,.12);color:var(--nt-cyan);font-size:25px}
+body.notifications-page .header small{display:block;margin-top:7px;color:var(--nt-muted);font-size:13px;letter-spacing:.15px}
+body.notifications-page button{min-height:42px;padding:10px 15px;border:1px solid rgba(95,151,255,.25);border-radius:11px;font-weight:750;letter-spacing:.1px;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,filter .2s ease;-webkit-tap-highlight-color:transparent}
+body.notifications-page button:active{transform:translateY(1px)}
+body.notifications-page button.primary{color:#fff;background:linear-gradient(110deg,#1677FF,#4d4bff 58%,#762BFF);border-color:rgba(0,217,255,.35);box-shadow:0 7px 22px rgba(22,119,255,.2)}
+body.notifications-page button.primary:hover{transform:translateY(-1px);filter:brightness(1.09);box-shadow:0 10px 26px rgba(22,119,255,.28)}
+body.notifications-page button.secondary{color:#e5efff;background:rgba(16,29,61,.86);border-color:rgba(118,158,255,.3)}
+body.notifications-page button.secondary:hover{transform:translateY(-1px);background:#152750;border-color:rgba(0,217,255,.42);box-shadow:0 7px 20px rgba(22,119,255,.13)}
+body.notifications-page button.danger{color:#ff8e9e;background:rgba(255,69,101,.1);border-color:rgba(255,69,101,.27)}
+body.notifications-page button.danger:hover{background:rgba(255,69,101,.18);box-shadow:0 0 18px rgba(255,69,101,.1)}
+body.notifications-page .container{width:100%;max-width:1180px;margin:30px auto 46px;padding:0 clamp(12px,2.5vw,30px)}
+body.notifications-page .card{position:relative;overflow:hidden;width:100%;margin-bottom:20px;padding:clamp(18px,2.5vw,28px);border:1px solid var(--nt-border);border-radius:18px;background:linear-gradient(145deg,rgba(10,24,53,.97),rgba(5,15,35,.98));box-shadow:0 18px 48px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.025)}
+body.notifications-page .card h2{display:flex;align-items:center;gap:11px;margin:0 0 23px!important;color:#f7faff;font-size:20px!important;font-weight:800;letter-spacing:-.3px}
+body.notifications-page .container>.card:first-of-type h2:before{content:"✦";display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border:1px solid rgba(0,168,255,.28);border-radius:11px;background:rgba(22,119,255,.13);color:var(--nt-cyan);font-size:18px}
+body.notifications-page label{margin-bottom:8px;color:#bdcfee;font-size:12px;font-weight:750;letter-spacing:.55px;text-transform:uppercase}
+body.notifications-page .field{margin-bottom:18px}
+body.notifications-page input,body.notifications-page textarea,body.notifications-page select{width:100%;min-height:46px;padding:13px 14px;border:1px solid rgba(99,139,220,.27);border-radius:11px;background:rgba(4,14,34,.82);color:#f3f7ff;font-size:14px;outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.02);transition:border-color .2s ease,box-shadow .2s ease,background .2s ease}
+body.notifications-page input::placeholder,body.notifications-page textarea::placeholder{color:#758db8}
+body.notifications-page input:focus,body.notifications-page textarea:focus,body.notifications-page select:focus{border-color:rgba(0,168,255,.85);background:rgba(6,20,46,.96);box-shadow:0 0 0 3px rgba(0,168,255,.12),0 0 20px rgba(22,119,255,.06)}
+body.notifications-page select option{background:#0A1835;color:#fff}
+body.notifications-page textarea{min-height:145px;resize:vertical;line-height:1.65}
+body.notifications-page .container>.card:first-of-type>button.primary{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:47px;padding:12px 20px}
+body.notifications-page .container>.card:first-of-type>button.primary:before{content:"➤";font-size:15px}
+body.notifications-page .toolbar{display:flex;justify-content:flex-end;gap:10px;margin:0 0 14px}
+body.notifications-page .toolbar button.primary{min-width:135px}
+body.notifications-page .toolbar button.primary:before{content:"↻";display:inline-block;margin-right:8px;font-size:17px;vertical-align:-1px}
+body.notifications-page .container>.card:last-child{padding:0}
+body.notifications-page .container>.card:last-child:before{content:"Published Notifications";display:block;padding:23px 25px;border-bottom:1px solid rgba(95,130,199,.16);color:#f7faff;font-size:18px;font-weight:800;letter-spacing:-.25px}
+body.notifications-page #notificationList{padding:20px 24px 24px}
+body.notifications-page .notification{position:relative;overflow:hidden;margin:0 0 13px;padding:20px;border:1px solid rgba(70,120,255,.22);border-radius:15px;background:linear-gradient(135deg,rgba(16,29,61,.84),rgba(7,18,42,.9));box-shadow:0 8px 22px rgba(0,0,0,.12);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+body.notifications-page .notification:last-child{margin-bottom:0}
+body.notifications-page .notification:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--nt-neon),var(--nt-purple));opacity:.9}
+body.notifications-page .notification:hover{transform:translateY(-2px);border-color:rgba(0,168,255,.4);box-shadow:0 12px 28px rgba(0,0,0,.2),0 0 20px rgba(22,119,255,.06)}
+body.notifications-page .notification-head{gap:16px;align-items:flex-start}
+body.notifications-page .notification h3{margin:0 0 9px;color:#f6f9ff;font-size:17px;font-weight:750;line-height:1.4;letter-spacing:-.15px}
+body.notifications-page .message{color:#b6c8e8;font-size:14px;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere}
+body.notifications-page .meta{margin-top:15px;color:#829bc4;font-size:12px;line-height:1.5}
+body.notifications-page .badge{padding:6px 10px;border:1px solid rgba(0,168,255,.23);border-radius:9px;background:rgba(22,119,255,.12);color:#71d2ff;font-size:10px;font-weight:850;letter-spacing:.65px;text-transform:uppercase}
+body.notifications-page .notification .danger{margin-top:12px;min-height:37px;padding:8px 13px;font-size:12px}
+body.notifications-page .error{display:none;margin-bottom:18px;padding:14px 16px;border:1px solid rgba(255,69,101,.3);border-radius:12px;background:rgba(255,69,101,.1);color:#ff9baa;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+body.notifications-page .empty{position:relative;margin:0;padding:55px 18px;border:1px dashed rgba(70,120,255,.25);border-radius:14px;background:radial-gradient(ellipse at center,rgba(22,119,255,.09),transparent 65%);color:transparent;font-size:0;text-align:center}
+body.notifications-page .empty:before{content:"♧";display:grid;place-items:center;width:62px;height:62px;margin:0 auto 18px;border:1px solid rgba(0,217,255,.3);border-radius:20px;background:linear-gradient(145deg,rgba(22,119,255,.16),rgba(118,43,255,.15));box-shadow:0 0 35px rgba(22,119,255,.12);color:var(--nt-cyan);font-size:30px}
+body.notifications-page .empty:after{content:"No Notifications Yet\AYour published platform notifications will appear here.";display:block;white-space:pre-line;color:var(--nt-muted);font-size:13px;line-height:1.9}
+@media(min-width:1400px){body.notifications-page .container{max-width:1240px}}
+@media(max-width:900px){body.notifications-page .header{padding:18px}body.notifications-page .container{margin:22px auto;padding:0 15px}}
+@media(max-width:700px){body.notifications-page .header{padding:17px 15px;flex-direction:column;align-items:stretch;gap:13px}body.notifications-page .header h1{font-size:22px}body.notifications-page .header h1:before{flex-basis:40px;width:40px;height:40px;border-radius:12px}body.notifications-page .header>button{width:100%;min-height:45px}body.notifications-page .container{margin:18px auto 30px;padding:0 12px}body.notifications-page .card{padding:17px;border-radius:15px;margin-bottom:15px}body.notifications-page .card h2{font-size:19px!important;margin-bottom:19px!important}body.notifications-page .field{margin-bottom:16px}body.notifications-page textarea{min-height:135px}body.notifications-page .container>.card:first-of-type>button.primary{width:100%;min-height:47px}body.notifications-page .toolbar{margin-bottom:12px}body.notifications-page .toolbar button{width:100%;min-height:45px}body.notifications-page .container>.card:last-child{padding:0}body.notifications-page .container>.card:last-child:before{padding:19px 17px;font-size:17px}body.notifications-page #notificationList{padding:13px}body.notifications-page .notification{padding:16px;border-radius:13px}body.notifications-page .notification-head{flex-direction:column;gap:10px}body.notifications-page .badge{align-self:flex-start}body.notifications-page .notification .danger{width:100%;min-height:43px}body.notifications-page .empty{padding:38px 12px}}
+@media(max-width:420px){body.notifications-page .header{padding:14px}body.notifications-page .header h1{font-size:20px}body.notifications-page .container{padding:0 10px;margin-top:14px}body.notifications-page .card{padding:14px;border-radius:13px}body.notifications-page .card h2{font-size:18px!important}body.notifications-page .container>.card:last-child{padding:0}body.notifications-page .container>.card:last-child:before{padding:17px 14px}body.notifications-page #notificationList{padding:10px}body.notifications-page .notification{padding:13px}body.notifications-page .notification h3{font-size:15px}body.notifications-page .message{font-size:13px;line-height:1.65}body.notifications-page .meta{font-size:11px}body.notifications-page input,body.notifications-page textarea,body.notifications-page select{font-size:14px;padding:12px}body.notifications-page .empty:before{width:55px;height:55px;border-radius:17px}}
+@media(hover:none) and (pointer:coarse){body.notifications-page .notification:hover{transform:none}body.notifications-page button:hover{filter:none}}
+@media(prefers-reduced-motion:reduce){body.notifications-page *,body.notifications-page *:before,body.notifications-page *:after{transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
 
-<body>
+<body class="notifications-page">
 
 
 <!-- =========================
