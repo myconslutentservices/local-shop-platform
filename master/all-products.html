@@ -1292,6 +1292,9 @@ body.master-shell .modal-overlay{background:rgba(1,5,18,.8)!important;backdrop-f
           stock <= 0
             ? "out-stock"
             : "";
+        const images = getProductImages(product);
+        const statusLabel = stock <= 0 ? "Out of Stock" : (isActive ? "Active" : "Inactive");
+        const statusClass = stock <= 0 ? "out" : (isActive ? "active" : "inactive");
 
 
         const card =
@@ -1302,6 +1305,8 @@ body.master-shell .modal-overlay{background:rgba(1,5,18,.8)!important;backdrop-f
 
 
         card.innerHTML = `
+
+          ${images.length ? '<div class="product-image-wrap"><img class="product-image" src="' + escapeHtml(images[0]) + '" alt="Product image" loading="lazy"></div>' : '<div class="product-image-wrap"><div class="product-image-placeholder"><span>◇</span>NO PRODUCT IMAGE</div></div>'}
 
           <div class="product-top">
 
@@ -1330,19 +1335,7 @@ body.master-shell .modal-overlay{background:rgba(1,5,18,.8)!important;backdrop-f
             </div>
 
 
-            <span class="status ${
-              isActive
-                ? "active"
-                : "inactive"
-            }">
-
-              ${
-                isActive
-                  ? "Active"
-                  : "Inactive"
-              }
-
-            </span>
+            <span class="status ${statusClass}">${statusLabel}</span>
 
           </div>
 
@@ -1412,7 +1405,7 @@ body.master-shell .modal-overlay{background:rgba(1,5,18,.8)!important;backdrop-f
 
             <button
               class="btn btn-primary"
-              onclick="openEditModal('${product.id}')"
+              onclick="openEditModal('${escapeHtml(product.id)}')"
             >
               Edit
             </button>
@@ -1420,7 +1413,7 @@ body.master-shell .modal-overlay{background:rgba(1,5,18,.8)!important;backdrop-f
 
             <button
               class="btn btn-secondary"
-              onclick="toggleProductStatus('${product.id}')"
+              onclick="toggleProductStatus('${escapeHtml(product.id)}')"
             >
               ${
                 isActive
@@ -1434,7 +1427,7 @@ body.master-shell .modal-overlay{background:rgba(1,5,18,.8)!important;backdrop-f
               shop?.slug
                 ? `
                   <button
-                    class="btn btn-secondary"
+                    class="btn btn-open"
                     onclick="openShop('${escapeHtml(shop.slug)}')"
                   >
                     Open Shop
@@ -1506,13 +1499,19 @@ body.master-shell .modal-overlay{background:rgba(1,5,18,.8)!important;backdrop-f
             : "false";
 
 
-      document.getElementById("editDescription")
-        .value =
-          product.description || "";
+      document.getElementById("editDescription").value = product.description || "";
 
+      const categorySelect = document.getElementById("editCategory");
+      const availableCategories = allCategories.filter(category => !category.shop_id || category.shop_id === product.shop_id);
+      categorySelect.innerHTML = '<option value="">No Category</option>' + availableCategories.map(category => '<option value="' + escapeHtml(category.id) + '">' + escapeHtml(category.name || "Unnamed Category") + '</option>').join("");
+      categorySelect.value = product.category_id || "";
+      const shop = getShop(product.shop_id);
+      document.getElementById("editShopName").textContent = shop ? (shop.name || shop.slug || "Unnamed Shop") + (shop.slug ? " · /" + shop.slug : "") : "Shop association unavailable";
+      document.getElementById("editImageFile").value = "";
+      const images = getProductImages(product);
+      document.getElementById("editImagePreview").innerHTML = images.length ? images.map((url,index) => '<img src="' + escapeHtml(url) + '" alt="Current product image ' + (index+1) + '" loading="lazy">').join("") : '<span style="color:#829bc5;font-size:12px">No image currently saved.</span>';
 
-      document.getElementById("editModal")
-        .style.display = "flex";
+      document.getElementById("editModal").style.display = "flex";
 
     }
 
@@ -1568,10 +1567,10 @@ body.master-shell .modal-overlay{background:rgba(1,5,18,.8)!important;backdrop-f
               .value === "true";
 
 
-          const description =
-            document.getElementById("editDescription")
-              .value.trim();
-
+          const description = document.getElementById("editDescription").value.trim();
+          const categoryId = document.getElementById("editCategory").value || null;
+          const imageFile = document.getElementById("editImageFile").files[0] || null;
+          const currentProduct = allProducts.find(item => String(item.id) === String(id));
 
           if (!name) {
 
@@ -1627,24 +1626,28 @@ body.master-shell .modal-overlay{background:rgba(1,5,18,.8)!important;backdrop-f
                 stock: stock,
 
                 is_active: isActive,
-
-                description:
-                  description || null
-
+                description: description || null,
+                category_id: categoryId
               })
               .eq("id", id);
 
 
-            if (error) {
+            if (error) throw error;
 
-              throw error;
-
+            if (imageFile && currentProduct) {
+              if (!imageFile.type.startsWith("image/")) throw new Error("Please choose a valid image file.");
+              const safeName = imageFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+              const storagePath = currentProduct.shop_id + "/" + currentProduct.id + "/" + crypto.randomUUID() + "-" + safeName;
+              const upload = await supabaseClient.storage.from("shop-assets").upload(storagePath, imageFile, {upsert:false,contentType:imageFile.type || "application/octet-stream"});
+              if (upload.error) throw upload.error;
+              const publicUrl = supabaseClient.storage.from("shop-assets").getPublicUrl(upload.data.path).data.publicUrl;
+              const nextImages = [...getProductImages(currentProduct), publicUrl].slice(-10);
+              const imageUpdate = await supabaseClient.from("products").update({image_url:nextImages[0] || null,image_urls:nextImages}).eq("id", id);
+              if (imageUpdate.error) throw imageUpdate.error;
             }
-
-
             closeEditModal();
-
             await loadProducts();
+            showSuccess("Product changes saved successfully.");
 
           } catch (error) {
 
@@ -1734,6 +1737,7 @@ body.master-shell .modal-overlay{background:rgba(1,5,18,.8)!important;backdrop-f
 
 
         await loadProducts();
+        showSuccess("Product status updated successfully.");
 
       } catch (error) {
 
@@ -1881,10 +1885,17 @@ body.master-shell .modal-overlay{background:rgba(1,5,18,.8)!important;backdrop-f
        PAGE LOAD
     ========================================================= */
 
-    window.addEventListener(
-      "load",
-      startPage
-    );
+    document.getElementById("refreshProductsBtn").addEventListener("click", startPage);
+    document.getElementById("editImageFile").addEventListener("change", function() {
+      const file = this.files && this.files[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) { showError("Please choose a valid image file."); this.value = ""; return; }
+      const preview = document.getElementById("editImagePreview");
+      const reader = new FileReader();
+      reader.onload = () => { const img = document.createElement("img"); img.alt = "New product image preview"; img.src = reader.result; preview.prepend(img); };
+      reader.readAsDataURL(file);
+    });
+    window.addEventListener("load", startPage);
 
   </script>
 
