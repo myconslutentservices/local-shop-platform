@@ -167,6 +167,38 @@ body::after{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
+
+/* ===== Shops-first discovery and accessible live search ===== */
+.search-control{position:relative;min-width:0;grid-column:1/-1;z-index:10}
+.searchbox{width:100%;position:relative;display:flex;align-items:center;gap:10px}
+.searchbox input{min-width:0;flex:1}
+.clear-search{width:30px;height:30px;border:0;border-radius:50%;background:#e8eef8;color:#20344e;font-size:22px;line-height:1;display:grid;place-items:center;flex:0 0 30px}
+.clear-search[hidden]{display:none}
+.search-suggestions{position:absolute;top:calc(100% + 8px);left:0;right:0;max-height:min(360px,55vh);overflow:auto;border:1px solid #c8d8ed;border-radius:14px;background:#fff;box-shadow:0 18px 48px rgba(2,10,28,.32);z-index:50;color:#15243a;padding:6px}
+.search-suggestions[hidden]{display:none}
+.suggestion-item{display:flex;align-items:center;gap:11px;width:100%;padding:11px 12px;text-align:left;border:0;border-radius:9px;background:transparent;color:#172b45}
+.suggestion-item:hover,.suggestion-item:focus-visible{background:#edf5ff;outline:2px solid #75b8ff;outline-offset:-2px}
+.suggestion-icon{width:34px;height:34px;display:grid;place-items:center;flex:0 0 34px;border-radius:10px;background:#e7f1ff;color:#1765c0}
+.suggestion-copy{min-width:0;display:flex;flex-direction:column;gap:3px}
+.suggestion-copy strong{font-size:13px;overflow-wrap:anywhere}
+.suggestion-copy small{font-size:11px;color:#64748b;overflow-wrap:anywhere}
+.suggestion-empty{padding:14px 12px;color:#64748b;font-size:13px}
+.shops-section{padding:26px 0 18px}
+.shop-grid,.business-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.shop-card{min-width:0;padding:18px;border:1px solid rgba(117,170,240,.24);border-radius:17px}
+.shop-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.shop-card .business-logo{width:64px;height:64px;display:grid;place-items:center;border-radius:15px;overflow:hidden;font-size:29px;background:linear-gradient(135deg,#dbeafe,#ede9fe)}
+.shop-card .business-logo img{width:100%;height:100%;object-fit:cover}
+.shop-category{max-width:62%;font-size:11px;font-weight:700;color:#d4e8ff;border:1px solid rgba(124,178,255,.32);background:rgba(36,86,156,.22);border-radius:999px;padding:6px 9px;overflow-wrap:anywhere;text-align:center}
+.shop-card h3{margin:0 0 9px;font-size:16px;line-height:1.35;overflow-wrap:anywhere}
+.shop-card .shop-description{min-height:42px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.shop-card .shop-location{margin:8px 0 14px;line-height:1.4;overflow-wrap:anywhere}
+.shop-card .btn{width:100%;min-height:42px}
+.shop-grid .empty-state{grid-column:1/-1}
+@media(max-width:1050px){.shop-grid,.business-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.shop-grid,.business-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.shop-card{padding:14px}.shop-card .business-logo{width:54px;height:54px}.shop-category{font-size:10px;padding:5px 7px}.search-control{grid-column:1/-1}.search-row .selectbox,.search-row>.btn{grid-column:auto}}
+@media(max-width:430px){.shop-grid,.business-grid{grid-template-columns:1fr}.shop-card{padding:16px}.shop-card .shop-description{min-height:0}.search-row{grid-template-columns:1fr}.search-control,.search-row .selectbox,.search-row>.btn{grid-column:1/-1}.search-suggestions{max-height:50vh}}
+
 </style>
 </head>
 <body>
@@ -182,18 +214,23 @@ body::after{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
 <main id="home">
   <section class="hero">
     <div class="wrap hero-inner">
-      <h1>Discover the Right<br><span>Business</span> for You.</h1>
-      <p>Explore local shops, companies and services — all in one place.</p>
-      <form class="search-row" id="searchForm">
-        <label class="searchbox"><span class="search-icon" aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Search businesses, products or services..." autocomplete="off" aria-label="Search businesses, products or services"></label>
-        <label class="selectbox"><span aria-hidden="true">▦</span><select id="categorySelect" aria-label="Choose a category"><option value="">Choose a Category</option></select></label>
-        <button class="btn btn-primary" type="submit"><span aria-hidden="true">⌕</span> Find Businesses</button>
+      <h1>Discover Local Shops <span>&amp; Businesses Near You</span></h1>
+      <p>Find trusted local shops, explore businesses, and discover products and services — all in one place.</p>
+      <form class="search-row" id="searchForm" role="search">
+        <div class="search-control"><label class="searchbox"><span class="search-icon" aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Search shops, categories, products or services…" autocomplete="off" aria-label="Search shops, categories, products or services" aria-controls="searchSuggestions" aria-expanded="false"><button class="clear-search" id="clearSearch" type="button" aria-label="Clear search" hidden>×</button></label><div class="search-suggestions" id="searchSuggestions" role="listbox" hidden></div></div>
+        <label class="selectbox"><span aria-hidden="true">▦</span><select id="categorySelect" aria-label="Choose a category"><option value="">All categories</option></select></label>
+        <button class="btn btn-primary" type="submit"><span aria-hidden="true">⌕</span> Search</button>
       </form>
     </div>
   </section>
 
+  <section class="wrap shops-section" id="shopsSection" aria-labelledby="shopsHeading">
+    <div class="section-heading"><h2 id="shopsHeading">Explore Local Shops</h2><p>Discover active shops, their details and what they offer.</p></div>
+    <div class="shop-grid" id="shopsGrid" aria-live="polite"><div class="empty-state">Loading shops…</div></div>
+  </section>
+
   <section class="wrap categories-section" id="categories">
-    <div class="section-heading"><h2>Browse Businesses by Category</h2><p>Choose from a wide range of categories to find the perfect business, shop or service near you.</p></div>
+    <div class="section-heading"><h2>Browse Categories</h2><p>Choose a category that exists in the current directory to find related shops and listings.</p></div>
     <div class="category-grid" id="categoryGrid"></div>
     <div class="notice" id="dataNotice" role="status"></div>
   </section>
@@ -229,103 +266,146 @@ body::after{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
 <script>
 (function(){
 "use strict";
-const categoryNames=[
-"Clothing & Fashion","Restaurant & Food","Sweets & Bakery","Hotel & Stay","Medical & Pharmacy","Grocery & General Store","Mobile & Electronics","Computer & IT","Beauty & Cosmetics",
-"Salon & Barber","Footwear","Jewellery & Accessories","Furniture & Home Decor","Hardware & Electrical","Automobile & Auto Parts","Bike & Scooter","Books & Stationery","Flowers & Gifts",
-"Pet Shop & Pet Services","Toys & Kids","Gym & Fitness","Event & Party Services","Home Services","Repair & Maintenance","Professional Services","Manufacturing & Industrial","Wholesale & Distribution","Transport & Delivery","Other Local Business"
-];
-const categoryIcons=["♧","♨","✿","▰","✚","🛒","▣","▱","❀","✂","◒","◇","▤","🔧","🚘","🚲","▤","🎁","🐾","♟","✚","▦","⌂","⚙","▣","▥","⬡","▰","•••"];
-const colors=["#f43f67","#ff7417","#a23be8","#1677ed","#35a875","#f5ae19","#06a6c9","#8b4be5","#ed2e87","#08949d","#6d55df","#f7ad18","#f05273","#5c7b9a","#e9364e","#3c9b65","#3867c8","#eb3595","#0d9fa8","#9744d8","#63914b","#df3c91","#1478e8","#8494a7","#7554db","#ff7927","#0f9eb5","#3188db","#8093a9"];
 const $=id=>document.getElementById(id);
-let shops=[],products=[],activeCategory="",activeShop=null,searchText="";
-const norm=s=>String(s??"").trim().toLowerCase();
+let shops=[],products=[],services=[],categories=[],activeCategory="",activeCategoryShopIds=[],activeShop=null,searchText="",searchTimer=null,searchSequence=0,directoryError="",productsError="",servicesError="";
+const norm=s=>String(s??"").normalize("NFKD").toLowerCase().trim().replace(/[\u0300-\u036f]/g,"");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function val(obj,keys,fallback=""){for(const k of keys)if(obj&&obj[k]!==undefined&&obj[k]!==null&&obj[k]!=="")return obj[k];return fallback}
-function nameOfShop(s){return val(s,["name","shop_name","business_name","company_name","title"],"Local Business")}
-function categoryOf(s){return val(s,["category","business_category","business_type","type"],"Other Local Business")}
-function nameOfProduct(p){return val(p,["name","product_name","title","service_name"],"Product")}
-function imageOf(obj){return val(obj,["image_url","photo_url","image","thumbnail","logo_url","logo"],"")}
-function categoryMatch(a,b){const x=norm(a),y=norm(b);return x===y||x.includes(y)||y.includes(x)}
-function categoryColor(name){const i=categoryNames.findIndex(c=>categoryMatch(c,name));return colors[i<0?28:i]}
-function iconOf(name){const i=categoryNames.findIndex(c=>categoryMatch(c,name));return categoryIcons[i<0?28:i]}
+function nameOfShop(s){return val(s,["name"],"Local Shop")}
+function categoryOf(s){return val(s,["category"],"")}
+function nameOfProduct(p){return val(p,["name"],"Product")}
+function nameOfService(s){return val(s,["name"],"Service")}
+function imageOf(obj){return val(obj,["image_url","logo_url"],"")}
+function categoryMatch(a,b){const x=norm(a),y=norm(b);return !!x&&!!y&&(x===y||x.includes(y)||y.includes(x))}
+function categoryColor(name){const palette=["#dbeafe","#dcfce7","#fce7f3","#fef3c7","#ede9fe","#cffafe"];let n=0;for(const ch of norm(name))n=(n+ch.charCodeAt(0))%palette.length;return palette[n]}
+function iconOf(name){const n=norm(name);if(/gift|flower/.test(n))return "🎁";if(/hotel|stay|room/.test(n))return "🛏️";if(/restaurant|food|cafe|bakery|sweet/.test(n))return "🍽️";if(/cloth|fashion|shirt|jean/.test(n))return "👕";if(/toy|kid/.test(n))return "🧸";if(/medical|pharmacy/.test(n))return "⚕️";return "🏪"}
 function money(p){const n=Number(p);return Number.isFinite(n)?n.toLocaleString("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:2}):"Price on request"}
-function shopForProduct(p){const id=val(p,["shop_id","shopId","business_id"],"");return shops.find(s=>String(s.id)===String(id))}
-function showNotice(msg){$("dataNotice").textContent=msg;$("dataNotice").classList.add("visible")}
+function productsForShop(shop){return products.filter(p=>String(p.shop_id)===String(shop.id))}
+function servicesForShop(shop){return services.filter(s=>String(s.shop_id)===String(shop.id))}
+function categoriesForShop(shop){return categories.filter(c=>String(c.shop_id)===String(shop.id))}
+function categoryNames(){return [...new Set([...shops.map(categoryOf),...categories.map(c=>c.name)].map(s=>String(s||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b))}
+function shopHasCategory(shop,label){return categoryMatch(categoryOf(shop),label)||categoriesForShop(shop).some(c=>categoryMatch(c.name,label))||productsForShop(shop).some(p=>{const c=categories.find(x=>String(x.id)===String(p.category_id));return c&&categoryMatch(c.name,label)})}
+function shopMatchesText(shop,text){
+ if(!text)return true;
+ const relatedProducts=productsForShop(shop),relatedServices=servicesForShop(shop),relatedCategories=categoriesForShop(shop);
+ const haystack=[shop.name,shop.category,shop.address,shop.description,shop.slug,JSON.stringify(shop.business_details||{}),...relatedProducts.flatMap(p=>[p.name,p.description]),...relatedServices.flatMap(s=>[s.name,s.description]),...relatedCategories.flatMap(c=>[c.name,c.description])].join(" ").toLowerCase();
+ return haystack.includes(text);
+}
+function showNotice(msg,isError=false){const el=$("dataNotice");el.textContent=msg;el.classList.add("visible");el.dataset.kind=isError?"error":"info"}
+function clearNotice(){const el=$("dataNotice");el.textContent="";el.classList.remove("visible");delete el.dataset.kind}
+function shopCard(shop){
+ const logo=imageOf(shop),cat=categoryOf(shop)||"Category not specified",address=val(shop,["address"],"Location not specified"),description=val(shop,["description"],"Explore this local shop and its available products or services.");
+ return '<article class="business-card shop-card"><div class="shop-card-top"><div class="business-logo">'+(logo?'<img src="'+esc(logo)+'" alt="'+esc(nameOfShop(shop))+' logo" loading="lazy" onerror="this.onerror=null;this.style.display=\'none\';this.parentElement.classList.add(\'logo-fallback\');this.parentElement.textContent=\'🏪\'">':'🏪')+'</div><span class="shop-category">'+esc(cat)+'</span></div><h3>'+esc(nameOfShop(shop))+'</h3><div class="meta shop-description">'+esc(description)+'</div><div class="meta shop-location">📍 '+esc(address)+'</div><button class="btn btn-primary" type="button" data-open-shop="'+esc(shop.id)+'">View Shop <span aria-hidden="true">→</span></button></article>';
+}
+function renderShops(){
+ const grid=$("shopsGrid");
+ const visible=shops.filter(s=>norm(s.status)==="active");
+ if(directoryError&&!shops.length){grid.innerHTML='<div class="empty-state">Shops could not be loaded. '+esc(directoryError)+' Please check the Supabase read permissions and try again.</div>';return}
+ if(!visible.length){grid.innerHTML='<div class="empty-state">No active shops are available yet.</div>';return}
+ grid.innerHTML=visible.map(shopCard).join("");
+}
 function buildCategories(){
-  $("categorySelect").innerHTML='<option value="">Choose a Category</option>'+categoryNames.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
-  $("categoryGrid").innerHTML=categoryNames.map((c,i)=>`<button class="category" type="button" data-category="${esc(c)}"><span class="cat-icon" style="background:${colors[i]}">${categoryIcons[i]}</span><span>${esc(c)}</span></button>`).join("");
-  $("categoryGrid").querySelectorAll("[data-category]").forEach(b=>b.addEventListener("click",()=>chooseCategory(b.dataset.category)));
-}
-function matchesSearch(shop){
- const text=[nameOfShop(shop),categoryOf(shop),val(shop,["description","about","address","location"],"")].join(" ").toLowerCase();
- return !searchText||text.includes(searchText)||products.some(p=>String(val(p,["shop_id","business_id"],""))===String(shop.id)&&[nameOfProduct(p),val(p,["description","details"],"")].join(" ").toLowerCase().includes(searchText));
-}
-function chooseCategory(c){
- activeCategory=c;activeShop=null;$("categorySelect").value=categoryNames.find(x=>categoryMatch(x,c))||c;
- document.querySelectorAll(".category").forEach(b=>b.classList.toggle("active",categoryMatch(b.dataset.category,c)));
- renderBusinesses();$("businessesSection").scrollIntoView({behavior:"smooth",block:"start"});
+ const names=categoryNames();
+ $("categorySelect").innerHTML='<option value="">All categories</option>'+names.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join("");
+ $("categoryGrid").innerHTML=names.length?names.map(c=>'<button class="category" type="button" data-category="'+esc(c)+'"><span class="cat-icon" style="background:'+categoryColor(c)+'">'+iconOf(c)+'</span><span>'+esc(c)+'</span></button>').join(""):'<div class="empty-state">No categories are available in the current database results.</div>';
+ $("categoryGrid").querySelectorAll("[data-category]").forEach(b=>b.addEventListener("click",()=>chooseCategory(b.dataset.category)));
 }
 function renderBusinesses(){
  const section=$("businessesSection"),grid=$("businessGrid");
- const list=shops.filter(s=>(!activeCategory||categoryMatch(categoryOf(s),activeCategory))&&matchesSearch(s));
+ const list=shops.filter(s=>(!activeCategory||shopHasCategory(s,activeCategory)||activeCategoryShopIds.includes(String(s.id)))&&shopMatchesText(s,searchText)&&norm(s.status)==="active");
  section.classList.add("visible");
- $("businessHeading").textContent=activeCategory?activeCategory+" Businesses":"Matching Businesses";
- $("businessSubheading").textContent=list.length?"Select a business to view its products and services.":"No businesses found for this search and category yet.";
- grid.innerHTML=list.length?list.map(s=>{
-  const cat=categoryOf(s),address=val(s,["address","location","city"],"");
-  return `<article class="business-card"><div class="business-logo" style="background:${categoryColor(cat)}18;color:${categoryColor(cat)}">${esc(iconOf(cat))}</div><h3>${esc(nameOfShop(s))}</h3><div class="meta">${esc(cat)}${address?"<br>📍 "+esc(address):""}</div><button class="btn btn-primary" type="button" data-open-shop="${esc(s.id)}">View Business →</button></article>`;
- }).join(""):'<div class="empty-state">No matching businesses are listed yet. Please try another category or search term.</div>';
+ $("businessHeading").textContent=searchText?'Search results for “'+searchText+'”':activeCategory?activeCategory+" Shops & Businesses":"Matching Shops & Businesses";
+ $("businessSubheading").textContent=list.length?list.length+" matching shop"+(list.length===1?"":"s")+" found. Select one to view its products and services.":"No matching listings were found in the data currently accessible to this page.";
+ grid.innerHTML=list.length?list.map(shopCard).join(""):'<div class="empty-state">No matching shops or businesses found. Try a different keyword or category.</div>';
  grid.querySelectorAll("[data-open-shop]").forEach(b=>b.addEventListener("click",()=>openShop(b.dataset.openShop)));
+}
+function chooseCategory(c,shopIds=[]){
+ activeCategory=c||"";activeCategoryShopIds=shopIds.map(String);activeShop=null;searchText="";$("searchInput").value="";$("clearSearch").hidden=true;$("categorySelect").value=activeCategory;
+ $("searchSuggestions").hidden=true;$("searchInput").setAttribute("aria-expanded","false");
+ document.querySelectorAll(".category").forEach(b=>b.classList.toggle("active",categoryMatch(b.dataset.category,activeCategory)));
+ renderBusinesses();$("businessesSection").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function openShop(id){
  activeShop=shops.find(s=>String(s.id)===String(id));if(!activeShop)return;
  $("productsSection").classList.add("visible");
  $("productsHeading").textContent=nameOfShop(activeShop)+" — Products & Services";
- $("productsSubheading").textContent="Browse items from this business only.";
- const list=products.filter(p=>String(val(p,["shop_id","shopId","business_id"],""))===String(activeShop.id));
- $("productGrid").innerHTML=list.length?list.map(p=>{
-  const price=val(p,["price","selling_price","amount"],null),stock=val(p,["stock","quantity","stock_quantity"],null),status=norm(val(p,["status","availability"],""));
-  const available=!(stock!==null&&Number(stock)<=0)&&!["inactive","unavailable","out of stock"].includes(status);
-  const img=imageOf(p);
-  return `<article class="product-card"><div class="product-image">${img?`<img src="${esc(img)}" alt="${esc(nameOfProduct(p))}" loading="lazy" onerror="this.style.display='none';this.parentElement.textContent='Product image'">`:"Product image"}</div><div class="product-body"><h3>${esc(nameOfProduct(p))}</h3><p>${esc(val(p,["description","details"],"Contact this business for more information."))}</p><div class="product-price">${price===null?"Price on request":money(price)}</div><button class="btn ${available?"btn-primary":"btn-outline"}" type="button" data-view-product="${esc(p.id)}" ${available?"":"disabled"}>${available?"View More":"Out of Stock"}</button></div></article>`;
- }).join(""):'<div class="empty-state">This business has not added any products or services yet.</div>';
+ $("productsSubheading").textContent="Browse items and services listed by this shop.";
+ const items=[...productsForShop(activeShop).map(p=>({...p,__kind:"product"})),...servicesForShop(activeShop).map(s=>({...s,__kind:"service"}))];
+ $("productGrid").innerHTML=items.length?items.map(p=>{
+  const isService=p.__kind==="service",name=isService?nameOfService(p):nameOfProduct(p),price=val(p,["price"],null),stock=val(p,["stock"],null),available=isService? p.is_active!==false : p.is_active!==false&&!(stock!==null&&Number(stock)<=0),img=imageOf(p),desc=val(p,["description"],"Contact this business for more information.");
+  return '<article class="product-card"><div class="product-image">'+(img?'<img src="'+esc(img)+'" alt="'+esc(name)+'" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.textContent=\'Image unavailable\'">':(isService?"Service":"Product"))+'</div><div class="product-body"><h3>'+esc(name)+'</h3><p>'+esc(desc)+'</p><div class="product-price">'+(price===null?"Price on request":money(price))+'</div><button class="btn '+(available?"btn-primary":"btn-outline")+'" type="button" data-view-item="'+esc(p.id)+'" data-item-kind="'+p.__kind+'" '+(available?"":"disabled")+'>'+(available?"Contact / Enquire":"Unavailable")+'</button></div></article>';
+ }).join(""):'<div class="empty-state">This shop has not added any active products or services yet.</div>';
  $("productsSection").scrollIntoView({behavior:"smooth",block:"start"});
 }
-function viewProduct(id){
- const p=products.find(x=>String(x.id)===String(id));if(!p||!activeShop)return;
- const description=val(p,["description","details"],"No additional details provided.");
- const price=val(p,["price","selling_price","amount"],null);
- const msg=`${nameOfProduct(p)}\n${price===null?"Price on request":money(price)}\n\n${description}\n\nTo order, contact this business directly.`;
- const phone=String(val(activeShop,["whatsapp","whatsapp_number","phone","phone_number","mobile"],"")).replace(/\D/g,"");
- if(phone){
-   if(confirm(msg+"\n\nPress OK to contact the business on WhatsApp, or Cancel to keep browsing.")){
-    window.open("https://wa.me/"+phone+"?text="+encodeURIComponent("Hello, I'm enquiring about "+nameOfProduct(p)+" from "+nameOfShop(activeShop)+"."),"_blank","noopener,noreferrer");
-   }
- }else alert(msg+"\n\nBusiness contact number is not available yet.");
+function viewProduct(id,kind){
+ const source=kind==="service"?services:products,p=source.find(x=>String(x.id)===String(id));if(!p||!activeShop)return;
+ const name=kind==="service"?nameOfService(p):nameOfProduct(p),description=val(p,["description"],"No additional details provided."),price=val(p,["price"],null);
+ const msg=name+"\n"+(price===null?"Price on request":money(price))+"\n\n"+description+"\n\nContact this business directly to enquire.";
+ const phone=String(val(activeShop,["whatsapp","phone"],"")).replace(/\D/g,"");
+ if(phone){if(confirm(msg+"\n\nPress OK to contact the business on WhatsApp, or Cancel to keep browsing.")){window.open("https://wa.me/"+phone+"?text="+encodeURIComponent("Hello, I'm enquiring about "+name+" from "+nameOfShop(activeShop)+"."),"_blank","noopener,noreferrer")}}
+ else alert(msg+"\n\nBusiness contact number is not available yet.");
 }
-$("productGrid").addEventListener("click",e=>{const b=e.target.closest("[data-view-product]");if(b)viewProduct(b.dataset.viewProduct)});
+$("productGrid").addEventListener("click",e=>{const b=e.target.closest("[data-view-item]");if(b)viewProduct(b.dataset.viewItem,b.dataset.itemKind)});
 $("backToBusinesses").addEventListener("click",()=>{$("businessesSection").scrollIntoView({behavior:"smooth",block:"start"})});
-$("searchForm").addEventListener("submit",e=>{
- e.preventDefault();searchText=norm($("searchInput").value);activeCategory=$("categorySelect").value;activeShop=null;
- document.querySelectorAll(".category").forEach(b=>b.classList.toggle("active",!!activeCategory&&categoryMatch(b.dataset.category,activeCategory)));
- renderBusinesses();
-});
-$("categorySelect").addEventListener("change",e=>{if(e.target.value)chooseCategory(e.target.value);else{activeCategory="";document.querySelectorAll(".category").forEach(b=>b.classList.remove("active"));renderBusinesses()}});
-$("menuBtn").addEventListener("click",()=>{const open=$("navActions").classList.toggle("open");$("menuBtn").setAttribute("aria-expanded",String(open));$("menuBtn").setAttribute("aria-label",open?"Close menu":"Open menu")});
-document.addEventListener("click",e=>{if(!$("navActions").contains(e.target)&&e.target!==$("menuBtn")){$("navActions").classList.remove("open");$("menuBtn").setAttribute("aria-expanded","false");$("menuBtn").setAttribute("aria-label","Open menu")}});
-async function loadDirectory(){
- try{
-  if(typeof supabaseClient==="undefined"||!supabaseClient)throw new Error("Supabase client is not configured in js/supabase.js.");
-  const [sr,pr]=await Promise.all([supabaseClient.from("shops").select("*").limit(500),supabaseClient.from("products").select("*").limit(2000)]);
-  if(sr.error)throw new Error("Could not load businesses: "+sr.error.message);
-  shops=sr.data||[];
-  if(pr.error){products=[];showNotice("Businesses loaded. Products could not be loaded; check the products table and its public read policy.");}
-  else products=pr.data||[];
-  if(!shops.length)showNotice("No businesses are listed yet. Register a business or add one through the owner dashboard.");
- }catch(err){console.error(err);showNotice("Directory could not connect to the database. Check js/supabase.js, table names and Supabase read policies.");}
+function suggestionItems(query){
+ const q=norm(query);if(!q)return [];
+ const items=[];
+ categoryNames().forEach(name=>{if(norm(name).includes(q))items.push({kind:"category",label:name,detail:"Category",key:"category:"+norm(name),shopIds:shops.filter(s=>shopHasCategory(s,name)).map(s=>String(s.id))})});
+ shops.filter(s=>[s.name,s.category,s.address,s.description,s.slug].some(v=>norm(v).includes(q))).forEach(s=>items.push({kind:"shop",label:nameOfShop(s),detail:(categoryOf(s)||"Local shop")+(s.address?" · "+s.address:""),key:"shop:"+s.id,id:s.id}));
+ products.filter(p=>[p.name,p.description].some(v=>norm(v).includes(q))).forEach(p=>{const shop=shops.find(s=>String(s.id)===String(p.shop_id));if(shop)items.push({kind:"product",label:nameOfProduct(p),detail:"Product · "+nameOfShop(shop),key:"product:"+p.id,shopId:shop.id})});
+ services.filter(s=>[s.name,s.description].some(v=>norm(v).includes(q))).forEach(s=>{const shop=shops.find(x=>String(x.id)===String(s.shop_id));if(shop)items.push({kind:"service",label:nameOfService(s),detail:"Service · "+nameOfShop(shop),key:"service:"+s.id,shopId:shop.id})});
+ const seen=new Set();return items.filter(x=>{if(seen.has(x.key))return false;seen.add(x.key);return true}).slice(0,8);
 }
-buildCategories();
-loadDirectory();
+function renderSuggestions(){
+ const input=$("searchInput"),box=$("searchSuggestions"),q=input.value.trim();
+ $("clearSearch").hidden=!q;
+ if(!q){box.hidden=true;input.setAttribute("aria-expanded","false");return}
+ const items=suggestionItems(q);
+ box.innerHTML=items.length?items.map((x,i)=>'<button type="button" class="suggestion-item" role="option" data-suggestion="'+i+'"><span class="suggestion-icon">'+(x.kind==="category"?"▦":x.kind==="shop"?"🏪":x.kind==="product"?"▣":"✦")+'</span><span class="suggestion-copy"><strong>'+esc(x.label)+'</strong><small>'+esc(x.detail)+'</small></span></button>').join(""):'<div class="suggestion-empty">'+(directoryError?"Could not search shops because the directory failed to load.":"No matching categories, shops, products or services found.")+'</div>';
+ box.hidden=false;input.setAttribute("aria-expanded","true");
+ box.querySelectorAll("[data-suggestion]").forEach(b=>b.addEventListener("click",()=>{
+  const item=items[Number(b.dataset.suggestion)];if(!item)return;
+  if(item.kind==="category"){chooseCategory(item.label,item.shopIds||[]);return}
+  if(item.kind==="shop"){searchText="";activeCategory="";activeCategoryShopIds=[];$("searchInput").value=item.label;$("clearSearch").hidden=false;renderBusinesses();openShop(item.id);box.hidden=true;return}
+  searchText=norm(item.label);activeCategory="";activeCategoryShopIds=[];$("searchInput").value=item.label;$("clearSearch").hidden=false;renderBusinesses();box.hidden=true;
+  const owner=shops.find(s=>String(s.id)===String(item.shopId));if(owner)openShop(owner.id);
+ }));
+}
+$("searchInput").addEventListener("input",()=>{
+ clearTimeout(searchTimer);const seq=++searchSequence;$("clearSearch").hidden=!$("searchInput").value.trim();
+ searchTimer=setTimeout(()=>{if(seq!==searchSequence)return;renderSuggestions()},180);
+});
+$("searchInput").addEventListener("keydown",e=>{if(e.key==="Escape"){$("searchSuggestions").hidden=true;$("searchInput").setAttribute("aria-expanded","false")}if(e.key==="ArrowDown"&&!$("searchSuggestions").hidden){const first=$("searchSuggestions").querySelector("button");if(first){e.preventDefault();first.focus()}}});
+$("clearSearch").addEventListener("click",()=>{$("searchInput").value="";searchText="";$("clearSearch").hidden=true;$("searchSuggestions").hidden=true;$("searchInput").setAttribute("aria-expanded","false");$("searchInput").focus();if(activeCategory)renderBusinesses()});
+$("searchForm").addEventListener("submit",e=>{
+ e.preventDefault();searchText=norm($("searchInput").value);activeCategory=$("categorySelect").value;activeCategoryShopIds=[];activeShop=null;$("searchSuggestions").hidden=true;$("searchInput").setAttribute("aria-expanded","false");
+ document.querySelectorAll(".category").forEach(b=>b.classList.toggle("active",!!activeCategory&&categoryMatch(b.dataset.category,activeCategory)));
+ renderBusinesses();$("businessesSection").scrollIntoView({behavior:"smooth",block:"start"});
+});
+$("categorySelect").addEventListener("change",e=>{if(e.target.value)chooseCategory(e.target.value);else{activeCategory="";activeCategoryShopIds=[];document.querySelectorAll(".category").forEach(b=>b.classList.remove("active"));renderBusinesses()}});
+$("menuBtn").addEventListener("click",()=>{const open=$("navActions").classList.toggle("open");$("menuBtn").setAttribute("aria-expanded",String(open));$("menuBtn").setAttribute("aria-label",open?"Close menu":"Open menu")});
+document.addEventListener("click",e=>{if(!$("searchForm").contains(e.target)){$("searchSuggestions").hidden=true;$("searchInput").setAttribute("aria-expanded","false")}if(!$("navActions").contains(e.target)&&e.target!==$("menuBtn")){$("navActions").classList.remove("open");$("menuBtn").setAttribute("aria-expanded","false");$("menuBtn").setAttribute("aria-label","Open menu")}});
+async function loadDirectory(){
+ const [sr,pr,cr,svr]=await Promise.all([
+  supabaseClient.from("shops").select("id,name,slug,logo_url,phone,whatsapp,address,description,status,category,business_details").eq("status","active").order("created_at",{ascending:false}).limit(200),
+  supabaseClient.from("products").select("id,shop_id,category_id,name,description,price,image_url,stock,is_active").eq("is_active",true).limit(500),
+  supabaseClient.from("categories").select("id,shop_id,name,description,image_url,is_active").eq("is_active",true).limit(300),
+  supabaseClient.from("services").select("id,shop_id,name,description,price,image_urls,is_active").eq("is_active",true).limit(300)
+ ]);
+ if(sr.error){directoryError=sr.error.message;console.error("Shops query failed:",sr.error);shops=[]}else shops=sr.data||[];
+ if(pr.error){productsError=pr.error.message;console.warn("Products unavailable:",pr.error);products=[]}else products=pr.data||[];
+ if(cr.error){console.warn("Categories unavailable:",cr.error);categories=[]}else categories=cr.data||[];
+ if(svr.error){servicesError=svr.error.message;console.warn("Services unavailable:",svr.error);services=[]}else services=svr.data||[];
+ renderShops();buildCategories();renderBusinesses();
+ if(directoryError)showNotice("Shops could not be loaded: "+directoryError,true);
+ else if(productsError||servicesError)showNotice("Shops loaded, but some product or service results are unavailable because of database access or query errors.");
+ else if(!shops.length)showNotice("No active shops are currently visible to this page. This may mean there are no active shops or Supabase read policies do not allow public access.");
+ else clearNotice();
+}
+if(typeof supabaseClient==="undefined"||!supabaseClient){
+ directoryError="Supabase client is not configured.";
+ renderShops();buildCategories();showNotice(directoryError,true);
+}else loadDirectory().catch(err=>{console.error("Directory load failed:",err);directoryError=err?.message||"Unexpected database error";renderShops();buildCategories();showNotice("Directory could not load: "+directoryError,true)});
 })();
 </script>
 </body>
