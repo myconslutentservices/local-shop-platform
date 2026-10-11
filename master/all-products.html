@@ -456,6 +456,25 @@
     @media (hover:none) { .product-card:hover{transform:none;box-shadow:0 4px 16px rgba(0,0,0,.04);} .top-btn,.btn,.save-btn,.cancel-btn,.close-btn{-webkit-tap-highlight-color:transparent;} }
   </style>
   <link rel="stylesheet" href="master-theme.css">
+<style>
+body.master-shell{background:radial-gradient(ellipse at 90% 0,rgba(118,43,255,.15),transparent 35%),#020817!important;color:#fff!important;overflow-x:hidden}
+body.master-shell .topbar{background:rgba(5,14,32,.94)!important;border-bottom:1px solid rgba(70,120,255,.3)!important;backdrop-filter:blur(16px);padding:15px clamp(15px,3vw,34px)!important}
+body.master-shell .brand:before{content:"✦";display:inline-grid;place-items:center;width:38px;height:38px;margin-right:10px;border-radius:12px;background:linear-gradient(135deg,#1677ff,#762bff);vertical-align:middle}
+body.master-shell .container{max-width:1600px!important;padding:clamp(16px,2.5vw,34px)!important}
+body.master-shell .page-title{padding:26px 28px;margin-bottom:22px!important;border:1px solid rgba(70,120,255,.3);border-radius:22px;background:radial-gradient(ellipse at 90% 0,rgba(118,43,255,.2),transparent 36%),radial-gradient(ellipse at 65% 100%,rgba(0,217,255,.1),transparent 35%),linear-gradient(125deg,#0a1835,#071127)}
+body.master-shell .page-title:after{content:"PRODUCT INTELLIGENCE / MASTER CONTROL";display:block;margin-top:16px;color:#7191c6;font-size:9px;font-weight:800;letter-spacing:.2em}
+body.master-shell .page-title h1{font-size:clamp(27px,3vw,36px)!important;letter-spacing:-.04em;margin-bottom:9px!important}body.master-shell .page-title p{color:#a9bce0!important;font-size:13px!important}
+body.master-shell .stats{gap:14px;margin-bottom:20px!important}body.master-shell .stat-card{position:relative;overflow:hidden;padding:21px 20px 19px 62px!important;border:1px solid rgba(70,120,255,.3)!important;border-radius:17px!important;background:linear-gradient(145deg,#0a1835,#071127)!important;transition:transform .2s,border-color .2s}body.master-shell .stat-card:before{content:"▦";position:absolute;left:17px;top:20px;width:33px;height:33px;display:grid;place-items:center;border-radius:10px;font-size:17px;background:rgba(22,119,255,.2);border:1px solid rgba(0,168,255,.3);color:#8ceaff}body.master-shell .stat-card:nth-child(2):before{content:"↗";color:#65f2ce}body.master-shell .stat-card:nth-child(3):before{content:"!";color:#ffc36f}body.master-shell .stat-card:nth-child(4):before{content:"⌂";color:#c6aaff}body.master-shell .stat-card:hover{transform:translateY(-3px);border-color:rgba(0,168,255,.6)!important}body.master-shell .stat-card .label{color:#9db4dc!important;font-size:11px!important;font-weight:700}body.master-shell .stat-card .value{font-size:clamp(24px,2.2vw,31px)!important;color:#fff}
+body.master-shell .filter-box{padding:19px!important;border:1px solid rgba(70,120,255,.3)!important;border-radius:17px!important;background:linear-gradient(145deg,rgba(10,24,53,.96),rgba(7,17,39,.98))!important}body.master-shell .filter-grid{grid-template-columns:minmax(220px,2fr) minmax(170px,1fr) minmax(160px,1fr);gap:13px!important}body.master-shell .field label{color:#a9bce0!important;font-size:10px!important;font-weight:800!important;letter-spacing:.1em;text-transform:uppercase}body.master-shell input,body.master-shell select,body.master-shell textarea{color:#f5f8ff!important;background:#07142d!important;border:1px solid rgba(89,125,197,.3)!important;border-radius:11px!important;min-height:45px}body.master-shell input:focus,body.master-shell select:focus,body.master-shell textarea:focus{border-color:#00a8ff!important;box-shadow:0 0 0 3px rgba(0,168,255,.12)!important}body.master-shell select option{background:#0a1835;color:#fff}
+body.master-shell .products-header{margin:25px 1px 13px!important}body.master-shell .result-count{padding:8px 11px;border:1px solid rgba(0,168,255,.25);border-radius:9px;background:rgba(22,119,255,.08);color:#a9dfff!important;font-size:11px!important;font-weight:700}
+body.master-shell .products-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important}body.master-shell .product-card{position:relative;min-width:0;overflow:hidden;padding:18px!important;border:1px solid rgba(70,120,255,.3)!important;border-radius:18px!important;background:linear-gradient(145deg,#0a1835,#050f22)!important;box-shadow:0 15px 38px rgba(0,0,0,.2)!important;transition:transform .2s,border-color .2s!important}body.master-shell .product-card:before{content:"";position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,#1677ff,#762bff,#00d9ff)}body.master-shell .product-card:hover{transform:translateY(-4px)!important;border-color:rgba(0,168,255,.55)!important}body.master-shell .product-name{font-size:17px!important;color:#f5f8ff;overflow-wrap:anywhere}body.master-shell .shop-name{color:#75dcff!important;font-size:11px!important}body.master-shell .category{color:#91a8d0!important;font-size:11px!important}body.master-shell .status{display:inline-flex;padding:6px 9px!important;border-radius:8px!important;font-size:9px!important;text-transform:uppercase;letter-spacing:.07em;border:1px solid transparent}body.master-shell .status.active{background:rgba(0,214,160,.1)!important;border-color:rgba(0,214,160,.25)!important;color:#55edc5!important}body.master-shell .status.inactive{background:rgba(255,69,101,.1)!important;border-color:rgba(255,69,101,.25)!important;color:#ff9eaf!important}body.master-shell .status.out{background:rgba(255,157,39,.1)!important;border-color:rgba(255,157,39,.25)!important;color:#ffc36f!important}
+body.master-shell .product-image-wrap{height:150px;margin:1px 0 15px;overflow:hidden;border:1px solid rgba(70,120,255,.25);border-radius:13px;background:radial-gradient(ellipse at 50% 0,rgba(22,119,255,.15),transparent 65%),#07142d;display:grid;place-items:center}body.master-shell .product-image{width:100%;height:100%;object-fit:cover;display:block}body.master-shell .product-image-placeholder{display:grid;place-items:center;gap:6px;color:#7f9bc9;font-size:11px;font-weight:700}body.master-shell .product-image-placeholder span{font-size:30px;color:#62dfff}
+body.master-shell .product-info{gap:9px!important;margin:16px 0!important}body.master-shell .info-box{min-width:0;padding:11px!important;border:1px solid rgba(70,120,255,.16);border-radius:11px!important;background:linear-gradient(145deg,rgba(16,29,61,.9),rgba(7,18,40,.9))!important}body.master-shell .info-box span{color:#829bc5!important;font-size:9px!important;font-weight:800;letter-spacing:.08em;text-transform:uppercase}body.master-shell .info-box strong{color:#f3f7ff;font-size:14px!important;overflow-wrap:anywhere}body.master-shell .product-description{color:#9eb2d5!important;font-size:12px!important;line-height:1.65!important;min-height:40px;overflow-wrap:anywhere}body.master-shell .product-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px!important}body.master-shell .product-actions .btn{min-height:39px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px!important;font-size:11px!important}body.master-shell .product-actions .btn-primary{background:linear-gradient(120deg,#1677ff,#4d5cff)!important;color:#fff!important}body.master-shell .product-actions .btn-secondary{background:linear-gradient(120deg,rgba(118,43,255,.16),rgba(16,29,61,.9))!important;border:1px solid rgba(118,43,255,.3)!important;color:#d6c7ff!important}body.master-shell .product-actions .btn-open{background:linear-gradient(120deg,rgba(0,217,255,.12),rgba(22,119,255,.12))!important;border:1px solid rgba(0,217,255,.3)!important;color:#8ceaff!important}
+body.master-shell .message-box{padding:40px 22px!important;border:1px solid rgba(70,120,255,.3)!important;border-radius:16px!important;background:linear-gradient(145deg,#0a1835,#050f22)!important;color:#9eb2d5!important}body.master-shell .error-box{background:rgba(255,69,101,.08)!important;border:1px solid rgba(255,69,101,.3)!important;color:#ffacbb!important;border-radius:12px!important;padding:13px 15px!important}
+body.master-shell .modal-overlay{background:rgba(1,5,18,.8)!important;backdrop-filter:blur(12px);z-index:1200}body.master-shell .modal{max-width:680px!important;padding:24px!important;border:1px solid rgba(76,123,255,.4)!important;border-radius:21px!important;background:radial-gradient(ellipse at 100% 0,rgba(118,43,255,.15),transparent 35%),linear-gradient(145deg,#0d1b39,#071329)!important;color:#f5f8ff!important}body.master-shell .modal-header{padding-bottom:16px;border-bottom:1px solid rgba(70,120,255,.2);margin-bottom:19px!important}body.master-shell .modal-header h3{font-size:21px!important}body.master-shell .close-btn{background:#101d3d!important;border:1px solid rgba(90,127,194,.3);color:#cfe0ff!important}body.master-shell .form-grid{gap:15px!important}body.master-shell .modal-actions{padding-top:17px;border-top:1px solid rgba(70,120,255,.2)}body.master-shell .save-btn{background:linear-gradient(120deg,#1677ff,#762bff)!important;color:white!important}body.master-shell .cancel-btn{background:#101d3d!important;border:1px solid rgba(90,127,194,.3)!important;color:#d5e2fb!important}body.master-shell .edit-preview{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:9px}body.master-shell .edit-preview img{width:88px;height:88px;object-fit:cover;border-radius:12px;border:1px solid rgba(70,120,255,.35)}body.master-shell .edit-shop-note{padding:11px 12px;border:1px solid rgba(0,168,255,.2);border-radius:10px;background:rgba(22,119,255,.07);color:#b7d9ff;font-size:12px}
+@media(min-width:1450px){body.master-shell .products-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}}@media(max-width:1100px){body.master-shell .products-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}body.master-shell .filter-grid{grid-template-columns:1fr 1fr!important}body.master-shell .filter-grid .field:first-child{grid-column:1/-1}}
+@media(max-width:650px){body.master-shell .topbar{padding:12px!important}body.master-shell .top-actions{grid-template-columns:repeat(3,minmax(0,1fr));display:grid;width:100%}body.master-shell .top-btn{padding:9px 5px;font-size:11px}body.master-shell .container{padding:14px 12px 25px!important}body.master-shell .page-title{padding:21px 18px!important}body.master-shell .stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}body.master-shell .stat-card{padding:15px 10px 14px 49px!important}body.master-shell .stat-card:before{left:10px;top:17px;width:29px;height:29px}body.master-shell .stat-card .value{font-size:22px!important}body.master-shell .filter-box{padding:13px!important}body.master-shell .filter-grid{grid-template-columns:1fr!important;gap:11px!important}body.master-shell .filter-grid .field:first-child{grid-column:auto}body.master-shell .products-grid{grid-template-columns:1fr!important;gap:12px!important}body.master-shell .product-card{padding:15px!important}body.master-shell .product-image-wrap{height:175px}body.master-shell .modal-overlay{align-items:flex-end;padding:0!important}body.master-shell .modal{width:100%!important;max-width:none!important;max-height:92vh!important;overflow:auto;border-radius:20px 20px 0 0!important;padding:19px 15px calc(18px + env(safe-area-inset-bottom))!important}body.master-shell .form-grid{grid-template-columns:1fr!important;gap:11px!important}body.master-shell .modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}body.master-shell .modal-actions button{min-height:44px}}@media(max-width:380px){body.master-shell .product-actions{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){body.master-shell .product-card,body.master-shell .stat-card{transition:none!important}}
+</style>
 </head>
 
 <body>
@@ -498,7 +517,8 @@
     </div>
 
 
-    <div id="errorBox" class="error-box"></div>
+    <div id="errorBox" class="error-box" role="alert" aria-live="polite"></div>
+    <div id="successBox" role="status" aria-live="polite" style="display:none;margin:0 0 14px;padding:12px 14px;border:1px solid rgba(0,214,160,.25);border-radius:11px;background:rgba(0,214,160,.08);color:#7af2d1;font-size:12px"></div>
 
 
     <!-- ================= STATS ================= -->
@@ -574,13 +594,8 @@
     <!-- ================= PRODUCTS ================= -->
 
     <div class="products-header">
-
-      <h2>Products</h2>
-
-      <div class="result-count" id="resultCount">
-        0 products
-      </div>
-
+      <h2>Product inventory</h2>
+      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap"><div class="result-count" id="resultCount">0 products</div><button type="button" class="top-btn" id="refreshProductsBtn">↻ Refresh</button></div>
     </div>
 
 
@@ -597,13 +612,13 @@
 
   <!-- ================= EDIT MODAL ================= -->
 
-  <div class="modal-overlay" id="editModal">
+  <div class="modal-overlay" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editProductTitle">
 
     <div class="modal">
 
       <div class="modal-header">
 
-        <h3>Edit Product</h3>
+        <div><h3 id="editProductTitle">Edit Product</h3><p style="margin-top:5px;color:#9eb2d5;font-size:12px">Update product details and visibility.</p></div>
 
         <button
           class="close-btn"
@@ -662,7 +677,11 @@
           </div>
 
 
-          <div class="field full">
+          <div class="field">
+            <label>Category</label>
+            <select id="editCategory"><option value="">No Category</option></select>
+          </div>
+          <div class="field">
             <label>Status</label>
 
             <select id="editActive">
@@ -681,7 +700,16 @@
 
 
           <div class="field full">
-
+            <label>Associated Shop</label>
+            <div id="editShopName" class="edit-shop-note">Shop will appear here.</div>
+          </div>
+          <div class="field full">
+            <label>Product Image</label>
+            <input id="editImageFile" type="file" accept="image/*" />
+            <div id="editImagePreview" class="edit-preview"></div>
+            <small style="display:block;color:#829bc5;margin-top:7px">Optional image upload uses the existing shop-assets storage bucket. Existing images are retained.</small>
+          </div>
+          <div class="field full">
             <label>Description</label>
 
             <textarea
@@ -729,6 +757,7 @@
     let allProducts = [];
     let allShops = [];
     let allCategories = [];
+    let toastTimer = null;
 
 
     /* =========================================================
@@ -741,6 +770,11 @@
 
       box.textContent = message;
       box.style.display = "block";
+      const retry = document.createElement("button");
+      retry.type = "button";
+      retry.textContent = "Retry";
+      retry.onclick = () => startPage();
+      box.appendChild(retry);
 
     }
 
@@ -778,6 +812,20 @@
 
     }
 
+
+    function showSuccess(message) {
+      const box = document.getElementById("successBox");
+      box.textContent = message;
+      box.style.display = "block";
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { box.style.display = "none"; }, 3600);
+    }
+
+    function getProductImages(product) {
+      const images = Array.isArray(product?.image_urls) ? product.image_urls.filter(Boolean) : [];
+      if (images.length) return images;
+      return product?.image_url ? [product.image_url] : [];
+    }
 
     function formatDate(value) {
 
@@ -990,6 +1038,11 @@
           name,
           description,
           price,
+          cost_price,
+          image_url,
+          image_urls,
+          has_sizes,
+          sizes,
           stock,
           is_active,
           created_at
@@ -1120,9 +1173,11 @@
                 ""
               ).toLowerCase();
 
+            const productId = String(product.id ?? "").toLowerCase();
             return (
               productName.includes(search) ||
-              shopName.includes(search)
+              shopName.includes(search) ||
+              productId.includes(search)
             );
 
           });
