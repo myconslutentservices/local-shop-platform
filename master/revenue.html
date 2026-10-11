@@ -15,10 +15,109 @@
 @media(max-width:420px){.container{width:94%}.header-actions{grid-template-columns:1fr 1fr}.stats-grid{grid-template-columns:1fr}.stat-card{padding:14px}.stat-value{font-size:21px}.filters{border-radius:12px}.section{border-radius:12px}.btn{padding:9px 11px;font-size:13px}.shop-row{grid-template-columns:1fr}.shop-revenue{text-align:left;margin-top:2px}.page-title h2{font-size:21px}.page-title p{font-size:13px}}
 @media(max-width:350px){.header-actions{grid-template-columns:1fr}.stats-grid{gap:8px}.stat-value{font-size:20px}}
 @media(hover:none){tbody tr:hover{background:transparent}.btn:active{transform:scale(.98)}}
+
+/* Revenue & Reports — page-scoped visual redesign; existing application logic is intentionally untouched. */
+body.revenue-page{
+  --rv-bg:#020817;--rv-card:#0a1835;--rv-panel:#101d3d;--rv-blue:#1677ff;--rv-neon:#00a8ff;
+  --rv-purple:#762bff;--rv-cyan:#00d9ff;--rv-green:#00d6a0;--rv-orange:#ff9d27;--rv-red:#ff4565;
+  --rv-text:#fff;--rv-muted:#a9bce0;--rv-border:rgba(70,120,255,.25);
+  background:radial-gradient(ellipse at 8% 0%,rgba(22,119,255,.16),transparent 36%),radial-gradient(ellipse at 92% 8%,rgba(118,43,255,.13),transparent 31%),var(--rv-bg);
+  color:var(--rv-text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;overflow-x:hidden
+}
+body.revenue-page .container{width:min(1500px,94%);margin-inline:auto}
+body.revenue-page .header{background:rgba(4,13,32,.86);border-bottom:1px solid var(--rv-border);box-shadow:0 12px 36px rgba(0,0,0,.24);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:17px 0}
+body.revenue-page .brand h1{font-size:21px;letter-spacing:.02em;font-weight:800;color:#fff}
+body.revenue-page .brand p{color:#9eb7df}
+body.revenue-page .header-actions{gap:10px}
+body.revenue-page .btn{border-radius:11px;min-height:43px;padding:10px 16px;font-size:13px;font-weight:750;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease}
+body.revenue-page .btn:hover{transform:translateY(-2px)}
+body.revenue-page .btn-light{background:rgba(16,29,61,.9);color:#eaf2ff;border:1px solid var(--rv-border)}
+body.revenue-page .btn-light:hover{border-color:rgba(0,168,255,.6);box-shadow:0 0 22px rgba(0,168,255,.12)}
+body.revenue-page .btn-danger{background:linear-gradient(135deg,#ff4565,#d92651);box-shadow:0 7px 20px rgba(255,69,101,.17)}
+body.revenue-page main{padding:32px 0 58px}
+body.revenue-page .page-title{margin-bottom:24px;position:relative}
+body.revenue-page .page-title h2{font-size:clamp(25px,3vw,34px);font-weight:850;letter-spacing:-.035em;line-height:1.2;margin-bottom:9px;background:linear-gradient(100deg,#fff 8%,#b7d7ff 55%,#a98aff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+body.revenue-page .page-title p{color:var(--rv-muted);font-size:14px;line-height:1.6}
+body.revenue-page .filters,body.revenue-page .section,body.revenue-page .stat-card{
+  background:linear-gradient(145deg,rgba(13,29,62,.94),rgba(7,19,43,.97));border:1px solid var(--rv-border);
+  border-radius:18px;box-shadow:0 14px 38px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.025)
+}
+body.revenue-page .filters{padding:21px;margin-bottom:24px;position:relative;overflow:hidden}
+body.revenue-page .filters:before{content:"";position:absolute;left:0;top:0;width:100%;height:2px;background:linear-gradient(90deg,var(--rv-blue),var(--rv-purple),var(--rv-cyan));opacity:.9}
+body.revenue-page .filter-grid{grid-template-columns:minmax(190px,1.35fr) repeat(3,minmax(145px,1fr)) auto;gap:14px}
+body.revenue-page .field label{color:#b6c9e9;font-size:11px;font-weight:800;letter-spacing:.075em;text-transform:uppercase;margin-bottom:8px}
+body.revenue-page .field input,body.revenue-page .field select{height:45px;border:1px solid rgba(120,155,220,.23);border-radius:11px;padding:0 13px;background:rgba(3,12,29,.82);color:#f2f7ff;outline:none;transition:border-color .2s ease,box-shadow .2s ease}
+body.revenue-page .field input::placeholder{color:#7187ad}
+body.revenue-page .field input:focus,body.revenue-page .field select:focus{border-color:var(--rv-neon);box-shadow:0 0 0 3px rgba(0,168,255,.12),0 0 18px rgba(0,168,255,.08)}
+body.revenue-page .field select option{background:#0a1835;color:#fff}
+body.revenue-page #shopSearch{padding-left:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%237e9bc8' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center}
+body.revenue-page .filter-action .btn-primary{height:45px;white-space:nowrap;background:linear-gradient(110deg,#1677ff,#5b45ff 65%,#762bff);box-shadow:0 8px 24px rgba(22,119,255,.26);padding-inline:20px}
+body.revenue-page .filter-action .btn-primary:before{content:"⌁";font-size:17px;margin-right:8px}
+body.revenue-page .filter-action .btn-primary:hover{box-shadow:0 10px 30px rgba(22,119,255,.4)}
+body.revenue-page #customDates{padding-top:15px;border-top:1px solid rgba(70,120,255,.17)}
+body.revenue-page .stats-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:25px}
+body.revenue-page .stat-card{position:relative;isolation:isolate;overflow:hidden;padding:20px 20px 19px;min-height:140px;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+body.revenue-page .stat-card:before{content:"";position:absolute;z-index:-1;width:110px;height:110px;right:-38px;top:-44px;border-radius:50%;background:var(--stat-accent,rgba(22,119,255,.18));filter:blur(2px);opacity:.2;transition:opacity .2s ease,transform .25s ease}
+body.revenue-page .stat-card:after{position:absolute;right:17px;top:17px;width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--stat-border,rgba(0,168,255,.24));border-radius:11px;background:var(--stat-icon-bg,rgba(22,119,255,.11));color:var(--stat-icon,#56bdff);font-size:18px;font-weight:800}
+body.revenue-page .stat-card:nth-child(1){--stat-accent:#1677ff;--stat-icon:"₹";--stat-border:rgba(0,168,255,.28);--stat-icon-bg:rgba(0,168,255,.1);--stat-icon:#35c5ff}
+body.revenue-page .stat-card:nth-child(2){--stat-accent:#00d6a0;--stat-icon:"◷";--stat-icon:#00d6a0;--stat-border:rgba(0,214,160,.28);--stat-icon-bg:rgba(0,214,160,.1)}
+body.revenue-page .stat-card:nth-child(3){--stat-accent:#762bff;--stat-icon:"▥";--stat-icon:#b69aff;--stat-border:rgba(118,43,255,.3);--stat-icon-bg:rgba(118,43,255,.13)}
+body.revenue-page .stat-card:nth-child(4){--stat-accent:#00a8ff;--stat-icon:"✓";--stat-icon:#56bdff}
+body.revenue-page .stat-card:nth-child(5){--stat-accent:#ff9d27;--stat-icon:"◷";--stat-icon:#ffb44f;--stat-border:rgba(255,157,39,.3);--stat-icon-bg:rgba(255,157,39,.1)}
+body.revenue-page .stat-card:nth-child(6){--stat-accent:#a16bff;--stat-icon:"↺";--stat-icon:#bda0ff;--stat-border:rgba(118,43,255,.3);--stat-icon-bg:rgba(118,43,255,.13)}
+body.revenue-page .stat-card:nth-child(7){--stat-accent:#ff4565;--stat-icon:"×";--stat-icon:#ff7088;--stat-border:rgba(255,69,101,.3);--stat-icon-bg:rgba(255,69,101,.1)}
+body.revenue-page .stat-card:nth-child(8){--stat-accent:#00d9ff;--stat-icon:"↗";--stat-icon:#00d9ff;--stat-border:rgba(0,217,255,.28);--stat-icon-bg:rgba(0,217,255,.1)}
+body.revenue-page .stat-card:after{content:var(--stat-icon,"•")}
+body.revenue-page .stat-card:hover{transform:translateY(-4px);border-color:rgba(0,168,255,.5);box-shadow:0 18px 42px rgba(0,0,0,.28),0 0 25px rgba(22,119,255,.08)}
+body.revenue-page .stat-card:hover:before{opacity:.36;transform:scale(1.12)}
+body.revenue-page .stat-label{color:#afc3e4;font-size:12px;font-weight:750;letter-spacing:.035em;margin-bottom:13px;padding-right:40px}
+body.revenue-page .stat-value{font-size:clamp(22px,2vw,29px);font-weight:850;letter-spacing:-.035em;line-height:1.25;color:#f7fbff;font-variant-numeric:tabular-nums}
+body.revenue-page .stat-card:nth-child(1) .stat-value,body.revenue-page .stat-card:nth-child(2) .stat-value,body.revenue-page .stat-card:nth-child(3) .stat-value{background:linear-gradient(100deg,#fff,#83d8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+body.revenue-page .stat-small{margin-top:10px;color:#7f97bd;font-size:11px;line-height:1.5}
+body.revenue-page .two-column{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+body.revenue-page .section{padding:22px;margin-bottom:22px;min-width:0}
+body.revenue-page .section-header{margin-bottom:19px;align-items:center}
+body.revenue-page .section-header h3{font-size:17px;font-weight:800;letter-spacing:-.015em;color:#f3f7ff;display:flex;align-items:center;gap:10px}
+body.revenue-page .section-header h3:before{content:"";width:4px;height:19px;border-radius:6px;background:linear-gradient(180deg,var(--rv-cyan),var(--rv-purple));box-shadow:0 0 12px rgba(0,168,255,.35)}
+body.revenue-page .section-header span{color:#8fa8d0;font-size:12px}
+body.revenue-page .table-wrap{border:1px solid rgba(70,120,255,.17);border-radius:12px;overflow-x:auto;overscroll-behavior-x:contain;background:rgba(2,8,23,.34)}
+body.revenue-page table{min-width:650px;border-collapse:separate;border-spacing:0}
+body.revenue-page th{background:rgba(17,34,69,.88);color:#9eb8e0;font-size:10px;font-weight:800;letter-spacing:.075em;text-transform:uppercase;padding:14px 13px;border-bottom:1px solid rgba(70,120,255,.22)}
+body.revenue-page td{color:#d9e6fb;padding:14px 13px;border-bottom:1px solid rgba(70,120,255,.11);font-size:12px;line-height:1.5}
+body.revenue-page tbody tr{transition:background .18s ease}
+body.revenue-page tbody tr:hover{background:rgba(22,119,255,.075)}
+body.revenue-page tbody tr:last-child td{border-bottom:0}
+body.revenue-page td strong{font-weight:750;color:#f6f9ff}
+body.revenue-page .empty,body.revenue-page .loading{color:#8ba3ca;text-align:center;padding:30px 18px}
+body.revenue-page .shop-list{gap:11px}
+body.revenue-page .shop-row{position:relative;grid-template-columns:minmax(0,1fr) auto;gap:14px;padding:15px;background:linear-gradient(110deg,rgba(16,34,72,.78),rgba(8,21,47,.7));border:1px solid rgba(70,120,255,.16);border-radius:13px;transition:transform .2s ease,border-color .2s ease,background .2s ease}
+body.revenue-page .shop-row:hover{transform:translateX(2px);border-color:rgba(0,168,255,.38);background:rgba(19,42,83,.82)}
+body.revenue-page .shop-name{color:#eff6ff;font-size:13px;font-weight:750;margin-bottom:5px}
+body.revenue-page .shop-meta{color:#8fa8d0;font-size:11px}
+body.revenue-page .shop-revenue{font-size:15px;font-weight:850;color:#39d6ff;font-variant-numeric:tabular-nums}
+body.revenue-page .badge{padding:5px 9px;border-radius:7px;font-size:10px;font-weight:800;letter-spacing:.025em;border:1px solid transparent;text-transform:capitalize}
+body.revenue-page .badge-paid,body.revenue-page .badge-delivered{background:rgba(0,214,160,.12);color:#4ce6ba;border-color:rgba(0,214,160,.22)}
+body.revenue-page .badge-pending,body.revenue-page .badge-preparing{background:rgba(255,157,39,.12);color:#ffc16c;border-color:rgba(255,157,39,.24)}
+body.revenue-page .badge-refunded,body.revenue-page .badge-confirmed,body.revenue-page .badge-out{background:rgba(143,101,255,.15);color:#c2aaff;border-color:rgba(143,101,255,.25)}
+body.revenue-page .badge-cancelled{background:rgba(255,69,101,.12);color:#ff8398;border-color:rgba(255,69,101,.24)}
+body.revenue-page .badge-new{background:rgba(22,119,255,.13);color:#76bdff;border-color:rgba(22,119,255,.25)}
+body.revenue-page .message{border-radius:12px;padding:14px 16px;margin-bottom:20px;border:1px solid transparent}
+body.revenue-page .message.error{background:rgba(255,69,101,.1);color:#ff9bab;border-color:rgba(255,69,101,.28)}
+body.revenue-page .message.success{background:rgba(0,214,160,.1);color:#68e8c3;border-color:rgba(0,214,160,.25)}
+body.revenue-page #statusBody td:nth-child(2),body.revenue-page #statusBody td:nth-child(3){font-variant-numeric:tabular-nums}
+@media(min-width:1500px){body.revenue-page .stats-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:1200px){body.revenue-page .filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}body.revenue-page .filter-action{grid-column:span 2}body.revenue-page .stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:900px){body.revenue-page .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}body.revenue-page .two-column{grid-template-columns:minmax(0,1fr)}body.revenue-page .section{padding:19px}}
+@media(max-width:700px){body.revenue-page .container{width:92%}body.revenue-page .header{padding:14px 0}body.revenue-page .header-inner{align-items:stretch;flex-direction:column}body.revenue-page .brand h1{font-size:19px}body.revenue-page .header-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}body.revenue-page main{padding:22px 0 38px}body.revenue-page .page-title{margin-bottom:19px}body.revenue-page .filters{padding:16px;margin-bottom:18px}body.revenue-page .filter-grid{grid-template-columns:minmax(0,1fr);gap:12px}body.revenue-page .filter-action{grid-column:auto}body.revenue-page .filter-action .btn{width:100%}body.revenue-page .stats-grid{gap:11px;margin-bottom:20px}body.revenue-page .stat-card{padding:16px;min-height:132px}body.revenue-page .stat-value{font-size:clamp(19px,4vw,25px)}body.revenue-page .stat-card:after{right:13px;top:13px;width:30px;height:30px}body.revenue-page .section{padding:16px;margin-bottom:17px;border-radius:15px}body.revenue-page .section-header{align-items:flex-start;flex-direction:row;gap:10px}body.revenue-page .section-header h3{font-size:16px}body.revenue-page .section-header span{text-align:right}body.revenue-page .shop-row{padding:13px}body.revenue-page .table-wrap{width:100%;margin:0}}
+@media(max-width:420px){body.revenue-page .container{width:94%}body.revenue-page .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}body.revenue-page .stat-card{padding:13px;min-height:126px}body.revenue-page .stat-label{font-size:11px;padding-right:30px;margin-bottom:11px}body.revenue-page .stat-value{font-size:19px;letter-spacing:-.045em}body.revenue-page .stat-small{font-size:10px}body.revenue-page .stat-card:after{width:27px;height:27px;right:10px;top:10px;font-size:15px}body.revenue-page .section-header{flex-wrap:wrap}body.revenue-page .section-header span{text-align:left}body.revenue-page .shop-row{grid-template-columns:minmax(0,1fr) auto}body.revenue-page .shop-revenue{font-size:13px}body.revenue-page .btn{padding:9px 11px;font-size:12px}}
+@media(max-width:340px){body.revenue-page .stats-grid{grid-template-columns:minmax(0,1fr)}body.revenue-page .stat-card{min-height:115px}body.revenue-page .stat-value{font-size:22px}body.revenue-page .header-actions{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){body.revenue-page *,body.revenue-page *:before,body.revenue-page *:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+@media(hover:none){body.revenue-page tbody tr:hover{background:transparent}body.revenue-page .btn:hover{transform:none}body.revenue-page .btn:active{transform:scale(.985)}}
+
 </style>
   <link rel="stylesheet" href="master-theme.css">
 </head>
-<body>
+<body class="revenue-page">
 <header class="header"><div class="container header-inner"><div class="brand"><h1>Master Panel</h1><p>Revenue & Reports</p></div><div class="header-actions"><button class="btn btn-light" onclick="goBack()">← Dashboard</button><button class="btn btn-danger" onclick="logout()">Logout</button></div></div></header>
 <main><div class="container">
 <div class="page-title"><h2>Revenue & Reports</h2><p>Platform-wide revenue, orders and sales performance.</p></div>
